@@ -19,6 +19,7 @@ Model thật: MODEL_PROVIDER = deepseek | openai (cả hai dùng API kiểu Open
     .env: MODEL_PROVIDER, MODEL_NAME, API_KEY (bắt buộc) · MODEL_BASE_URL, MODEL_MAX_TOKENS (tuỳ chọn, mặc định 700).
     Hướng dẫn nhóm: docs/model-setup-nhom.md. Không dán API key vào file này. Chỉ dùng thư viện chuẩn (urllib).
 """
+import contextlib
 import json
 import os
 import re
@@ -81,10 +82,25 @@ def _redact(text) -> str:
     return t
 
 
+_min_max_tokens = [0]   # sàn tạm thời do max_tokens_at_least() đặt (0 = không có)
+
+
+@contextlib.contextmanager
+def max_tokens_at_least(n: int):
+    """Trong khối `with`, mỗi lần gọi model được phép ra ÍT NHẤT n token (lấy số lớn hơn giữa n và
+    MODEL_MAX_TOKENS / mặc định). Dùng cho bước cần JSON dài hơn mà KHÔNG đổi chữ ký call_model(system, user)."""
+    old = _min_max_tokens[0]
+    _min_max_tokens[0] = max(old, int(n))
+    try:
+        yield
+    finally:
+        _min_max_tokens[0] = old
+
+
 def _max_tokens() -> int:
     raw = (os.environ.get("MODEL_MAX_TOKENS") or "").strip()
     if not raw:
-        return DEFAULT_MAX_TOKENS
+        return max(DEFAULT_MAX_TOKENS, _min_max_tokens[0])
     try:
         n = int(raw)
         if n < 1:
@@ -92,7 +108,7 @@ def _max_tokens() -> int:
     except ValueError:
         raise MissingConfigError("MODEL_MAX_TOKENS trong .env phải là số nguyên ≥1 (đang là %r). Để trống = %d."
                                  % (raw, DEFAULT_MAX_TOKENS))
-    return n
+    return max(n, _min_max_tokens[0])
 
 
 def _url(spec) -> str:
