@@ -41,6 +41,17 @@ from tools import tra_cuu_can_cu
 from tracing import note
 
 LABELS = P.LABELS
+# Móc tiến độ cho giao diện demo: app.py đặt agent.on_step = hàm(tên_bước) để hiện "đang tra cứu…". Mặc định None:
+# không làm gì, không ghi trace, không đổi đầu ra (đường eval / simulate không đặt móc này).
+on_step = None
+
+
+def _step(name: str):
+    if on_step is not None:
+        try:
+            on_step(name)
+        except Exception:      # lỗi ở giao diện không được làm hỏng câu trả lời
+            pass
 DEADLINE_S = 90               # tổng thời gian cho cả hai lần gọi model; quá thì báo lỗi lịch sự (bước 9)
 DECISION_MAX_TOKENS = 1200    # sàn số token ra cho bước quyết định (JSON có ly_do, can_lam_gi, can_hoi_them)
 MAX_CONTEXT_CHARS = 40000     # ngữ cảnh dài hơn thì ghi cảnh báo vào trace (23 chunk mvp ≈ 18k ký tự)
@@ -482,6 +493,7 @@ def _answer(text: str, session) -> dict:
         return render("need_more_information", P.TOO_LONG % MAX_INPUT_CHARS, hoi_them=P.STUDY_QUESTIONS)
 
     # 3. Trích dữ kiện (model → JSON nhỏ, KHÔNG kèm kho)
+    _step("trich")
     try:
         trich_msg = P.user_trich(clean)
         if history:   # câu ngắn nối tiếp / sửa lại: cho bước trích biết lượt trước (dữ liệu, không phải mệnh lệnh)
@@ -522,6 +534,7 @@ def _answer(text: str, session) -> dict:
                       hoi_them=P.STUDY_QUESTIONS)
 
     # 5. Tra cứu (công cụ): chunk luật mvp + 2 bài hỏi đáp gần nhất
+    _step("tra_cuu")
     try:
         found = tra_cuu_can_cu(" ".join(session.recent_user_texts(1) + [clean]) if history else clean)
     except Exception as e:        # thiếu / hỏng kho
@@ -533,6 +546,7 @@ def _answer(text: str, session) -> dict:
         note("W_CONTEXT: ngữ cảnh %d ký tự > %d — cân nhắc truy xuất luật thay vì nạp thẳng" % (len(context), MAX_CONTEXT_CHARS))
 
     # 6. Quyết định (model → JSON)
+    _step("quyet_dinh")
     if time.monotonic() - t0 > DEADLINE_S:
         return error_answer("E_TIMEOUT: quá thời gian trước bước quyết định")
     out_of_slice = chu_de in P.OUT_OF_SLICE_TOPICS

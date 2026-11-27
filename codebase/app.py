@@ -9,6 +9,7 @@ và vài lượt gần nhất trong cuộc đó. Gõ /moi (hoặc /reset) để 
 """
 import os
 import sys
+import time
 
 for _stream in (sys.stdout, sys.stderr, sys.stdin):
     try:
@@ -32,6 +33,8 @@ def _where(e):
 def main() -> int:
     try:
         import tracing
+        import agent
+        import demo_ui
         from agent import answer
         from session import ChatSession
     except Exception as e:  # lỗi cú pháp, thiếu thư viện… trong codebase/
@@ -41,6 +44,7 @@ def main() -> int:
     print("Bản chạy thử — gõ đầu vào rồi Enter. Thoát: Ctrl+C (hoặc Enter 2 lần với dòng trống).")
     session = ChatSession()
     print("(%s Gõ /moi để bắt đầu lại.)" % session.status())
+    agent.on_step = lambda name: print("   " + demo_ui.STEP_TEXT.get(name, "…"), flush=True)
     blank = 0
     while True:
         try:
@@ -59,20 +63,30 @@ def main() -> int:
             print("(Đã xóa cuộc trò chuyện. %s)" % session.status())
             continue
         tracing.begin("app")
+        t0 = time.perf_counter()
         try:
             result = answer(text, session=session)
         except NotImplementedError as e:
             tracing.end()
             print("Chưa nối model: %s" % e)
             return 1
-        except Exception as e:  # lỗi gọi model: báo rồi cho hỏi tiếp
+        except KeyboardInterrupt:
             tracing.end()
-            print("[lỗi] %s: %s" % (type(e).__name__, e))
+            print("\n(Đã dừng câu này. Bạn có thể hỏi tiếp.)")
             continue
-        s, _ = tracing.end()
-        print(result.get("output", "") if isinstance(result, dict) else result)
-        print("   (model: %s · gọi model %d lần · công cụ %d lần · token vào %d / ra %d)"
-              % (", ".join(s["models"]) or "—", s["model_calls"], s["tool_calls"], s["tokens_in"], s["tokens_out"]))
+        except Exception as e:  # lỗi bất ngờ: câu thân thiện, KHÔNG in nội dung lỗi / stack trace
+            _, events = tracing.end()
+            print(demo_ui.friendly_error(events=events, exc=e))
+            print("   " + demo_ui.FOOTER)
+            continue
+        s, events = tracing.end()
+        output = result.get("output", "") if isinstance(result, dict) else str(result)
+        nice = demo_ui.friendly_error(output, events)
+        print(nice if nice else output)
+        t = demo_ui.step_timings(events, time.perf_counter() - t0)
+        print("   (model: %s · gọi model %d lần · công cụ %d lần · token vào %d / ra %d · %.1f s: trích %.1f, tra cứu %.1f, "
+              "quyết định %.1f)" % (", ".join(s["models"]) or "—", s["model_calls"], s["tool_calls"], s["tokens_in"],
+                                    s["tokens_out"], t["tong"], t["trich"], t["tra_cuu"], t["quyet_dinh"]))
         print("   (%s)" % session.status())
 
 
