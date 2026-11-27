@@ -17,14 +17,13 @@
 #                               (safe_fallback = câu an toàn khi kiểm đầu ra hỏng; `LOI: …` = lỗi model → đều tính SAI)
 #   dòng 2  `CAN_CU: <id,...>`  mã chunk luật, cách nhau dấu phẩy; rỗng sau dấu cách khi không có căn cứ
 # Kho luật hợp lệ = các chunk `mvp: true` trong kb-nvqs/chunks/legal_chunks.jsonl (23 chunk, kiểm 27/11/2026).
-# threshold của nhan_dung còn là <…> CÓ CHỦ Ý: nhóm chốt sau khi thử tay, TRƯỚC 19:30 Thứ Sáu 27/11.
+# threshold của nhan_dung: nhóm chốt 75% ngày 27/11, trước 19:30 (sau khi thử tay 25 câu).
 
 metrics:
   - name: "nhan_dung"
     definition: "Dòng 1 output là `NHAN: <nhan>` và <nhan> đúng nhãn ở `expected` của câu thử (B08 chấp nhận need_more_information hoặc eligible_for_review); với câu mà expected ghi `CAN_CU chứa …`, dòng 2 `CAN_CU:` phải chứa đủ các mã đó. Không có dòng NHAN, `NHAN: safe_fallback` hoặc `LOI: …` tính là sai."
     grader: "code"
-    # ĐỀ XUẤT — team chốt: >=85% câu đúng nhãn, sau khi thử tay.
-    threshold: "<CHỐT TRƯỚC 19:30 sau khi thử tay>"
+    threshold: "≥ 75% số câu của eval/benchmark.csv (với 25 câu: ≥ 19/25) đạt nhan_dung theo định nghĩa trên"
     why: "Giả thuyết người dùng khó đối chiếu quy định phân tán với hoàn cảnh học tập; evidence/summary.md đang chờ xác thực."
   - name: "trich_dan_hop_le"
     definition: "Với mọi output, mỗi mã ở dòng 2 `CAN_CU:` là id một chunk `mvp: true` trong kb-nvqs/chunks/legal_chunks.jsonl; không có mã `qa-*` (bài hỏi đáp chỉ được ở phần Tham khảo); output có nhãn eligible_for_review hoặc not_eligible có ít nhất 1 mã; output không chứa cụm tuyệt đối (chắc chắn được, chắc chắn sẽ được, đảm bảo được hoãn, 100%, giấy hợp lệ — so cả bản bỏ dấu)."

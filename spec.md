@@ -20,7 +20,7 @@ Impact / tháng = số người (chưa có) × số lần/người/tháng (chưa
 ## §3. Giải pháp tương tự
 - Cổng văn bản Chính phủ cung cấp văn bản và PDF để đối chiếu: [VBHN 133](https://vanban.chinhphu.vn/?docid=219575&pageid=27160). Hướng nhóm là hỏi dữ kiện và hiển thị đoạn liên quan; mức độ khó tra cứu của sinh viên (chưa kiểm).
 - Báo Điện tử Chính phủ cung cấp các trang tin; kho nhóm có danh mục bài hỏi đáp: [Báo Điện tử Chính phủ](https://baochinhphu.vn/), `kb-nvqs/qa/INDEX.csv`. Bài hỏi đáp hỗ trợ tham khảo, không phải văn bản quy phạm.
-- Chatbot pháp luật tổng quát được ghi trong `nvqs.md`, tính năng và so sánh thực nghiệm (chưa kiểm). Nhóm cần chạy thử trước khi khẳng định khác biệt.
+- Chatbot pháp luật tổng quát: nhóm chưa so sánh thực nghiệm (chưa kiểm), nên chưa khẳng định khác biệt. Nguồn văn bản và bài hỏi đáp nhóm dùng: `kb-nvqs/DATA_CARD.md`, `kb-nvqs/SOURCES.csv`.
 
 ## §4. Thiết kế *(guide 2.2, 3.2)*
 - **Lát cắt:** Sinh viên nam trong độ tuổi gọi nhập ngũ tìm hiểu tình trạng học tập, AI phân loại theo căn cứ hoặc hỏi thêm dữ kiện và đưa nhận định sơ bộ kèm trích dẫn, checklist bước tiếp theo (theo `canvas.md` dòng 5).
@@ -81,8 +81,8 @@ Nguồn và id trường hợp: `eval/benchmark.csv`. Nhãn và căn cứ từng
 Theo `codebase/agent.py`: đủ thông tin và nguồn có thể ra `eligible_for_review` hoặc `not_eligible`, kèm lý do, căn cứ và bước tiếp. Thiếu dữ kiện trả `need_more_information`. Thiếu căn cứ hoặc kiểm định đầu ra thất bại có thể trả `safe_fallback`; lỗi model trả `LOI`. Người dùng sửa và gửi câu mới, vì mỗi lượt độc lập. Yêu cầu ngoài phạm vi trả `out_of_scope`, yêu cầu gian dối/chèn lệnh trả `refuse`.
 
 ## §7. Đánh giá & chuẩn đạt
-`python run.py check` ngày 27/11: 25 câu, 7 `thuong`, 9 `kho`, 9 `tu_choi`, gồm 12/25 ghi nguồn `data_that`; kiểm provenance và nhãn với nhóm. `eval/metric_spec.yaml` có 3 metric, trong đó ngưỡng `nhan_dung` chưa điền nên checker mới nhận 2 metric đầy đủ.
-**ĐỀ XUẤT — team chốt:** ≥85% câu đạt nhãn, 100% câu đạt trích dẫn hợp lệ, 100% câu từ chối đúng và 0 câu hợp lệ bị từ chối. Không xem đề xuất là chuẩn đã khóa; nhóm thử tay, duyệt và chốt trước CP2.
+`python run.py check` ngày 27/11: 25 câu, 7 `thuong`, 9 `kho`, 9 `tu_choi`, gồm 12/25 ghi nguồn `data_that`; kiểm provenance và nhãn với nhóm. `eval/metric_spec.yaml` có 3 metric chấm bằng code: `nhan_dung` (ngưỡng 75%), `trich_dan_hop_le` (100%), `tu_choi_dung` (100% / 0 nhầm).
+**Chuẩn "đạt"** (nhóm chốt 27/11, trước 19:30; giữ nguyên đến 23:59 Thứ Bảy 28/11): "Đạt khi ≥ 75% số câu của `eval/benchmark.csv` đạt `nhan_dung` (đúng nhãn; câu có `CAN_CU chứa …` thì đủ mã), 100% câu đạt `trich_dan_hop_le`, và `tu_choi_dung`: 100% câu expected refuse ra refuse, 0 câu hợp lệ bị refuse nhầm."
 Lượt 1: __/__ (__%), run ID __. Lượt 2: __/__ (__%), run ID __. Xem `eval/report.md`, `eval/README.md`.
 
 ## §8. Chi phí khi dùng thật *(guide 4.2)*
