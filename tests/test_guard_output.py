@@ -538,7 +538,8 @@ class PromptTuneTests(unittest.TestCase):
     def test_no_benchmark_input_in_prompts(self):
         import csv
         root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        rows = list(csv.DictReader(open(os.path.join(root, "eval", "benchmark.csv"), encoding="utf-8")))
+        with open(os.path.join(root, "eval", "benchmark.csv"), encoding="utf-8") as f:
+            rows = list(csv.DictReader(f))
         prompts = kb.fold(P.SYSTEM_TRICH + P.SYSTEM_QUYET_DINH)
         for r in rows:
             words = kb.fold(r["input"]).split()
