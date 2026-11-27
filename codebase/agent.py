@@ -324,7 +324,7 @@ def parse_json(raw: str):
     for candidate in (s, s[s.find("{"): s.rfind("}") + 1] if "{" in s and "}" in s else ""):
         try:
             data = json.loads(candidate)
-        except ValueError:
+        except (ValueError, RecursionError):   # RecursionError: JSON lồng quá sâu ("[[[[…") — coi như hỏng, không crash
             continue
         if isinstance(data, dict):
             return data
