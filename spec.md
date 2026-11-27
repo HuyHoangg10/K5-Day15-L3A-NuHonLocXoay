@@ -20,7 +20,8 @@ Impact / tháng = số người (chưa có) × số lần/người/tháng (chưa
 ## §3. Giải pháp tương tự
 - Cổng văn bản Chính phủ cung cấp văn bản và PDF để đối chiếu: [VBHN 133](https://vanban.chinhphu.vn/?docid=219575&pageid=27160). Hướng nhóm là hỏi dữ kiện và hiển thị đoạn liên quan; mức độ khó tra cứu của sinh viên (chưa kiểm).
 - Báo Điện tử Chính phủ cung cấp các trang tin; kho nhóm có danh mục bài hỏi đáp: [Báo Điện tử Chính phủ](https://baochinhphu.vn/), `kb-nvqs/qa/INDEX.csv`. Bài hỏi đáp hỗ trợ tham khảo, không phải văn bản quy phạm.
-- Chatbot pháp luật tổng quát: nhóm chưa so sánh thực nghiệm (chưa kiểm), nên chưa khẳng định khác biệt. Nguồn văn bản và bài hỏi đáp nhóm dùng: `kb-nvqs/DATA_CARD.md`, `kb-nvqs/SOURCES.csv`.
+- Chatbot pháp luật tổng quát (hỏi đáp chung): nhóm chưa chạy thử nên chưa so sánh tính năng hay độ đúng (chưa kiểm). Cần chạy thử vài câu của bộ câu thử trên một chatbot tổng quát trước khi khẳng định khác biệt.
+- Nguồn văn bản và bài hỏi đáp nhóm dùng: `kb-nvqs/DATA_CARD.md`, `kb-nvqs/SOURCES.csv`.
 
 ## §4. Thiết kế *(guide 2.2, 3.2)*
 - **Lát cắt:** Sinh viên nam trong độ tuổi gọi nhập ngũ tìm hiểu tình trạng học tập, AI phân loại theo căn cứ hoặc hỏi thêm dữ kiện và đưa nhận định sơ bộ kèm trích dẫn, checklist bước tiếp theo (theo `canvas.md` dòng 5).
