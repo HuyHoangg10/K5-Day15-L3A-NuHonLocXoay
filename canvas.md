@@ -5,11 +5,11 @@
 | 1 | Track + lát cắt dự kiến | F · LegalTech / CivicTech. Đối chiếu căn cứ tạm hoãn gọi nhập ngũ liên quan đến tình trạng học tập. |
 | 2 | Người dùng chính | Sinh viên nam trong độ tuổi gọi nhập ngũ tại Việt Nam, đang tìm hiểu trường hợp học tập của mình. |
 | 3 | Pain | Sinh viên trong độ tuổi gọi nhập ngũ khó đối chiếu quy định tạm hoãn với tình trạng học tập của mình vì thông tin tra cứu phân tán, nên mất thời gian xác định bước tiếp theo. |
-| 4 | Bằng chứng đầu | **Giả thuyết:** sinh viên phải tra nhiều nguồn và vẫn khó xác định dữ kiện học tập có liên quan. **Nguồn sẽ kiểm:** phỏng vấn ít nhất 3 sinh viên đúng vai ngoài nhóm và đối chiếu các hỏi đáp công khai phù hợp, ưu tiên Báo Điện tử Chính phủ. Lưu số liệu và trích dẫn ẩn danh tại `evidence/summary.md`. |
+| 4 | Bằng chứng đầu | **Giả thuyết:** sinh viên phải tra nhiều nguồn và vẫn khó xác định dữ kiện học tập có liên quan. **Số đầu tiên (đào data Q&A công khai, `evidence/data-mining.md`):** trên 24 bài (15 ca) đạt tiêu chí lọc, **21/24 bài (88%)** / **13/15 ca (87%)** vướng địa phương hoặc rơi vào tình huống biên; **11/24 (46%)** đã nộp giấy tờ nhưng chưa được giải quyết *(vd `qa-q02`: "Tôi đã nộp Giấy xác nhận sinh viên… tuy nhiên không được chấp nhận giải quyết chế độ tạm hoãn")*. **Nguồn kiểm lại:** phỏng vấn ≥3 sinh viên đúng vai ngoài nhóm, lưu tổng hợp tại `evidence/summary.md`. |
 | 5 | Lát cắt một câu | Khi sinh viên nam trong độ tuổi gọi nhập ngũ tìm hiểu trường hợp học tập của mình, AI phân loại tình huống theo căn cứ đã xác minh hoặc hỏi thêm dữ kiện để đưa ra nhận định sơ bộ kèm trích dẫn và checklist bước tiếp theo khi đủ căn cứ. |
 | 6 | Mức tự động | AI hỏi thêm, phân loại và giải thích dựa trên nguồn đã xác minh. Người dùng kiểm tra căn cứ và cơ quan có thẩm quyền quyết định, vì nhận định sai có thể khiến sinh viên hiểu sai nghĩa vụ hoặc chuẩn bị thiếu hồ sơ. |
 | 7 | Phân công có tên | `Nhi` khám phá người dùng · `Hiếu` kiểm chứng nguồn luật · `Tùng` triển khai bản chạy thử · `Hoàng` đánh giá và chuẩn bị demo. |
-| — | *(CP2)* Đã đổi gì so với CP1 | Nhóm bổ sung KB và truy xuất, kết nối model thật, các lớp guard và benchmark 27 ca; chi tiết lịch sử ở git log origin/main. Chuẩn đạt 75% và điều kiện an toàn đã chốt; bằng chứng pain đang thu thập. |
+| — | *(CP2)* Đã đổi gì so với CP1 | Nhóm bổ sung KB và truy xuất, kết nối model thật, các lớp guard, benchmark 27 ca và chạy xong đào data Q&A công khai (21/24 bài / 13/15 ca có pain); chi tiết lịch sử ở git log origin/main. Chuẩn đạt 75% và điều kiện an toàn đã chốt; phỏng vấn người dùng thật đang tiếp tục thu thập. |
 
 ## Track F · Đối chiếu tạm hoãn gọi nhập ngũ vì lý do học tập
 
