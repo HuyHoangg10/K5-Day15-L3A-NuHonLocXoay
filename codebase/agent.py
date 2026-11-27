@@ -201,7 +201,14 @@ def parse_json(raw: str):
 
 
 def clean_facts(d: dict):
-    """Chuẩn hóa dữ kiện model trích; kiểu sai → None (không biết). chu_de / y_do sai hoặc thiếu → None (coi là hỏng)."""
+    """Chuẩn hóa dữ kiện model trích; kiểu sai → None (không biết). chu_de / y_do sai → None (coi là hỏng).
+    Model trả null (không trích được gì, vd "Em có phải đi không?", "????"): chu_de null → "khac" (hỏi lại chủ đề);
+    y_do null chỉ được coi là "hop_phap" khi chủ đề cũng chưa rõ — nhánh đó chỉ hỏi lại, không kết luận gì."""
+    d = dict(d)
+    if "chu_de" in d and d["chu_de"] is None:          # null tường minh; THIẾU khóa vẫn là JSON hỏng
+        d["chu_de"] = "khac"
+    if "y_do" in d and d["y_do"] is None and d.get("chu_de") == "khac":
+        d["y_do"] = "hop_phap"
     if d.get("y_do") not in Y_DO or d.get("chu_de") not in P.TOPICS:
         return None
     f = {k: (d.get(k) if isinstance(d.get(k), bool) else None) for k in BOOL_FACTS}
