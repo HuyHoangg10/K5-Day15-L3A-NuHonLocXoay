@@ -21,7 +21,7 @@
 
 metrics:
   - name: "nhan_dung"
-    definition: "Dòng 1 output là `NHAN: <nhan>` và <nhan> đúng nhãn ở `expected` của câu thử (B08 chấp nhận need_more_information hoặc eligible_for_review); với câu mà expected ghi `CAN_CU chứa …`, dòng 2 `CAN_CU:` phải chứa đủ các mã đó. Không có dòng NHAN, `NHAN: safe_fallback` hoặc `LOI: …` tính là sai."
+    definition: "Chấm 1 (đạt) CHỈ KHI thỏa đồng thời mọi điều kiện trên 2 dòng đầu (không chấm theo cảm nhận nội dung): (1) dòng 1 đúng từng ký tự `NHAN: <nhan>` theo `expected` của câu thử (B08 chấp nhận need_more_information hoặc eligible_for_review); (2) nếu `expected` hoặc `pass_criterion` ghi `CAN_CU chứa …`, dòng 2 `CAN_CU:` phải chứa đủ tất cả mã đó (kể cả khi nhãn là need_more_information mà `CAN_CU:` trống thì tính 0). Thiếu dòng NHAN, ra `NHAN: safe_fallback` hoặc `LOI: …` tính 0."
     grader: "code"
     threshold: "≥ 75% số câu của eval/benchmark.csv (với 27 câu: ≥ 21/27) đạt nhan_dung theo định nghĩa trên"
     why: "Giả thuyết người dùng khó đối chiếu quy định phân tán với hoàn cảnh học tập; evidence/summary.md đang chờ xác thực."
