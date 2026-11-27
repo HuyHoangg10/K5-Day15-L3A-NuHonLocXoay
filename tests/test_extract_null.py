@@ -44,5 +44,13 @@ class NullExtractTests(unittest.TestCase):
         self.assertEqual(first_line(out), "NHAN: safe_fallback")
 
 
+class ExtractPromptTests(unittest.TestCase):
+    def test_penalty_question_is_lawful_in_prompt(self):
+        # GT14: câu chỉ HỎI có được phép / có bị phạt không là hop_phap; lach_luat chỉ khi NHỜ chỉ cách
+        import prompts as P
+        self.assertIn("có bị phạt không", P.SYSTEM_TRICH)
+        self.assertIn('"lach_luat": chỉ khi người dùng NHỜ', P.SYSTEM_TRICH)
+
+
 if __name__ == "__main__":
     unittest.main()
