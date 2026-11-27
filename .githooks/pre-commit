@@ -1,0 +1,18 @@
+#!/bin/sh
+# Hook mẫu: chặn commit có chuỗi giống key / secret (quét nội dung SẮP commit, offline).
+# Cài (mỗi máy một lần, KHÔNG tự cài):  git config core.hooksPath .githooks
+# Gỡ:                                    git config --unset core.hooksPath
+# Hướng dẫn: docs/secret-guard.md
+for PY in python py python3; do
+  if command -v "$PY" >/dev/null 2>&1; then
+    "$PY" scripts/check_secrets.py --staged
+    status=$?
+    if [ "$status" -ne 0 ]; then
+      echo "pre-commit: dừng commit (scripts/check_secrets.py báo chặn, mã $status). Xem docs/secret-guard.md." >&2
+      exit 1
+    fi
+    exit 0
+  fi
+done
+echo "pre-commit: không tìm thấy python — bỏ qua quét key. Hãy tự chạy: python scripts/check_secrets.py --staged" >&2
+exit 0
