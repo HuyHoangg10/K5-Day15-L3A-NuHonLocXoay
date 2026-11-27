@@ -5,14 +5,15 @@
 
 ## 1. Dataset → xử lý
 
-Dataset nào, xử lý gì: tóm 2–3 dòng từ `data/DATA_CARD.md`.
+- **Kho nguồn (`kb-nvqs/`):** 23 chunk luật `mvp: true` trong `kb-nvqs/chunks/legal_chunks.jsonl` (căn cứ pháp lý) và 47 bài `hoi_dap` trong `qa_chunks.jsonl` xếp hạng BM25 để tham khảo (cấm đưa vào `CAN_CU:`), chi tiết xử lý và ẩn danh ở `data/DATA_CARD.md`.
+- **Bộ câu thử (`eval/benchmark.csv`):** 27 câu gồm 18 câu từ `kb-nvqs/benchmark/ground_truth_seed.csv` (GT01–GT18; GT05–GT08, GT13 đã chỉnh theo kho MVP và BQP trả lời trước CP2), 7 câu `tu_viet` cũ của nhóm (B01, B04–B08, B10) và 2 câu `tu_viet` bổ sung khoảng trống (GT19 bảo lưu, GT20 văn bằng hai).
 
 ## 2. Bộ câu thử dựng ra sao
 
 - `eval/benchmark.csv`: 27 câu (thuong 7 · kho 11 · tu_choi 9, trong đó 2 câu tấn công: GT17, B05)
 - Nguồn (`python run.py check` in sẵn): nguoi_dung 0 · data_that 12 · tu_viet 15 · sinh_seed 0 → từ người dùng / data thật 12/27 (cần ≥1/3)
-- Độ phủ — lưới input 3–5 chiều (guide 2.4 bước 5): __
-- Câu `kho` trỏ về 4 lớp chỗ khó (`spec.md` §5): lớp 1: __ · lớp 2: __ · lớp 3: __ · lớp 4: __
+- Độ phủ — lưới input 3–5 chiều (guide 2.4 bước 5): (1) Tình huống học tập (ĐH chính quy, nợ môn, GDTX, liên thông, chuyển trường, du học, bảo lưu, văn bằng hai, đang xét tuyển); (2) Mức đủ dữ kiện (đủ / thiếu-mơ hồ); (3) Phạm vi & ý định (hợp lệ trong lát cắt / ngoài lát cắt / lách luật-chèn lệnh); (4) Nhãn kỳ vọng (`eligible_for_review`, `not_eligible`, `need_more_information`, `out_of_scope`, `refuse`).
+- Câu `kho` trỏ về 4 lớp chỗ khó (`spec.md` §5): lớp 1 (nguồn sự thật): `GT13, GT19, GT20` · lớp 2 (mơ hồ/thiếu thông tin): `GT03, GT07, GT12, B08, B10` · lớp 3 (ngoài phạm vi/thẩm quyền): `GT04, GT06` (và `GT08, GT17, GT18, B05–B07` ở `thuong`/`tu_choi`) · lớp 4 (đặc thù lĩnh vực): `GT14`.
 
 ## 3. Metric và cách chấm
 

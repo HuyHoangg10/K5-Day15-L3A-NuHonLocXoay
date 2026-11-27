@@ -6,7 +6,7 @@ Track F · LegalTech / CivicTech. Nguồn kho: `kb-nvqs/README.md`, `kb-nvqs/SOU
 Đường tra cứu dự kiến: tìm văn bản hợp nhất qua cổng công bố, đọc điều liên quan, tìm bài hỏi đáp theo tình huống, rồi liên hệ nhà trường hoặc cơ quan quân sự để xác minh. Đây là mô tả đường tra cứu khả dụng, chưa phải quan sát người dùng. Nguồn văn bản và hỏi đáp: `kb-nvqs/SOURCES.csv`, `kb-nvqs/README.md`. Công cụ thực tế người dùng chọn (chưa kiểm).
 
 ## §1. Người dùng & bằng chứng
-Sinh viên nam trong độ tuổi gọi nhập ngũ muốn đối chiếu hoàn cảnh học tập với quy định tạm hoãn. Giả thuyết pain: các nguồn phân tán, khó đối chiếu với hoàn cảnh cá nhân; hậu quả thời gian tra cứu (chưa đo). `canvas.md` dòng 4 và `evidence/summary.md` ghi kế hoạch phỏng vấn, khảo sát, đào dữ liệu. Bằng chứng tổng hợp đạt ngưỡng và phỏng vấn đã hoàn thành (chưa có).
+Sinh viên nam trong độ tuổi gọi nhập ngũ muốn đối chiếu hoàn cảnh học tập với quy định tạm hoãn. Giả thuyết pain: các nguồn phân tán, khó đối chiếu với hoàn cảnh cá nhân; hậu quả thời gian tra cứu (chưa đo). Đã hoàn thành đào data Q&A công khai (`evidence/data-mining.md`, `evidence/count.py`): **21/24 bài (88%) / 13/15 ca (87%)** gặp vướng địa phương hoặc tình huống biên (`11/24` bài đã nộp giấy tờ vẫn chưa được giải quyết). Phỏng vấn ≥3 sinh viên ngoài nhóm và tổng hợp `evidence/summary.md` đang triển khai.
 
 ## §2. Impact & quyết định chọn
 | Hướng | Người / tháng | Lần / người / tháng | Phút / lần | Impact | Quyết định |
@@ -62,7 +62,7 @@ Impact / tháng = số người (chưa có) × số lần/người/tháng (chưa
 - **Mức tự động:** AI gợi ý, người dùng đối chiếu và cơ quan có thẩm quyền quyết định. Nhận định sai có thể làm người dùng hiểu nhầm nghĩa vụ (`canvas.md` dòng 6).
 - **Chặn rủi ro:** chuẩn hóa và che CCCD, số điện thoại, email; chặn đầu vào gian dối/chèn lệnh (câu chỉ HỎI chế tài không bị chặn); đầu vào quá 4000 ký tự được nhắc rút gọn, không gọi model. Đầu ra: kiểm nhãn, JSON, id nguồn, cụm khẳng định tuyệt đối (bỏ qua khi bị phủ định), "Điều N"/khoản/điểm, URL, số tiền/mức tù/thời hạn ngày phải có trong ngữ cảnh, rò rỉ prompt, độ dài. Đầu ra hỏng chuyển `safe_fallback`; mỗi lần chặn ghi mã `G_*` vào trace. Câu miễn trừ cố định do code nối vào mọi câu trả lời trừ `refuse` và lỗi. Mã và giới hạn: `codebase/agent.py` (`GUARD_CODES`), `codebase/guards.py`, `docs/build-checklist.md` §3.
 - **Người duyệt:** người dùng kiểm lại; cơ quan có thẩm quyền quyết định hồ sơ. Hệ thống chỉ cung cấp thông tin tham khảo (`codebase/prompts.py`).
-- **Nguyên tắc:** G10 hỏi bổ sung khi thiếu dữ kiện; G1 nêu phạm vi và giới hạn; G2 hiển thị nguồn để kiểm tra; G13 người dùng gửi lại câu đã sửa, mỗi lượt độc lập (`codebase/agent.py`).
+- **Nguyên tắc:** G10 hỏi bổ sung khi thiếu dữ kiện; G1 nêu phạm vi và giới hạn; G2 hiển thị nguồn để kiểm tra; G9 người dùng gửi lại câu đã sửa, mỗi lượt độc lập (`codebase/agent.py`).
 - **Phần giả:** nếu cấu hình provider fake, model trả phản hồi giả, không tính lượt đánh giá. Connector OpenAI/DeepSeek có trong `codebase/ai.py`; DeepSeek đã chạy thật khi phát triển (27/11, gọi `answer()` trực tiếp, không phải lượt đánh giá chính thức).
 
 ## §5. Chỗ khó — bốn lớp
