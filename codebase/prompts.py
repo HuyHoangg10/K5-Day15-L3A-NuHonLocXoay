@@ -129,9 +129,14 @@ DISCLAIMER = ("Thông tin này chỉ để tham khảo, không phải quyết đ
               "Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân "
               "cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.")
 
-SAFE_SENTENCE = ("Mình chưa đủ căn cứ để nhận định tình huống này nên không đưa ra kết luận. "
-                 "Bạn nên hỏi trực tiếp Ban Chỉ huy quân sự cấp xã nơi cư trú, và mang theo giấy tờ liên quan. "
-                 "Nếu muốn, bạn có thể mô tả lại tình huống (học trình độ gì, hệ nào, khóa mấy năm, đã từng được tạm hoãn chưa).")
+# B9: câu an toàn (nhãn safe_fallback) khi kiểm đầu ra hỏng. Khác need_more_information: KHÔNG hỏi lại như thể chỉ thiếu
+# dữ kiện, mà nói rõ chưa thể nhận định và chỉ nơi hỏi. Chỉ nêu "cấp xã": văn bản luật trong kho (VBHN 2026) không còn cấp huyện.
+SAFE_SENTENCE = ("Mình chưa thể nhận định trường hợp này: câu trả lời mình soạn chưa qua được bước kiểm tra với văn bản trong kho, "
+                 "nên mình không đưa ra kết luận để tránh nói sai. "
+                 "Bạn nên hỏi trực tiếp Ban Chỉ huy quân sự cấp xã nơi bạn cư trú và mang theo giấy tờ học tập "
+                 "(giấy báo nhập học, giấy xác nhận của nhà trường). "
+                 "Bạn cũng có thể hỏi lại mình ngắn gọn: học trình độ gì, hệ chính quy hay không, khóa học từ năm nào đến năm nào, "
+                 "đã từng được tạm hoãn chưa.")
 
 ERROR_MESSAGE = ("Xin lỗi, hệ thống đang gặp sự cố hoặc phản hồi quá lâu nên chưa trả lời được. "
                  "Mình không đoán thay để tránh đưa thông tin sai. Bạn vui lòng thử lại sau ít phút, "

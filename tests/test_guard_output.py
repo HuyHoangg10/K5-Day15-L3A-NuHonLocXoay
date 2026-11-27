@@ -359,3 +359,31 @@ class DisclaimerTests(unittest.TestCase):
                      "hội đồng khám sức khỏe"]:
             self.assertIn(body, P.DISCLAIMER.lower())
             self.assertIn(body, kb.nfc(corpus))
+
+
+class SafeFallbackTests(unittest.TestCase):
+    """B9: câu an toàn riêng, hữu ích: nói chưa thể nhận định, chỉ nơi hỏi; khác câu hỏi lại need_more_information."""
+    def test_safe_sentence_content(self):
+        s = P.SAFE_SENTENCE
+        self.assertIn("chưa thể nhận định", s)
+        self.assertIn("Ban Chỉ huy quân sự cấp xã", s)
+        self.assertFalse(agent.has_absolute(s))
+        self.assertNotIn("cấp huyện", s)                     # văn bản luật trong kho không còn cấp huyện
+
+    def test_safe_answer_shape(self):
+        out = agent.safe_answer("G_JSON: thử")["output"]
+        lines = out.splitlines()
+        self.assertEqual(lines[0], "NHAN: safe_fallback")
+        self.assertEqual(lines[1], "CAN_CU: ")
+        self.assertIn(P.SAFE_SENTENCE, out)
+        self.assertNotIn("Cần biết thêm", out)                # không giả làm câu hỏi lại
+
+    def test_differs_from_need_more_information(self):
+        out = agent.answer("")["output"]
+        self.assertTrue(out.startswith("NHAN: need_more_information"))
+        self.assertNotIn(P.SAFE_SENTENCE, out)
+
+    def test_safe_words_in_kb(self):
+        corpus = kb.nfc(" ".join((c.get("answer") or "") for c in kb.qa_all()).lower())
+        for w in ["ban chỉ huy quân sự cấp xã", "giấy báo nhập học"]:
+            self.assertIn(w, corpus)
