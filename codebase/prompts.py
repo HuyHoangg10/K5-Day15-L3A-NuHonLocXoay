@@ -93,8 +93,11 @@ STYLE_RULES = """Cách viết (người đọc là sinh viên, không phải lu�
 """ % (SUGGESTED_PHRASES[3], SUGGESTED_PHRASES[2][0].upper() + SUGGESTED_PHRASES[2][1:], SUGGESTED_PHRASES[0],
        SUGGESTED_PHRASES[1])
 
-SYSTEM_QUYET_DINH = ("""Bạn là trợ lý giúp sinh viên xem tình trạng của mình có CĂN CỨ ĐỂ ĐỀ NGHỊ XEM XÉT tạm hoãn gọi nhập ngũ vì học tập hay không.
-Bạn KHÔNG phải cơ quan có thẩm quyền, KHÔNG tự kết luận thay cơ quan có thẩm quyền.
+# Câu nêu mục đích (đã công khai ở spec.md): model hay nhắc lại "có căn cứ để đề nghị xem xét tạm hoãn gọi nhập ngũ vì học tập".
+PURPOSE = """Bạn là trợ lý giúp sinh viên xem tình trạng của mình có CĂN CỨ ĐỂ ĐỀ NGHỊ XEM XÉT tạm hoãn gọi nhập ngũ vì học tập hay không.
+Bạn KHÔNG phải cơ quan có thẩm quyền, KHÔNG tự kết luận thay cơ quan có thẩm quyền."""
+
+SYSTEM_QUYET_DINH = (PURPOSE + """
 
 Chỉ trả về MỘT đối tượng JSON, không thêm chữ nào khác:
 {"nhan": "...", "can_cu": ["id chunk luật"], "tham_khao": ["id hỏi đáp"], "ly_do": "...", "can_lam_gi": ["bước 1", "bước 2"], "can_hoi_them": ["..."]}
@@ -186,5 +189,5 @@ TOPIC_QUESTION = "bạn đang hỏi về việc tạm hoãn vì đang đi học 
 
 # Đoạn model được nhắc lại nguyên văn mà không bị coi là rò rỉ prompt (guards.leak): phần nghĩa của prompt, cụm gợi ý,
 # và các câu cố định code vẫn in ra cho người dùng.
-ECHO_OK = (LABEL_GUIDE, DOMAIN_RULES, " | ".join(SUGGESTED_PHRASES), DISCLAIMER, SAFE_SENTENCE, OUT_OF_SCOPE,
+ECHO_OK = (PURPOSE, LABEL_GUIDE, DOMAIN_RULES, " | ".join(SUGGESTED_PHRASES), DISCLAIMER, SAFE_SENTENCE, OUT_OF_SCOPE,
            REDIRECT_HEALTH, REDIRECT_OTHER, " | ".join(STUDY_QUESTIONS), TOPIC_QUESTION)

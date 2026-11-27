@@ -512,6 +512,12 @@ class LeakFalsePositiveTests(unittest.TestCase):
         d, why = check(decision(can_lam_gi=[step]))
         self.assertIsNotNone(d, why)
 
+    def test_purpose_sentence_echo_passes(self):
+        # chữ model thật (GT10): nhắc lại câu mục đích của prompt — không phải chỉ dẫn bị lộ
+        t = "Bạn đang học đại học chính quy nên bạn có căn cứ để đề nghị xem xét tạm hoãn gọi nhập ngũ vì học tập."
+        d, why = check(decision(ly_do=t))
+        self.assertIsNotNone(d, why)
+
     def test_every_quoted_suggestion_is_allowed(self):
         for q in P.SUGGESTED_PHRASES:
             with self.subTest(q=q[:40]):
