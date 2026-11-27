@@ -123,11 +123,14 @@ class InputBlockTests(unittest.TestCase):
         self.assertNotIn("vbhn133-d10", inj)
 
     def test_legal_question_reaches_model_and_asks_more(self):
-        model = scripted(facts_json())
+        # chưa có dữ kiện học tập: vẫn tra cứu + bước quyết định (2 lần gọi), hỏi lại kèm căn cứ
+        model = scripted(facts_json(), decision_json(nhan="need_more_information", can_cu=[],
+                                                     can_hoi_them=["Bạn đang học trình độ gì, hệ nào?"]))
         with mock.patch.object(agent, "call_model", model):
             out = agent.answer("làm sao để được hoãn hợp pháp")
-        self.assertEqual(len(model.calls), 1)
+        self.assertEqual(len(model.calls), 2)
         self.assertEqual(first_line(out), "NHAN: need_more_information")
+        self.assertEqual(out["output"].splitlines()[1], "CAN_CU: vbhn133-d41-k1-g")
 
 
 class OutputGuardTests(unittest.TestCase):
@@ -201,12 +204,14 @@ class OutputGuardTests(unittest.TestCase):
 
 class FlowTests(unittest.TestCase):
     def test_missing_facts_asks_for_them(self):
-        model = scripted(facts_json(dang_hoc=True))
+        # model (giả) vội kết luận eligible khi chưa biết trình độ / hệ → code đổi thành hỏi thêm, giữ căn cứ
+        model = scripted(facts_json(dang_hoc=True), decision_json())
         with mock.patch.object(agent, "call_model", model):
-            out = agent.answer("em đang học đại học")
+            out = agent.answer("em đang học")
         self.assertEqual(first_line(out), "NHAN: need_more_information")
         self.assertIn("hệ chính quy", out["output"])
-        self.assertEqual(len(model.calls), 1)
+        self.assertIn("vbhn133-d41-k1-g", out["output"].splitlines()[1])
+        self.assertEqual(len(model.calls), 2)
 
     def test_model_flags_evasion_and_out_of_scope(self):
         for y_do, label in (("lach_luat", "refuse"), ("ngoai_pham_vi", "out_of_scope")):
