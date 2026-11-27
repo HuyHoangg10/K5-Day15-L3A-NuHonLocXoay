@@ -55,7 +55,7 @@ def nhan(out):
 
 
 def decision_prompts(model):
-    return [u for s, u in model.calls if s == P.SYSTEM_QUYET_DINH]
+    return [u for s, u in model.calls if s in (P.SYSTEM_QUYET_DINH, P.SYSTEM_QUYET_DINH_PHIEN)]
 
 
 class FactMergeTests(unittest.TestCase):
@@ -137,7 +137,11 @@ class FollowUpTests(unittest.TestCase):
         with mock.patch.object(agent, "call_model", m2):
             b = agent.answer("Em học đại học chính quy năm 2", session=S.ChatSession())["output"]
         self.assertEqual(a, b)
-        self.assertEqual(m1.calls, m2.calls)                   # chưa có lịch sử → prompt y hệt
+        # chưa có lịch sử → lời nhắn y hệt; prompt hệ thống chỉ khác đúng khối quy tắc demo (P.RULES_PHIEN) ở bước quyết định
+        self.assertEqual([u for _, u in m1.calls], [u for _, u in m2.calls])
+        self.assertEqual([s for s, _ in m1.calls], [P.SYSTEM_TRICH, P.SYSTEM_QUYET_DINH])
+        self.assertEqual([s for s, _ in m2.calls], [P.SYSTEM_TRICH, P.SYSTEM_QUYET_DINH_PHIEN])
+        self.assertEqual(P.SYSTEM_QUYET_DINH_PHIEN, P.SYSTEM_QUYET_DINH + "\n" + P.RULES_PHIEN)
 
 
 class ResetIsolationLimitTests(unittest.TestCase):

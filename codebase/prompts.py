@@ -197,3 +197,19 @@ TOPIC_QUESTION = "bạn đang hỏi về việc tạm hoãn vì đang đi học 
 # và các câu cố định code vẫn in ra cho người dùng.
 ECHO_OK = (PURPOSE, LABEL_GUIDE, DOMAIN_RULES, " | ".join(SUGGESTED_PHRASES), DISCLAIMER, SAFE_SENTENCE, OUT_OF_SCOPE,
            REDIRECT_HEALTH, REDIRECT_OTHER, " | ".join(STUDY_QUESTIONS), TOPIC_QUESTION)
+
+
+# ---------------------------------------------------------------- khối quy tắc RIÊNG cho bản demo nhiều lượt
+# Chỉ ghép vào prompt quyết định khi answer() chạy có phiên (session). Đường đo một lượt (eval / simulate) KHÔNG dùng
+# khối này: prompt và đầu ra của nó giữ nguyên từng byte (tests/test_single_turn_invariance.py). Khối đứng riêng, đánh
+# số 16+, không sửa chữ nào của quy tắc 1–15, để sau này gộp với thay đổi ở quy tắc 6 ít xung đột.
+RULES_PHIEN = """
+Quy tắc thêm cho cuộc trò chuyện:
+16. Đủ dữ kiện thì kết luận, không hỏi lại. Người dùng đã nói đang học (hoặc đã nhập học), trình độ, và hệ chính quy /
+   tập trung (hoặc đang học phổ thông), mà KHÔNG nhắc tới: đã tốt nghiệp một trình độ khác, liên thông, văn bằng hai,
+   thôi học, chuyển trường, bảo lưu, nợ môn, quá hạn, du học, hay một lần tạm hoãn trước → chọn "eligible_for_review",
+   nêu điều kiện một khóa học trong ly_do. Không hỏi về học gián đoạn, khóa đầu tiên hay đã từng được tạm hoãn chưa.
+17. can_hoi_them chỉ hỏi dữ kiện còn thiếu, chưa có trong "Dữ kiện đã trích" hay "Dữ kiện đã biết", và chưa được
+   người dùng trả lời ở lượt trước; không hỏi lại một dữ kiện bằng cách diễn đạt khác."""
+
+SYSTEM_QUYET_DINH_PHIEN = SYSTEM_QUYET_DINH + "\n" + RULES_PHIEN

@@ -555,7 +555,8 @@ def _answer(text: str, session) -> dict:
             user_msg = P.user_quyet_dinh(clean, facts, context)
             if history:
                 user_msg = session.context_block() + "\n\n" + user_msg
-            res = call_model(P.SYSTEM_QUYET_DINH, user_msg)
+            # có phiên (demo): thêm khối quy tắc 16+ (P.RULES_PHIEN); không phiên: prompt đường đo, giữ nguyên
+            res = call_model(P.SYSTEM_QUYET_DINH_PHIEN if session is not None else P.SYSTEM_QUYET_DINH, user_msg)
     except NotImplementedError:
         raise
     except Exception as e:
