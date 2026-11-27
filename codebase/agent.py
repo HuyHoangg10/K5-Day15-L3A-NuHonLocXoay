@@ -74,7 +74,8 @@ GUARD_CODES = {
     "G_HEALTH": "chủ đề sức khỏe → out_of_scope, không gọi bước quyết định",
     "G_ASK_TOPIC": "chưa rõ chủ đề → need_more_information",
     "G_ASK_STUDY": "chưa có dữ kiện học tập nào → VẪN tra cứu + bước quyết định (hỏi thêm kèm căn cứ), chỉ ghi trace",
-    "G_PREMATURE": "eligible_for_review khi chưa biết đang học / trình độ / hệ chính quy → đổi thành need_more_information",
+    "G_PREMATURE": "chưa biết đang học / trình độ / hệ chính quy mà kết luận eligible_for_review (câu kể tình trạng "
+                   "riêng), hoặc not_eligible (câu không phải hỏi chung, không có dữ kiện loại trừ) → need_more_information",
     "G_EXTRACT": "JSON trích dữ kiện hỏng → safe_fallback",
     "G_JSON": "JSON quyết định hỏng → safe_fallback",
     "G_LABEL": "nhãn ngoài tập nhãn → safe_fallback",
@@ -99,6 +100,7 @@ GUARD_CODES = {
 
 # Câu học tập: điểm luật chi phối việc tạm hoãn vì học tập (điểm g khoản 1 Điều 41, có trong kho mvp).
 STUDY_CAN_CU = "vbhn133-d41-k1-g"
+_LOAI_TRU = ("qua_han", "da_tam_hoan_truoc", "da_tot_nghiep", "bao_luu", "du_hoc")   # dữ kiện tự nó có thể loại trừ
 _PHO_THONG = ("thpt", "pho thong", "gdtx", "giao duc thuong xuyen", "lop 10", "lop 11", "lop 12", "cap 3")
 
 REFUSE_CAN_CU = "vbhn133-d10"
@@ -449,15 +451,32 @@ def key_study_facts_missing(facts: dict) -> bool:
     return facts.get("he_chinh_quy") is not True and not any(w in tr for w in _PHO_THONG)
 
 
+def tells_own_situation(facts: dict) -> bool:
+    """Người dùng có kể việc học CỦA MÌNH (đang học / trình độ / năm thứ) — dù bước trích có đánh hoi_quy_dinh_chung."""
+    return facts.get("dang_hoc") is not None or bool(facts.get("trinh_do")) or facts.get("nam_thu") is not None
+
+
+def has_excluding_fact(facts: dict) -> bool:
+    """Có ít nhất một dữ kiện tự nó có thể loại trừ tạm hoãn vì học tập (không đang học, quá hạn, đã tốt nghiệp…)."""
+    return facts.get("dang_hoc") is False or any(facts.get(k) is True for k in _LOAI_TRU)
+
+
 def study_checks(decision: dict, facts: dict) -> dict:
-    """Bước 7 (câu học tập, sau validate_decision): (a) câu kể tình trạng RIÊNG (không phải hỏi quy định chung) mà
-    eligible_for_review khi thiếu dữ kiện then chốt → đổi thành
-    need_more_information, câu cố định + câu hỏi lại, giữ căn cứ (G_PREMATURE); (b) need_more_information không có căn cứ
-    → thêm điểm luật tạm hoãn vì học tập (W_CITE_DEFAULT). not_eligible KHÔNG bị đổi: người dùng có thể đã nêu
-    một dữ kiện tự nó loại trừ việc tạm hoãn (vd hết khóa vì nợ môn)."""
+    """Bước 7 (câu học tập, sau validate_decision):
+    (a) G_PREMATURE — còn thiếu dữ kiện then chốt thì không được kết luận:
+        · eligible_for_review: khi không phải câu hỏi quy định chung, HOẶC người dùng có kể việc học của mình
+          (bước trích có thể đánh nhầm hoi_quy_dinh_chung);
+        · not_eligible: chỉ với câu không phải hỏi quy định chung và chưa nêu dữ kiện loại trừ nào. Câu hỏi chung
+          kiểu "mọi sinh viên đều được miễn?" thì not_eligible là đúng nên KHÔNG đổi; có dữ kiện loại trừ (vd quá hạn vì
+          nợ môn) cũng KHÔNG đổi.
+        → need_more_information, câu cố định + câu hỏi lại, giữ căn cứ.
+    (b) W_CITE_DEFAULT — need_more_information không có căn cứ → thêm điểm luật tạm hoãn vì học tập."""
     d = dict(decision)
-    if d["nhan"] == "eligible_for_review" and not facts.get("hoi_quy_dinh_chung") and key_study_facts_missing(facts):
-        note("G_PREMATURE: eligible_for_review khi chưa rõ đang học / trình độ / hệ chính quy → need_more_information")
+    general = bool(facts.get("hoi_quy_dinh_chung"))
+    premature = ((d["nhan"] == "eligible_for_review" and (not general or tells_own_situation(facts)))
+                 or (d["nhan"] == "not_eligible" and not general and not has_excluding_fact(facts)))
+    if premature and key_study_facts_missing(facts):
+        note("G_PREMATURE: %s khi chưa rõ đang học / trình độ / hệ chính quy → need_more_information" % d["nhan"])
         d.update(nhan="need_more_information", ly_do=P.NEED_KEY_FACTS, can_lam_gi=[], can_hoi_them=list(P.STUDY_QUESTIONS))
     if d["nhan"] == "need_more_information" and not d["can_cu"] and STUDY_CAN_CU in kb.legal_ids():
         note("W_CITE_DEFAULT: need_more_information không có căn cứ → thêm " + STUDY_CAN_CU)

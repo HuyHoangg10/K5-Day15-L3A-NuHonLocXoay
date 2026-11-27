@@ -59,14 +59,18 @@ class NoEarlyExitTests(unittest.TestCase):
         self.assertNotIn("G_PREMATURE", notes)
 
     def test_question_without_facts_also_answered_by_decision(self):
-        # câu không kể tình trạng (dữ kiện null hết) cũng tới bước quyết định, không bị thoát sớm
-        out, calls, _, _ = run("Em có giấy rồi thì sao", facts_json(), decision_json(nhan="not_eligible"))
+        # câu không nêu dữ kiện nào (null hết) cũng tới bước quyết định, không bị thoát sớm; model kết luận
+        # not_eligible mà không có dữ kiện loại trừ → vẫn hỏi thêm, kèm căn cứ
+        out, calls, notes, _ = run("Em có giấy rồi thì sao", facts_json(), decision_json(nhan="not_eligible"))
         self.assertEqual(len(calls), 2)
-        self.assertEqual(first_line({"output": out}), "NHAN: not_eligible")
+        self.assertEqual(first_line({"output": out}), "NHAN: need_more_information")
+        self.assertIn("G_PREMATURE", notes)
+        self.assertEqual(can_cu(out), "vbhn133-d41-k1-g")
 
 
 class PrematureEligibleTests(unittest.TestCase):
-    """Nói là sinh viên nhưng không nói hệ / trình độ / đang học → không được kết luận eligible."""
+    """Nói là sinh viên nhưng không nói hệ / trình độ / đang học → không được kết luận eligible, cũng không được kết luận
+    not_eligible khi chưa nêu dữ kiện loại trừ nào."""
     CASES = [
         facts_json(dang_hoc=True),                                             # chỉ biết đang học
         facts_json(dang_hoc=True, trinh_do="đại học"),                         # thiếu hệ chính quy
@@ -99,10 +103,55 @@ class PrematureEligibleTests(unittest.TestCase):
         self.assertEqual(first_line({"output": out}), "NHAN: eligible_for_review")
         self.assertNotIn("G_PREMATURE", notes)
 
+    def test_personal_story_checked_even_if_marked_general(self):
+        # bước trích có thể đánh nhầm hoi_quy_dinh_chung=True cho câu kể tình trạng riêng: vẫn phải chặn kết luận sớm
+        for ext in [facts_json(hoi_quy_dinh_chung=True, dang_hoc=True),
+                    facts_json(hoi_quy_dinh_chung=True, dang_hoc=True, trinh_do="đại học")]:
+            with self.subTest(ext=ext[:90]):
+                out, _, notes, _ = run("Em là sinh viên, có được hoãn không?", ext, decision_json())
+                self.assertEqual(first_line({"output": out}), "NHAN: need_more_information")
+                self.assertIn("G_PREMATURE", notes)
+
+    def test_not_eligible_without_excluding_fact_turned_into_need_more(self):
+        # kết luận "không thuộc diện" khi người dùng chưa nêu dữ kiện loại trừ nào và còn thiếu dữ kiện then chốt
+        for ext in [facts_json(dang_hoc=True),
+                    facts_json(dang_hoc=True, trinh_do="đại học", da_tot_nghiep=False)]:
+            with self.subTest(ext=ext[:90]):
+                out, _, notes, _ = run("Em là sinh viên, có được hoãn không?", ext, decision_json(nhan="not_eligible"))
+                self.assertEqual(first_line({"output": out}), "NHAN: need_more_information")
+                self.assertIn("G_PREMATURE", notes)
+                self.assertEqual(can_cu(out), "vbhn133-d41-k1-g")
+
+    def test_not_eligible_with_excluding_fact_kept(self):
+        for kw in [dict(qua_han=True), dict(da_tot_nghiep=True), dict(da_tam_hoan_truoc=True), dict(bao_luu=True),
+                   dict(du_hoc=True)]:
+            with self.subTest(kw=kw):
+                out, _, notes, _ = run("Em là sinh viên", facts_json(dang_hoc=True, **kw), decision_json(nhan="not_eligible"))
+                self.assertEqual(first_line({"output": out}), "NHAN: not_eligible")
+                self.assertNotIn("G_PREMATURE", notes)
+        out, _, notes, _ = run("Em đã nghỉ học", facts_json(dang_hoc=False), decision_json(nhan="not_eligible"))
+        self.assertEqual(first_line({"output": out}), "NHAN: not_eligible")
+        self.assertNotIn("G_PREMATURE", notes)
+
+    def test_general_myth_not_eligible_kept(self):
+        # hỏi chung kiểu "mọi sinh viên đều được…?": not_eligible là câu trả lời đúng, không đổi
+        out, _, notes, _ = run("Có phải ai đi học cũng được hoãn hết không?",
+                               facts_json(hoi_quy_dinh_chung=True, dang_hoc=True), decision_json(nhan="not_eligible"))
+        self.assertEqual(first_line({"output": out}), "NHAN: not_eligible")
+        self.assertNotIn("G_PREMATURE", notes)
+
+    def test_not_eligible_full_facts_kept(self):
+        out, _, notes, _ = run("Em học đại học chính quy năm 2", facts_json(**STUDENT_FACTS), decision_json(nhan="not_eligible"))
+        self.assertEqual(first_line({"output": out}), "NHAN: not_eligible")
+        self.assertNotIn("G_PREMATURE", notes)
+
     def test_key_fact_helper(self):
         f = lambda raw: agent.clean_facts(agent.parse_json(raw))  # noqa: E731
         self.assertTrue(agent.key_study_facts_missing(f(facts_json(dang_hoc=True))))
         self.assertFalse(agent.key_study_facts_missing(f(facts_json(**STUDENT_FACTS))))
+        self.assertTrue(agent.tells_own_situation(f(facts_json(hoi_quy_dinh_chung=True, nam_thu=3))))
+        self.assertFalse(agent.tells_own_situation(f(facts_json(hoi_quy_dinh_chung=True))))
+        self.assertFalse(agent.has_excluding_fact(f(facts_json(dang_hoc=True, da_tot_nghiep=False))))
 
 
 class OtherGatesUnchangedTests(unittest.TestCase):
