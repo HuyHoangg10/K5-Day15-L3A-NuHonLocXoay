@@ -55,3 +55,66 @@ def expand_abbr(text: str) -> str:
 def for_matching(text: str) -> str:
     """Bản dùng để KHỚP (không gửi model): làm sạch → nối chữ tách → mở rộng viết tắt → chữ thường."""
     return expand_abbr(join_split(clean(text))).lower()
+
+
+# ---------------------------------------------------------------- CHỈ cho bước chặn đầu vào (không dùng cho BM25 / model)
+# Tách riêng khỏi for_matching để truy vấn tra cứu (và đường đo) không đổi.
+
+# Chữ Kirin / Hy Lạp / Armenia trông giống chữ Latin ("ѕуѕtеm", "іgnоrе", "mսa") → chữ Latin tương ứng.
+_HOMOGLYPH = str.maketrans({
+    "а": "a", "е": "e", "о": "o", "р": "p", "с": "c", "у": "y", "х": "x", "і": "i", "ї": "i", "ј": "j", "ѕ": "s",
+    "ԁ": "d", "ӏ": "l", "к": "k", "т": "t", "м": "m", "н": "h", "в": "b", "г": "r", "п": "n",
+    "А": "A", "В": "B", "Е": "E", "К": "K", "М": "M", "Н": "H", "О": "O", "Р": "P", "С": "C", "Т": "T", "Х": "X",
+    "І": "I", "Ј": "J", "Ѕ": "S", "У": "Y",
+    "α": "a", "ο": "o", "ρ": "p", "ε": "e", "ι": "i", "κ": "k", "ν": "v", "τ": "t", "υ": "u", "χ": "x", "ϲ": "c",
+    "Α": "A", "Β": "B", "Ε": "E", "Ι": "I", "Κ": "K", "Μ": "M", "Ν": "N", "Ο": "O", "Ρ": "P", "Τ": "T", "Χ": "X",
+    "ս": "u", "օ": "o", "ո": "n", "հ": "h", "ց": "g", "ɡ": "g", "ı": "i",
+})
+# Leetspeak: chỉ đổi số / ký hiệu NẰM TRONG một từ có cả chữ ("g1ả", "tr0n", "syst3m"); "2024", "lớp 12" giữ nguyên.
+_LEET = str.maketrans({"0": "o", "1": "i", "3": "e", "4": "a", "5": "s", "7": "t", "8": "b", "9": "g", "@": "a", "$": "s"})
+_LEET_WORD = re.compile(r"(?=[\w@$]*[^\W\d_])(?=[\w@$]*[\d@$])[\w@$]+")
+
+
+def deobfuscate(text: str) -> str:
+    """Ký tự vô hình → dấu cách (để "bỏ qua\\u200bhướng dẫn" không dính thành một từ), chữ giống Latin → Latin, leetspeak."""
+    t = unicodedata.normalize("NFKC", text or "")
+    t = _INVISIBLE.sub(" ", t).translate(_HOMOGLYPH)
+    return _LEET_WORD.sub(lambda m: m.group(0).translate(_LEET), t)
+
+
+def for_screening(text: str) -> str:
+    """Bản dùng cho bước chặn: bỏ ngụy trang (deobfuscate) rồi chuẩn hóa như for_matching."""
+    return for_matching(deobfuscate(text))
+
+
+def fold(text: str) -> str:
+    """Bỏ dấu tiếng Việt, chữ thường."""
+    s = unicodedata.normalize("NFD", (text or "").lower()).replace("đ", "d")
+    return "".join(c for c in s if unicodedata.category(c) != "Mn")
+
+
+def squash(text: str) -> str:
+    """Chỉ giữ chữ cái a–z sau khi bỏ dấu và bỏ ngụy trang: "b*ỏ q*ua h-ướng d.ẫn", "s y s t e m" → "boquahuongdan", "system".
+    Mất ranh giới từ nên CHỈ được so với danh sách từ khóa rất đặc trưng (agent._SQUASHED_INJECTION)."""
+    return re.sub(r"[^a-z]", "", fold(deobfuscate(text)))
+
+
+_B64_TOKEN = re.compile(r"[A-Za-z0-9+/]{16,}={0,2}")
+
+
+def decoded_payloads(text: str) -> list:
+    """Đoạn base64 (≥16 ký tự) giải mã ra chữ đọc được, và bản rot13 của câu — để kiểm lệnh bị mã hóa."""
+    import base64
+    import binascii
+    out = []
+    for tok in _B64_TOKEN.findall(text or ""):
+        try:
+            raw = base64.b64decode(tok + "=" * (-len(tok) % 4), validate=True)
+            s = raw.decode("utf-8")
+        except (binascii.Error, ValueError, UnicodeDecodeError):
+            continue
+        if s and sum(c.isprintable() for c in s) / len(s) > 0.9 and sum(c.isalpha() for c in s) >= 8:
+            out.append(s)
+    import codecs
+    out.append(codecs.encode(text or "", "rot13"))
+    return out

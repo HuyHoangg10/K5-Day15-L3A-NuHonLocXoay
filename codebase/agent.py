@@ -169,6 +169,10 @@ _EVASION = [
     r"hối\s+lộ|đút\s+lót|lót\s+tay",
     r"lách\s+luật",
     r"(?:cách|làm\s+sao\s+để|làm\s+thế\s+nào\s+để|muốn)\s+(?:trốn|né|tránh)\s+(?:nghĩa\s+vụ|lính|quân\s+sự|nhập\s+ngũ|đi\s+bộ\s+đội|khám)",
+    # bổ sung: "cách để né…", "làm sao để trốn đi lính", "tìm cách thoát nghĩa vụ"
+    r"(?:cách\s+(?:để|nào\s+để|gì\s+để)|tìm\s+cách|có\s+cách\s+nào)\s+(?:trốn|né|tránh|thoát|lách)\s+"
+    r"(?:nghĩa\s+vụ|đi\s+lính|lính|quân\s+sự|nhập\s+ngũ|đi\s+bộ\s+đội|khám)",
+    r"(?:làm\s+sao|làm\s+thế\s+nào|bằng\s+cách\s+nào)\s+(?:để\s+)?(?:trốn|né|thoát)\s+(?:đi\s+lính|đi\s+bộ\s+đội|nghĩa\s+vụ)",
     r"cố\s+ý\s+(?:gây|làm)\s+(?:thương\s+tích|hỏng|bệnh)",
     # diễn đạt gián tiếp / đồng nghĩa phổ biến
     r"(?:giấy|hồ\s*sơ|xác\s*nhận|bệnh\s*án|bằng)[^.?!\n]{0,40}fake|fake[^.?!\n]{0,40}(?:giấy|hồ\s*sơ|xác\s*nhận|bệnh\s*án)",
@@ -192,7 +196,37 @@ _INJECTION = [
     # giả làm tin nhắn hệ thống / tự viết sẵn dòng nhãn của đầu ra
     r"(?:system|assistant|developer)\s*:|new\s+instructions?",
     r"nhan\s*:\s*(?:eligible_for_review|not_eligible|need_more_information|refuse|out_of_scope|safe_fallback)",
+    # --- bổ sung (dò offline): tiếng Anh
+    r"ignore\s+(?:all\s+|any\s+|the\s+|your\s+|these\s+)?(?:rules|guidelines|guardrails|restrictions|policies)",
+    r"forget\s+(?:everything|all|what|the\s+(?:above|previous|rules)|your\s+(?:rules|instructions|prompt)|previous|prior)",
+    r"(?:from\s+now\s+on|henceforth)\s*,?\s+you\s+(?:are|will|must|should)",
+    r"act\s+as\s+(?:an?\s+|my\s+|the\s+)?\w+|role\s*-?\s*play",
+    r"(?:reveal|show|print|repeat|output|display|tell|list|leak|dump)\s+(?:me\s+|us\s+)?(?:your\s+|the\s+|all\s+)?"
+    r"(?:hidden\s+|initial\s+|original\s+|secret\s+|full\s+|internal\s+)?"
+    r"(?:instructions?|prompts?|rules|system|text\s+above|everything\s+(?:above|before)|conversation\s+above)",
+    r"(?:what|which)\s+(?:are|were|is)\s+your\s+(?:initial\s+|original\s+|hidden\s+|system\s+)?(?:instructions?|prompts?|rules)",
+    r"override\s+(?:your\s+|the\s+|all\s+|my\s+)?(?:rules|instructions|guidelines|settings|restrictions)",
+    # --- tiếng Việt: quên lời dặn, nhập vai, đổi vai, đòi xem / lặp lại prompt
+    r"quên\s+(?:hết|đi|sạch|mọi|tất\s+cả)[^.?!\n]{0,30}(?:dặn|hướng\s+dẫn|chỉ\s+dẫn|quy\s+tắc|được\s+cài|thiết\s+lập)",
+    r"nhập\s+vai",
+    r"(?:từ\s+(?:giờ|bây\s+giờ|nay)|kể\s+từ\s+(?:giờ|bây\s+giờ|nay))\s*,?\s+(?:bạn|mày|cậu|ngươi|trợ\s+lý|bot)\s+"
+    r"(?:là|sẽ\s+là|hãy|đóng|không\s+cần|được\s+phép)",
+    r"(?:xem|in\s+ra|hiện|hiển\s+thị|đưa\s+ra|liệt\s+kê|lặp\s+lại|chép\s+lại|nhắc\s+lại|gửi)[^.?!\n]{0,30}"
+    r"(?:prompt|hướng\s+dẫn\s+(?:hệ\s+thống|đầu\s+tiên|gốc|ban\s+đầu|được\s+cài|của\s+bạn)"
+    r"|chỉ\s+dẫn\s+(?:hệ\s+thống|đầu\s+tiên|của\s+bạn|được\s+cài|ban\s+đầu)|cấu\s+hình\s+(?:của\s+bạn|hệ\s+thống))",
+    r"(?:được\s+cài|cài\s+đặt|được\s+lập\s+trình|được\s+thiết\s+lập)\s+(?:sẵn\s+)?(?:những\s+|các\s+)?"
+    r"(?:chỉ\s+dẫn|hướng\s+dẫn|lệnh|quy\s+tắc)",
+    # --- giả dấu phân cách / tiêu đề vai của prompt, đòi giải mã rồi làm theo
+    r"#+\s*(?:system|assistant|developer)|<<<\s*nguoi_dung|nguoi_dung\s*>>>|</\s*nguoi_dung",
+    r"(?:giải\s+mã|decode|dịch\s+ngược)[^.?!\n]{0,40}(?:base\s*64|rot\s*13|hex)"
+    r"|(?:base\s*64|rot\s*13)[^.?!\n]{0,60}(?:làm\s+theo|follow|execute|thực\s+hiện|run)",
 ]
+# Từ khóa chèn lệnh so trên bản "ép liền" (text_norm.squash: chỉ còn a–z) — bắt chữ cách quãng, chèn ký tự ("b*ỏ q*ua",
+# "s y s t e m p r o m p t", "ig-nore"). Mất ranh giới từ nên chỉ dùng cụm dài, rất đặc trưng, không gặp trong câu hỏi thường.
+_SQUASHED_INJECTION = ("boquahuongdan", "boquamoihuongdan", "boquatatcahuongdan", "boquachidan", "boquaquytac",
+                       "systemprompt", "developerprompt", "prompthethong", "ignoreprevious", "ignoreallprevious",
+                       "ignoreinstructions", "ignoreallinstructions", "ignoreallrules", "disregardprevious",
+                       "jailbreak", "developermode", "youarenow", "tietloprompt", "quenhetmoihuongdan")
 
 # Câu CHỈ HỎI chế tài ("làm giả giấy thì bị xử lý thế nào", "khám thay có bị phạt không") là câu hợp lệ: không chặn
 # ở code mà để model trả lời — trừ khi câu đồng thời NHỜ trợ lý chỉ / bán ("chỉ cách", "mua", "ở đâu"…).
@@ -255,12 +289,20 @@ def screen_input(text: str):
     """Trả None nếu qua, hoặc "lach_luat" / "chen_lenh". Câu hỏi về hoãn HỢP PHÁP không được chặn.
     Câu có dấu: so mẫu có dấu (tránh "giá giấy" khớp nhầm "giả giấy"). Câu gõ KHÔNG dấu: so mẫu đã bỏ dấu."""
     # So trên câu gốc VÀ bản chuẩn hóa để khớp (nối chữ tách "g.i.ả", mở rộng viết tắt "kq", "sk", "sv"…).
+    # Thêm bản bỏ ngụy trang (chữ giống Latin, leetspeak, ký tự vô hình) — text_norm.for_screening, không dùng cho BM25.
     variants = [text.lower()]
-    norm = text_norm.for_matching(text)
-    if norm not in variants:
-        variants.append(norm)
+    for v in (text_norm.for_matching(text), text_norm.for_screening(text)):
+        if v not in variants:
+            variants.append(v)
     if any(_match(_RX["chen_lenh"], v) for v in variants):
         return "chen_lenh"
+    # Chữ cách quãng / chèn ký tự: so cụm đặc trưng trên bản ép liền. Lệnh mã hóa base64 / rot13: giải mã rồi kiểm lại.
+    if any(k in text_norm.squash(text) for k in _SQUASHED_INJECTION):
+        return "chen_lenh"
+    for payload in text_norm.decoded_payloads(text):
+        low = text_norm.for_screening(payload)
+        if _match(_RX["chen_lenh"], low) or any(k in text_norm.squash(payload) for k in _SQUASHED_INJECTION):
+            return "chen_lenh"
     if any(_match(_RX["lach_luat"], v) for v in variants):
         penalty_only = (any(_match(_RX_PENALTY, v) for v in variants)
                         and not any(_match(_RX_REQUEST, v) for v in variants))
