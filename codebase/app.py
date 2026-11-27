@@ -107,6 +107,14 @@ def main() -> int:
         print("Không nạp được codebase/ — lỗi ở %s: %s: %s" % (_where(e), type(e).__name__, e))
         print("Sửa lỗi rồi chạy lại. Cách nối model: docs/connect-model.md")
         return 1
+    print("… đang nạp kho văn bản luật", flush=True)
+    try:
+        tracing.begin("warm_up")
+        agent.warm_up()           # câu hỏi đầu tiên không phải chờ phần nạp một lần
+    except Exception:             # nạp sẵn hỏng thì câu hỏi đầu sẽ tự nạp (và báo lỗi thân thiện nếu kho hỏng)
+        pass
+    finally:
+        tracing.end()
     print("Bản chạy thử — gõ câu hỏi rồi Enter. Gõ /help để xem hướng dẫn, /thoat để thoát.")
     session = ChatSession()
     print("(%s Gõ /moi để bắt đầu lại.)" % session.status())

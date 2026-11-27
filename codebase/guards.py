@@ -187,7 +187,10 @@ def _prompt_grams(prompts) -> frozenset:
             grams.update(s[i:i + n] for i in range(len(s) - n + 1))
         corpus = " | ".join(_squash(" ".join(str(c.get(k) or "") for k in ("text", "title", "question", "answer")))
                             for c in kb.legal_all() + kb.qa_all())
-        _PROMPT_GRAMS[key] = frozenset(g for g in grams if g not in corpus)
+        # Tương đương "g not in corpus" (mọi đoạn n ký tự liên tục của corpus, kể cả đoạn vắt qua " | "), nhưng dựng tập
+        # một lần thay vì tìm chuỗi con trong ~370 nghìn ký tự cho từng đoạn: lần gọi đầu 3,5 giây → ~0,25 giây.
+        corpus_grams = {corpus[i:i + n] for i in range(len(corpus) - n + 1)}
+        _PROMPT_GRAMS[key] = frozenset(g for g in grams if g not in corpus_grams)
     return _PROMPT_GRAMS[key]
 
 

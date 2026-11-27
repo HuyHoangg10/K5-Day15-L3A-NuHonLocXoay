@@ -560,6 +560,15 @@ def validate_decision(raw: str, qa_allowed=(), must_be_out_of_scope: bool = Fals
 
 # ================================================================ answer
 
+def warm_up():
+    """Nạp sẵn kho, chỉ mục BM25 và bảng kiểm rò rỉ prompt (app gọi lúc khởi động) để câu hỏi ĐẦU TIÊN của buổi demo
+    không phải chờ phần nạp một lần. Không gọi model, không đổi đầu ra."""
+    kb.legal_ids()
+    tra_cuu_can_cu("tạm hoãn gọi nhập ngũ sinh viên")
+    guards.leak("", (P.SYSTEM_TRICH, P.SYSTEM_QUYET_DINH))
+    screen_input("khởi động")
+
+
 def answer(text: str, session=None) -> dict:
     """session=None: đường đo một lượt (eval / simulate), y hệt trước. Có session (session.ChatSession): dùng dữ kiện,
     chủ đề và vài lượt gần nhất đã nhớ; mọi bước chặn đầu vào / kiểm đầu ra vẫn chạy đủ ở lượt này."""
