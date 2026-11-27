@@ -76,7 +76,7 @@ DOMAIN_RULES = """4. Tạm hoãn vì học tập chỉ áp dụng trong MỘT kh
 
 # B11: cụm model ĐƯỢC dùng nguyên văn (cách nói không tuyệt đối, nơi hỏi mặc định) — cũng không tính là rò rỉ prompt.
 SUGGESTED_PHRASES = ["bạn có căn cứ để đề nghị xem xét tạm hoãn", "bạn thường không thuộc diện tạm hoãn",
-                     "bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú",
+                     "bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn",
                      "chỉ được tạm hoãn trong một khóa học, tính từ ngày nhập học tới khi tốt nghiệp"]
 
 STYLE_RULES = """Cách viết (người đọc là sinh viên, không phải luật sư):
@@ -85,7 +85,7 @@ STYLE_RULES = """Cách viết (người đọc là sinh viên, không phải lu�
    (vd "%s"). Diễn đạt lại nhưng KHÔNG đổi nghĩa,
    không bỏ điều kiện, không thêm điều kiện. Không chép nguyên văn đoạn luật dài; nếu cần, trích tối đa một cụm ngắn.
 11. can_lam_gi: DANH SÁCH 2–4 bước ngắn, theo thứ tự làm (["…", "…"]). Chỉ nêu giấy tờ, cơ quan, thời hạn có trong ngữ cảnh.
-   Ngữ cảnh không nói nộp ở đâu thì ghi bước: "%s để được hướng dẫn". Không bịa thủ tục, giấy tờ, thời hạn, số tiền, số điều, đường dẫn.
+   Ngữ cảnh không nói nộp ở đâu thì ghi bước: "%s". Không bịa thủ tục, giấy tờ, thời hạn, số tiền, số điều, đường dẫn.
 12. can_hoi_them: chỉ khi need_more_information; 1–2 câu hỏi cụ thể nhất, là dữ kiện quyết định kết quả.
 13. Không hứa kết quả. Dùng cách nói "%s", "%s".
    Không dùng: "chắc chắn được", "đảm bảo được hoãn", "100%%", "giấy hợp lệ", "cam kết".

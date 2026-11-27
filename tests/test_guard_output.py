@@ -502,3 +502,19 @@ class StyleTests(unittest.TestCase):
         f = kb.fold(" ".join(P.STUDY_QUESTIONS))
         for must in ["trinh do", "chinh quy", "tu nam nao den nam nao", "da tung duoc tam hoan"]:
             self.assertIn(must, f)
+
+
+class LeakFalsePositiveTests(unittest.TestCase):
+    """Phát hiện khi chạy model thật: model dùng đúng câu prompt gợi ý ("…nơi bạn cư trú để được hướng dẫn")
+    bị G_LEAK chặn nhầm. Mọi cụm trong ngoặc kép mà prompt gợi ý cho model đều phải được phép nhắc lại."""
+    def test_real_model_step_passes(self):
+        step = "Nếu có lý do chính đáng không thể đến, bạn liên hệ Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn."
+        d, why = check(decision(can_lam_gi=[step]))
+        self.assertIsNotNone(d, why)
+
+    def test_every_quoted_suggestion_is_allowed(self):
+        for q in P.SUGGESTED_PHRASES:
+            with self.subTest(q=q[:40]):
+                self.assertIn(kb.fold(q), kb.fold(P.SYSTEM_QUYET_DINH))          # prompt gợi ý nguyên câu này
+                d, why = check(decision(ly_do="Mình gợi ý: " + q + ", bạn nhé."))
+                self.assertIsNotNone(d, why)
