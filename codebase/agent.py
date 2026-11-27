@@ -26,6 +26,7 @@ import unicodedata
 import ai
 import kb
 import prompts as P
+import text_norm
 from ai import call_model
 from tools import tra_cuu_can_cu
 from tracing import note
@@ -59,9 +60,12 @@ _RE_CMND = re.compile(r"(?<!\d)\d{9}(?!\d)")
 
 
 def preprocess(text: str):
-    """NFKC, gộp khoảng trắng, che email / SĐT VN / CCCD (12 số) / CMND (9 số). → (văn bản đã che, danh sách loại đã che)."""
-    t = unicodedata.normalize("NFKC", text or "")
-    t = re.sub(r"\s+", " ", t).strip()
+    """Làm sạch (text_norm.clean: NFKC, bỏ zero-width / ký tự điều khiển, gộp khoảng trắng), che email / SĐT VN /
+    CCCD (12 số) / CMND (9 số). → (văn bản đã che, danh sách loại đã che). Câu KHÔNG có chữ / số nào → "" (coi là rỗng).
+    Bản này là bản gửi model: KHÔNG mở rộng viết tắt ở đây (chỉ dùng text_norm.for_matching để khớp từ khóa / BM25)."""
+    t = text_norm.clean(text)
+    if not any(c.isalnum() for c in t):
+        return "", []
     kinds = []
     for kind, rx, token in (("email", _RE_EMAIL, "[EMAIL]"), ("sdt", _RE_PHONE, "[SĐT]"),
                             ("cccd", _RE_CCCD, "[CCCD]"), ("cmnd", _RE_CMND, "[CCCD]")):
@@ -124,15 +128,19 @@ _RX = {"lach_luat": _compile(_EVASION), "chen_lenh": _compile(_INJECTION)}
 def screen_input(text: str):
     """Trả None nếu qua, hoặc "lach_luat" / "chen_lenh". Câu hỏi về hoãn HỢP PHÁP không được chặn.
     Câu có dấu: so mẫu có dấu (tránh "giá giấy" khớp nhầm "giả giấy"). Câu gõ KHÔNG dấu: so mẫu đã bỏ dấu."""
-    low = text.lower()
-    folded_text = _fold(text)
-    unaccented = folded_text == low
+    # So trên câu gốc VÀ bản chuẩn hóa để khớp (nối chữ tách "g.i.ả", mở rộng viết tắt "kq", "sk", "sv"…).
+    variants = [text.lower()]
+    norm = text_norm.for_matching(text)
+    if norm not in variants:
+        variants.append(norm)
     for kind, (accented, folded, safe_folded) in _RX.items():
-        if unaccented:
-            if any(rx.search(low) for rx in folded):
+        for low in variants:
+            folded_text = _fold(low)
+            if folded_text == low:          # câu gõ KHÔNG dấu
+                if any(rx.search(low) for rx in folded):
+                    return kind
+            elif any(rx.search(low) for rx in accented) or any(rx.search(folded_text) for rx in safe_folded):
                 return kind
-        elif any(rx.search(low) for rx in accented) or any(rx.search(folded_text) for rx in safe_folded):
-            return kind
     return None
 
 
