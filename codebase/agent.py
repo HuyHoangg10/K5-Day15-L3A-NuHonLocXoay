@@ -36,6 +36,13 @@ LABELS = P.LABELS
 DEADLINE_S = 90               # tổng thời gian cho cả hai lần gọi model; quá thì báo lỗi lịch sự (bước 9)
 DECISION_MAX_TOKENS = 1200    # sàn số token ra cho bước quyết định (JSON có ly_do, can_lam_gi, can_hoi_them)
 MAX_CONTEXT_CHARS = 40000     # ngữ cảnh dài hơn thì ghi cảnh báo vào trace (23 chunk mvp ≈ 18k ký tự)
+# B7: giới hạn độ dài. Đầu vào dài hơn MAX_INPUT_CHARS (sau làm sạch) → nhắc rút gọn, không gọi model.
+# Đầu ra: cắt từng trường model viết, rồi cả câu trả lời không quá MAX_OUTPUT_CHARS (quá → safe_fallback).
+MAX_INPUT_CHARS = 4000
+MAX_OUTPUT_CHARS = 4000
+MAX_LY_DO_CHARS = 800
+MAX_STEPS, MAX_STEP_CHARS = 4, 300
+MAX_QUESTIONS, MAX_QUESTION_CHARS = 2, 200
 
 Y_DO = ("hop_phap", "lach_luat", "ngoai_pham_vi")
 BOOL_FACTS = ("dang_hoc", "he_chinh_quy", "qua_han", "bao_luu", "du_hoc", "da_tot_nghiep", "da_tam_hoan_truoc")
@@ -294,6 +301,16 @@ def _str_list(v):
     return list(dict.fromkeys(kb.nfc(x).strip() for x in v if x.strip()))
 
 
+def _cut(text: str, limit: int) -> str:
+    """Cắt chữ model viết về tối đa limit ký tự, ưu tiên cắt ở cuối câu; có cắt thì thêm "…"."""
+    text = " ".join(text.split())
+    if len(text) <= limit:
+        return text
+    head = text[:limit]
+    end = max(head.rfind(". "), head.rfind("? "), head.rfind("! "))
+    return (head[:end + 1] if end >= limit // 2 else head.rstrip()) + " …"
+
+
 def validate_decision(raw: str, qa_allowed=(), must_be_out_of_scope: bool = False, passages=None, refs=None,
                       context: str = "", user_text: str = ""):
     """→ (quyết định đã chuẩn hóa, None) nếu đạt; (None, lý do) nếu hỏng.
@@ -325,12 +342,15 @@ def validate_decision(raw: str, qa_allowed=(), must_be_out_of_scope: bool = Fals
     ly_do = d.get("ly_do")
     if not isinstance(ly_do, str) or not ly_do.strip():
         return None, "thiếu ly_do"
-    viec = d.get("can_lam_gi", "")
-    if isinstance(viec, list):
-        viec = "; ".join(str(x) for x in viec)
-    if not isinstance(viec, str):
+    viec = _str_list(d.get("can_lam_gi"))
+    if viec is None:
         return None, "can_lam_gi sai kiểu"
-    model_text = " ".join([ly_do, viec] + hoi_them)
+    if len(viec) > MAX_STEPS or len(hoi_them) > MAX_QUESTIONS or len(ly_do) > MAX_LY_DO_CHARS:
+        note("G_LEN_OUT: cắt trường model viết quá dài")
+    ly_do = _cut(ly_do, MAX_LY_DO_CHARS)
+    viec = [_cut(x, MAX_STEP_CHARS) for x in viec[:MAX_STEPS]]
+    hoi_them = [_cut(x, MAX_QUESTION_CHARS) for x in hoi_them[:MAX_QUESTIONS]]
+    model_text = " ".join([ly_do] + viec + hoi_them)
     if has_absolute(model_text):
         return None, "chứa cụm tuyệt đối"
     leaked = guards.leak(model_text, (P.SYSTEM_TRICH, P.SYSTEM_QUYET_DINH),
@@ -348,7 +368,7 @@ def validate_decision(raw: str, qa_allowed=(), must_be_out_of_scope: bool = Fals
         if num:
             return None, "G_NUMBER: lời văn có %s không có trong ngữ cảnh" % num
     return {"nhan": nhan, "can_cu": can_cu, "tham_khao": tham_khao, "ly_do": ly_do.strip(),
-            "can_lam_gi": viec.strip(), "can_hoi_them": hoi_them}, None
+            "can_lam_gi": viec, "can_hoi_them": hoi_them}, None
 
 
 # ================================================================ answer
@@ -364,13 +384,16 @@ def answer(text: str) -> dict:
         note("đầu vào rỗng")
         return render("need_more_information", "Mình chưa nhận được nội dung nào.", hoi_them=[P.TOPIC_QUESTION])
 
-    # 2. Chặn đầu vào (không gọi model)
+    # 2. Chặn đầu vào (không gọi model). Chặn TRƯỚC khi xét độ dài: câu dài có chèn lệnh vẫn là refuse.
     hit = screen_input(clean)
     if hit:
         note("chặn đầu vào: " + hit + " — không gọi model")
         if hit == "lach_luat":
             return refuse_answer(clean, P.REFUSE_EVASION)
         return refuse_answer(clean, P.REFUSE_INJECTION, cite=False)
+    if len(clean) > MAX_INPUT_CHARS:
+        note("G_LEN_IN: đầu vào %d ký tự > %d — không gọi model" % (len(clean), MAX_INPUT_CHARS))
+        return render("need_more_information", P.TOO_LONG % MAX_INPUT_CHARS, hoi_them=P.STUDY_QUESTIONS)
 
     # 3. Trích dữ kiện (model → JSON nhỏ, KHÔNG kèm kho)
     try:
@@ -438,9 +461,12 @@ def answer(text: str) -> dict:
 
     # 8. Định dạng đầu ra
     note("quyết định: " + decision["nhan"])
-    viec = decision["can_lam_gi"]
+    viec = "; ".join(decision["can_lam_gi"])
     if decision["nhan"] == "out_of_scope":
         viec = (viec + " " if viec else "") + P.REDIRECT_OTHER
-    return render(decision["nhan"], decision["ly_do"], viec,
-                  [kb.get_chunk(c) for c in decision["can_cu"]],
-                  [kb.get_chunk(q) for q in decision["tham_khao"]], decision["can_hoi_them"])
+    out = render(decision["nhan"], decision["ly_do"], viec,
+                 [kb.get_chunk(c) for c in decision["can_cu"]],
+                 [kb.get_chunk(q) for q in decision["tham_khao"]], decision["can_hoi_them"])
+    if len(out["output"]) > MAX_OUTPUT_CHARS:
+        return safe_answer("G_LEN_OUT: câu trả lời %d ký tự > %d" % (len(out["output"]), MAX_OUTPUT_CHARS))
+    return out

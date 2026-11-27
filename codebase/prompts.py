@@ -134,6 +134,9 @@ ERROR_MESSAGE = ("Xin lỗi, hệ thống đang gặp sự cố hoặc phản h�
                  "Mình không đoán thay để tránh đưa thông tin sai. Bạn vui lòng thử lại sau ít phút, "
                  "hoặc hỏi trực tiếp Ban Chỉ huy quân sự cấp xã nơi cư trú.")
 
+TOO_LONG = ("Câu hỏi của bạn dài quá nên mình chưa đọc được (tối đa %d ký tự). "
+            "Bạn viết gọn lại giúp mình, chỉ cần nêu tình trạng học tập chính là đủ.")
+
 REFUSE_EVASION = ("Mình không hỗ trợ cách làm giả, mua bán, gian lận hay nhờ người khác làm thay để được hoãn. "
                   "Gian dối trong đăng ký, sơ tuyển hay khám sức khỏe nghĩa vụ quân sự là hành vi bị nghiêm cấm và có chế tài xử phạt. "
                   "Bạn có thể mô tả tình trạng học tập thật của mình để mình xem có căn cứ đề nghị xem xét tạm hoãn hay không.")
