@@ -186,7 +186,8 @@ _PENALTY = [
 _REQUEST = [
     r"chỉ\s+(?:\w+\s+){0,2}cách|hướng\s+dẫn|giúp\s+(?:em|mình|tôi|tớ)|làm\s+(?:sao|thế\s+nào)\s+(?:để|cho)",
     # "nhờ"/"thuê" KHÔNG nằm ở đây: "nhờ người khám thay thì có phạm luật không" là câu HỎI chế tài (B2).
-    r"cách\s+(?:để\s+)?(?:làm|lách|né|trốn|có|xin)|ở\s+đâu|mua|bán|dịch\s+vụ|bao\s+nhiêu\s+tiền|chi\s+phí",
+    # "bao nhiêu tiền" ngay sau "phạt" là hỏi mức phạt ("bị phạt bao nhiêu tiền"), không phải hỏi giá dịch vụ gian lận.
+    r"cách\s+(?:để\s+)?(?:làm|lách|né|trốn|có|xin)|ở\s+đâu|mua|bán|dịch\s+vụ|(?<!phạt\s)bao\s+nhiêu\s+tiền|chi\s+phí",
     r"tốn|liên\s+hệ|muốn",
 ]
 def _compile(patterns):
