@@ -287,7 +287,7 @@ def strip_disclaimer(text: str) -> str:
     return " ".join(kept).strip() or (text or "")
 
 
-def render(nhan: str, giai_thich: str, viec: str = "", passages=None, tham_khao=None, hoi_them=None,
+def render(nhan: str, giai_thich: str, viec="", passages=None, tham_khao=None, hoi_them=None,
            disclaimer: bool = True) -> dict:
     """Bước 8. Dòng 1 LUÔN là `NHAN: <nhan>`, dòng 2 LUÔN là `CAN_CU: <id,...>` (trống nếu không có) để chấm bằng code.
     disclaimer: nối câu miễn trừ cố định (B8) vào mọi câu trả lời trừ refuse; câu lỗi (LOI:) không qua render."""
@@ -295,8 +295,13 @@ def render(nhan: str, giai_thich: str, viec: str = "", passages=None, tham_khao=
     lines = ["NHAN: " + nhan, "CAN_CU: " + ",".join(p["id"] for p in passages), "", "Giải thích: " + giai_thich]
     if hoi_them:
         lines.append("Cần biết thêm: " + "; ".join(hoi_them))
-    if viec:
-        lines.append("Việc cần làm: " + viec)
+    steps = [viec] if isinstance(viec, str) else list(viec or [])
+    steps = [x for x in steps if x]
+    if len(steps) == 1:
+        lines.append("Việc cần làm: " + steps[0])
+    elif steps:                                  # B11: các bước đánh số, mỗi bước một dòng
+        lines.append("Việc cần làm:")
+        lines.extend("%d. %s" % (n, x) for n, x in enumerate(steps, 1))
     if passages:
         lines.append("Nguồn:")
         for p in passages:
@@ -516,9 +521,9 @@ def answer(text: str) -> dict:
     # 8. Định dạng đầu ra
     note("quyết định: " + decision["nhan"])
     steps = [strip_disclaimer(x) for x in decision["can_lam_gi"]]
-    viec = "; ".join(x for x in steps if not _DISCLAIMER_LIKE.search(kb.fold(x)))
-    if decision["nhan"] == "out_of_scope":
-        viec = (viec + " " if viec else "") + P.REDIRECT_OTHER
+    viec = [x for x in steps if not _DISCLAIMER_LIKE.search(kb.fold(x))]
+    if decision["nhan"] == "out_of_scope" and not any("ban chi huy quan su cap xa" in kb.fold(x) for x in viec):
+        viec.append(P.REDIRECT_OTHER)
     out = render(decision["nhan"], strip_disclaimer(decision["ly_do"]), viec,
                  [kb.get_chunk(c) for c in decision["can_cu"]],
                  [kb.get_chunk(q) for q in decision["tham_khao"]], decision["can_hoi_them"])

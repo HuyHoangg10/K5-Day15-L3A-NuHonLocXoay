@@ -442,3 +442,63 @@ class GuardCodeTests(unittest.TestCase):
     def test_codes_documented(self):
         for code in agent.GUARD_CODES:
             self.assertIn(code, agent.__doc__)
+
+
+class StyleTests(unittest.TestCase):
+    """B11: prompt văn phong dễ hiểu nhưng giữ đủ điều kiện then chốt; hợp đồng đầu ra không đổi; bước đánh số."""
+    def test_prompt_keeps_key_conditions(self):
+        f = kb.fold(P.SYSTEM_QUYET_DINH)
+        for must in ["mot khoa dao tao cua mot trinh do", "hoc lien tuc", "giay bao nhap hoc", "den khi tot nghiep",
+                     "no mon, luu ban", "khong duoc tam hoan", "tru khi chinh nha truong xac dinh khoa hoc keo dai",
+                     "hoi dong nghia vu quan su cap xa qua ban chi huy quan su cap xa", "chi dua vao ngu canh"]:
+            self.assertIn(must, f, must)
+
+    def test_prompt_style_rules(self):
+        f = kb.fold(P.SYSTEM_QUYET_DINH)
+        for must in ['goi nguoi dung la "ban"', "cau ngan", "toi da 3 cau", "2–4 buoc", "1–2 cau hoi",
+                     "khong doi nghia", "khong chep nguyen van doan luat dai", "co can cu de de nghi xem xet",
+                     "thuong khong thuoc dien", "khong bia thu tuc"]:
+            self.assertIn(must, f, must)
+
+    def test_output_contract_unchanged(self):
+        for k in ['"nhan"', '"can_cu"', '"tham_khao"', '"ly_do"', '"can_lam_gi"', '"can_hoi_them"']:
+            self.assertIn(k, P.SYSTEM_QUYET_DINH)
+        for lab in P.LABELS:
+            self.assertIn('"%s"' % lab, P.SYSTEM_QUYET_DINH)
+
+    def test_suggested_phrases_are_safe(self):
+        for ph in P.SUGGESTED_PHRASES:
+            self.assertFalse(agent.has_absolute(ph))
+            self.assertIsNotNone(check(decision(ly_do=ph[0].upper() + ph[1:] + " nếu bạn học đúng một khóa liên tục."))[0])
+
+    def test_steps_rendered_numbered(self):
+        from test_guards import facts_json, scripted, STUDENT_FACTS
+        fn = scripted(facts_json(**STUDENT_FACTS), decision(can_lam_gi=["Xin giấy xác nhận của nhà trường.",
+                                                                       "Nộp cho Ban Chỉ huy quân sự cấp xã."]))
+        with mock.patch.object(agent, "call_model", fn):
+            out = agent.answer("Em học đại học chính quy năm 2, có được hoãn không?")["output"]
+        lines = out.splitlines()
+        self.assertEqual(lines[0], "NHAN: eligible_for_review")
+        self.assertEqual(lines[1], "CAN_CU: vbhn133-d41-k1-g")
+        i = lines.index("Việc cần làm:")
+        self.assertEqual(lines[i + 1], "1. Xin giấy xác nhận của nhà trường.")
+        self.assertEqual(lines[i + 2], "2. Nộp cho Ban Chỉ huy quân sự cấp xã.")
+
+    def test_string_steps_still_accepted(self):
+        d, why = check(decision(can_lam_gi="Xin giấy xác nhận của nhà trường."))
+        self.assertEqual(d["can_lam_gi"], ["Xin giấy xác nhận của nhà trường."])
+
+    def test_out_of_scope_redirect_not_duplicated(self):
+        from test_guards import facts_json, scripted
+        fn = scripted(facts_json(chu_de="gia_dinh"),
+                      decision(nhan="out_of_scope", can_cu=[], ly_do="Câu này về hoàn cảnh gia đình.",
+                               can_lam_gi=["Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn."]))
+        with mock.patch.object(agent, "call_model", fn):
+            out = agent.answer("Em là lao động chính trong nhà thì có được hoãn không?")["output"]
+        self.assertEqual(kb.fold(out).count("ban chi huy quan su cap xa"), 2)   # 1 bước của model + 1 trong câu miễn trừ
+
+    def test_at_most_two_follow_up_questions(self):
+        self.assertLessEqual(len(P.STUDY_QUESTIONS), 2)
+        f = kb.fold(" ".join(P.STUDY_QUESTIONS))
+        for must in ["trinh do", "chinh quy", "tu nam nao den nam nao", "da tung duoc tam hoan"]:
+            self.assertIn(must, f)
