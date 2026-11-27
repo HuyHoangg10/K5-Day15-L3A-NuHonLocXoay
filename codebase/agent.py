@@ -133,13 +133,58 @@ def preprocess(text: str):
     if not any(c.isalnum() for c in t):
         return "", []
     kinds = []
+    # Key / token TRƯỚC các mẫu số (số trong key không được bị bắt nhầm thành SĐT / CCCD).
+    t, n = _RE_KEY.subn("[KEY]", t)
+    if n:
+        kinds.append("key")
     # CCCD trước SĐT: 12 số có dấu phân cách không được để regex SĐT cắt mất một phần
     for kind, rx, token in (("email", _RE_EMAIL, "[EMAIL]"), ("cccd", _RE_CCCD, "[CCCD]"),
                             ("sdt", _RE_PHONE, "[SĐT]"), ("cmnd", _RE_CMND, "[CCCD]")):
         t, n = rx.subn(token, t)
         if n:
             kinds.append(kind)
+    t, n = mask_names(t)
+    if n:
+        kinds.append("tên")
     return t, kinds
+
+
+# Key / token người dùng lỡ dán: sk-… (OpenAI / DeepSeek / Anthropic sk-ant-…), "Bearer <token>", vài tiền tố phổ biến,
+# và "api_key / token / secret = <chuỗi dài>". Che thành [KEY] trước khi gửi model, ghi trace hay lưu vào phiên.
+_RE_KEY = re.compile(r"(?<![\w-])(?:sk-[A-Za-z0-9_\-]{16,}|(?:ghp|gho|ghs|github_pat)_[A-Za-z0-9_]{16,}|AKIA[A-Z0-9]{16}"
+                     r"|AIza[A-Za-z0-9_\-]{20,}|xox[abpr]-[A-Za-z0-9\-]{10,})"
+                     r"|(?i:bearer)\s+[A-Za-z0-9._~+/\-]{16,}=*"
+                     r"|(?i:\b(?:api[_\- ]?key|access[_\- ]?token|secret|token|password|mật\s+khẩu)\s*[:=]\s*)\S{8,}")
+
+# Họ tên: chỉ che khi có từ dẫn rõ ("tên là", "họ tên", "tôi là" + họ tên viết hoa), để không che nhầm tên trường,
+# địa danh, "Ban Chỉ huy…". Sau "tên" chấp nhận 1–5 chữ viết hoa; sau "tôi / em / mình là" cần ≥ 2 chữ viết hoa.
+_NAME_CUE = re.compile(r"(?i:\b(?:(?:họ\s+(?:và\s+)?)?tên(?:\s+(?:của\s+)?(?:em|tôi|mình|tớ|con|cháu))?(?:\s+là)?"
+                       r"|(?P<self>(?:tôi|em|mình|tớ|con|cháu)\s+là))\s*:?\s+)")
+_CAP_WORD = re.compile(r"[^\W\d_]+")
+
+
+def mask_names(text: str):
+    """→ (văn bản đã che họ tên sau từ dẫn bằng [TÊN], số chỗ đã che)."""
+    out, pos, n = [], 0, 0
+    for m in _NAME_CUE.finditer(text):
+        if m.start() < pos:
+            continue
+        words, end, i = 0, m.end(), m.end()
+        while words < 5:
+            w = _CAP_WORD.match(text, i)
+            if not w or not w.group(0)[0].isupper():
+                break
+            words, end = words + 1, w.end()
+            j = end
+            while j < len(text) and text[j] == " ":
+                j += 1
+            i = j
+        if words >= (2 if m.group("self") else 1):
+            out.append(text[pos:m.end()])
+            out.append("[TÊN]")
+            pos, n = end, n + 1
+    out.append(text[pos:])
+    return "".join(out), n
 
 
 # ================================================================ bước 2: chặn đầu vào
