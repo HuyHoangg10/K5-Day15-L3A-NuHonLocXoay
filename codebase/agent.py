@@ -333,6 +333,10 @@ def validate_decision(raw: str, qa_allowed=(), must_be_out_of_scope: bool = Fals
     model_text = " ".join([ly_do, viec] + hoi_them)
     if has_absolute(model_text):
         return None, "chứa cụm tuyệt đối"
+    leaked = guards.leak(model_text, (P.SYSTEM_TRICH, P.SYSTEM_QUYET_DINH),
+                         " \n ".join((context or "", user_text or "") + P.ECHO_OK))
+    if leaked:
+        return None, "G_LEAK: " + leaked
     if passages is not None:
         art = guards.unknown_article(model_text, passages, context)
         if art:

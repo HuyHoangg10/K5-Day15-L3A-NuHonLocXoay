@@ -155,3 +155,57 @@ def unknown_number(text: str, allowed_text: str):
     for d in day_terms(text) - day_terms(allowed_text):
         return "thời hạn %s ngày" % d
     return None
+
+
+# ---------------------------------------------------------------- B6: rò rỉ prompt / chèn lệnh ở đầu ra
+LEAK_MIN_CHARS = 40
+_LEAK_PHRASES = re.compile(
+    r"(?<!\w)(?:system\s+prompt|developer\s+prompt|prompt\s+(?:he\s+thong|goc)"
+    r"|bo\s+qua\s+(?:moi\s+|tat\s+ca\s+|cac\s+|nhung\s+)?(?:huong\s+dan|chi\s+dan)"
+    r"|ignore\s+(?:all\s+|any\s+|the\s+|your\s+)?(?:previous\s+|prior\s+|above\s+)?instructions)(?!\w)")
+# Dòng nhãn thừa: model tự viết "NHAN: …" / "CAN_CU: …" trong lời văn (so trên bản gốc, chỉ chữ ASCII viết đúng như định dạng).
+_FORMAT_LINE = re.compile(r"(?<![A-Za-z_])(?:NHAN|CAN_CU)\s*:", re.IGNORECASE)
+
+
+def _squash(s: str) -> str:
+    """Bỏ dấu, chữ thường, gộp mọi khoảng trắng thành một dấu cách — để so đoạn trùng không phụ thuộc xuống dòng."""
+    return " ".join(kb.fold(s or "").split())
+
+
+_PROMPT_GRAMS = {}
+
+
+def _prompt_grams(prompts) -> frozenset:
+    """Mọi đoạn LEAK_MIN_CHARS ký tự liên tục của các prompt hệ thống, TRỪ đoạn cũng có trong kho (luật + hỏi đáp):
+    đoạn đó là nội dung pháp lý mà model được phép nhắc lại, không phải chỉ dẫn bị lộ."""
+    key = tuple(prompts)
+    if key not in _PROMPT_GRAMS:
+        n = LEAK_MIN_CHARS
+        grams = set()
+        for p in prompts:
+            s = _squash(p)
+            grams.update(s[i:i + n] for i in range(len(s) - n + 1))
+        corpus = " | ".join(_squash(" ".join(str(c.get(k) or "") for k in ("text", "title", "question", "answer")))
+                            for c in kb.legal_all() + kb.qa_all())
+        _PROMPT_GRAMS[key] = frozenset(g for g in grams if g not in corpus)
+    return _PROMPT_GRAMS[key]
+
+
+def leak(text: str, prompts, allowed_text: str = ""):
+    """Lời văn model viết có dấu hiệu rò rỉ prompt / chèn lệnh → mô tả ngắn; sạch → None.
+    - cụm "system prompt", "bỏ qua hướng dẫn", "ignore previous instructions"…;
+    - dòng "NHAN:" / "CAN_CU:" thừa (chỉ code được viết hai dòng này);
+    - đoạn ≥ LEAK_MIN_CHARS ký tự liên tục trùng prompt hệ thống (không tính đoạn có trong ngữ cảnh / câu người dùng / kho)."""
+    t = _squash(text)
+    if _LEAK_PHRASES.search(t):
+        return "cụm nói về prompt / bỏ qua hướng dẫn"
+    if _FORMAT_LINE.search(text or ""):
+        return "dòng NHAN:/CAN_CU: thừa ngoài định dạng"
+    grams = _prompt_grams(prompts)
+    allowed = _squash(allowed_text)
+    n = LEAK_MIN_CHARS
+    for i in range(len(t) - n + 1):
+        w = t[i:i + n]
+        if w in grams and w not in allowed:
+            return "đoạn ≥%d ký tự trùng prompt hệ thống" % n
+    return None
