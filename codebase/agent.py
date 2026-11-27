@@ -65,10 +65,10 @@ MAX_STEPS, MAX_STEP_CHARS = 4, 300
 MAX_QUESTIONS, MAX_QUESTION_CHARS = 2, 200
 
 Y_DO = ("hop_phap", "lach_luat", "chen_lenh", "ngoai_pham_vi")
-BOOL_FACTS = ("dang_hoc", "he_chinh_quy", "qua_han", "bao_luu", "du_hoc", "da_tot_nghiep", "da_tam_hoan_truoc")
+BOOL_FACTS = ("dang_hoc", "da_nhap_hoc", "he_chinh_quy", "qua_han", "bao_luu", "du_hoc", "da_tot_nghiep", "da_tam_hoan_truoc")
 # Bước 4: câu về tình trạng riêng của mình mà KHÔNG có dữ kiện học tập nào trong số này → need_more_information
 STUDY_DETAIL_FACTS = ("trinh_do", "he_chinh_quy", "nam_thu", "qua_han", "bao_luu", "du_hoc", "da_tot_nghiep",
-                      "da_tam_hoan_truoc")
+                      "da_tam_hoan_truoc", "da_nhap_hoc")
 
 # Cụm khẳng định tuyệt đối (danh sách dùng trong metric trich_dan_hop_le). Bước 7 chặn bằng guards.has_absolute:
 # so trên bản bỏ dấu, thêm "cam kết", "đảm bảo <ai> được hoãn", và BỎ QUA khi bị phủ định ngay trước ("không thể nói 100%").

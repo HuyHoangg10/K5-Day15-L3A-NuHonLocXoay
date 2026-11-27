@@ -16,7 +16,7 @@ import threading
 import uuid
 
 # Dữ kiện học tập được nhớ qua các lượt (KHÔNG nhớ y_do / hoi_quy_dinh_chung: luôn lấy theo lượt hiện tại).
-MEMORY_FACTS = ("dang_hoc", "trinh_do", "he_chinh_quy", "nam_thu", "qua_han", "bao_luu", "du_hoc", "da_tot_nghiep",
+MEMORY_FACTS = ("dang_hoc", "da_nhap_hoc", "trinh_do", "he_chinh_quy", "nam_thu", "qua_han", "bao_luu", "du_hoc", "da_tot_nghiep",
                 "da_tam_hoan_truoc")
 MAX_TURNS = 6                 # số lượt giữ dạng rút gọn
 MAX_BLOCK_CHARS = 1500        # trần độ dài khối ngữ cảnh hội thoại ghép vào prompt quyết định
