@@ -10,10 +10,10 @@ kb-nvqs/
 ├── DATA_CARD.md               ← nguồn, phạm vi, giới hạn (nộp cho CP2)
 ├── SOURCES.csv                ← manifest: số hiệu, ngày, hiệu lực, URL, sha256
 ├── sources/
-│   ├── pdf/                   ← 8 bản PDF gốc
-│   └── text/                  ← text trích từ PDF + bản chép tay TT 148 (Đ4–5)
+│   ├── pdf/                   ← 8 bản PDF gốc + bản .docx đối chiếu từ thuvienphapluat (*_tvpl.docx)
+│   └── text/                  ← text trích từ PDF + bản chép tay TT 148 (Đ4–5) + toàn văn thuvienphapluat (*_tvpl.txt)
 ├── chunks/
-│   ├── legal_chunks.jsonl     ← 179 chunk theo Điều (+14 chunk Đ41 tách theo điểm), có metadata
+│   ├── legal_chunks.jsonl     ← 179 chunk (165 theo Điều + 14 chunk Đ41 tách theo điểm/khoản), có metadata
 │   └── qa_chunks.jsonl        ← 58 bài hỏi đáp/kiến nghị chính thức (đã ẩn danh), tách question/answer
 ├── qa/                        ← 58 bài dạng .md (đã ẩn danh) + INDEX.csv
 └── benchmark/
@@ -22,7 +22,7 @@ kb-nvqs/
 
 ## Dùng nhanh cho MVP
 
-- **Nạp thẳng vào context LLM:** lọc `legal_chunks.jsonl` với `"mvp": true` (23 chunk, khoảng 15k ký tự). Gồm Đ4, Đ10, Đ30, Đ41 (cả điều và từng điểm), Đ42 Luật NVQS; Đ4–5 TT 148 (bản hiện hành); Đ9–10 NĐ 218/2025.
+- **Nạp thẳng vào context LLM:** lọc `legal_chunks.jsonl` với `"mvp": true` (23 chunk, khoảng 17k ký tự). Gồm Đ4, Đ10, Đ30, Đ41 (cả điều và từng điểm), Đ42 Luật NVQS; Đ4–5 TT 148 (bản hiện hành); Đ9–10 NĐ 218/2025.
 - **Ví dụ minh họa / few-shot:** `qa_chunks.jsonl`, lọc `loai == "hoi_dap"`.
 - **Benchmark:** mở rộng `ground_truth_seed.csv` lên 25 ca. Cột `status_ky_vong` gồm: `eligible_for_review`, `not_eligible`, `need_more_information`, `refuse`, `out_of_scope`.
 
@@ -50,5 +50,6 @@ Yêu cầu chatbot trích `id` chunk (ví dụ `vbhn133-d41-k1-g`) để chấm 
 ## Cảnh báo
 
 - Text trích tự động từ PDF có thể lẫn lỗi ngắt dòng hoặc chú thích. Trước khi demo, đối chiếu lại các chunk `mvp` với PDF.
-- TT 148/2018 và TT 68/2025 là bản scan, nên Đ4–5 TT 148 được **chép tay**. TT 105/2023 (105 trang scan) chưa được OCR.
+- TT 148/2018 và TT 68/2025 là bản scan, nên Đ4–5 TT 148 được **chép tay**. Ngày 27/11/2026 đã đối chiếu với 36/VBHN-BQP: khớp nội dung.
+- TT 105/2023 (105 trang scan) chưa được OCR. Đã có bản chữ từ thuvienphapluat trong `sources/text/`, chưa tách chunk.
 - Bài hỏi đáp là **văn bản trả lời của cơ quan nhà nước, không phải văn bản quy phạm**. Không trích chúng như "căn cứ pháp lý".
