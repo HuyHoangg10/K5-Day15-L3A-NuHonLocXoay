@@ -340,8 +340,7 @@ def validate_decision(raw: str, qa_allowed=(), must_be_out_of_scope: bool = Fals
         url = guards.unknown_url(model_text, passages, refs)
         if url:
             return None, "G_URL: lời văn có URL không thuộc nguồn đã dùng"
-        num = guards.unknown_number(model_text, (context or "") + "
-" + (user_text or ""))
+        num = guards.unknown_number(model_text, (context or "") + " \n " + (user_text or ""))
         if num:
             return None, "G_NUMBER: lời văn có %s không có trong ngữ cảnh" % num
     return {"nhan": nhan, "can_cu": can_cu, "tham_khao": tham_khao, "ly_do": ly_do.strip(),
