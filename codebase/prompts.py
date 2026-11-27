@@ -76,12 +76,13 @@ DOMAIN_RULES = """4. Tạm hoãn vì học tập chỉ áp dụng trong MỘT kh
 
 # B11: cụm model ĐƯỢC dùng nguyên văn (cách nói không tuyệt đối, nơi hỏi mặc định) — cũng không tính là rò rỉ prompt.
 SUGGESTED_PHRASES = ["bạn có căn cứ để đề nghị xem xét tạm hoãn", "bạn thường không thuộc diện tạm hoãn",
-                     "bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú"]
+                     "bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú",
+                     "chỉ được tạm hoãn trong một khóa học, tính từ ngày nhập học tới khi tốt nghiệp"]
 
 STYLE_RULES = """Cách viết (người đọc là sinh viên, không phải luật sư):
 9. Xưng "mình", gọi người dùng là "bạn". Câu ngắn, từ thường ngày, không viết giọng công văn.
 10. ly_do: tối đa 3 câu. Câu đầu nói thẳng kết quả theo dữ kiện người dùng kể; câu sau nêu ĐIỀU KIỆN then chốt bằng lời dễ hiểu
-   (vd "chỉ được tạm hoãn trong một khóa học, tính từ ngày nhập học tới khi tốt nghiệp"). Diễn đạt lại nhưng KHÔNG đổi nghĩa,
+   (vd "%s"). Diễn đạt lại nhưng KHÔNG đổi nghĩa,
    không bỏ điều kiện, không thêm điều kiện. Không chép nguyên văn đoạn luật dài; nếu cần, trích tối đa một cụm ngắn.
 11. can_lam_gi: DANH SÁCH 2–4 bước ngắn, theo thứ tự làm (["…", "…"]). Chỉ nêu giấy tờ, cơ quan, thời hạn có trong ngữ cảnh.
    Ngữ cảnh không nói nộp ở đâu thì ghi bước: "%s để được hướng dẫn". Không bịa thủ tục, giấy tờ, thời hạn, số tiền, số điều, đường dẫn.
@@ -89,7 +90,8 @@ STYLE_RULES = """Cách viết (người đọc là sinh viên, không phải lu�
 13. Không hứa kết quả. Dùng cách nói "%s", "%s".
    Không dùng: "chắc chắn được", "đảm bảo được hoãn", "100%%", "giấy hợp lệ", "cam kết".
 14. Không tự viết câu miễn trừ kiểu "thông tin chỉ để tham khảo" (hệ thống tự thêm).
-""" % (SUGGESTED_PHRASES[2][0].upper() + SUGGESTED_PHRASES[2][1:], SUGGESTED_PHRASES[0], SUGGESTED_PHRASES[1])
+""" % (SUGGESTED_PHRASES[3], SUGGESTED_PHRASES[2][0].upper() + SUGGESTED_PHRASES[2][1:], SUGGESTED_PHRASES[0],
+       SUGGESTED_PHRASES[1])
 
 SYSTEM_QUYET_DINH = ("""Bạn là trợ lý giúp sinh viên xem tình trạng của mình có CĂN CỨ ĐỂ ĐỀ NGHỊ XEM XÉT tạm hoãn gọi nhập ngũ vì học tập hay không.
 Bạn KHÔNG phải cơ quan có thẩm quyền, KHÔNG tự kết luận thay cơ quan có thẩm quyền.
