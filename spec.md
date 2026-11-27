@@ -40,17 +40,18 @@ Data BTC cấp đã dùng (nếu có — không commit nguyên file): __
   ```mermaid
   flowchart LR
     A["Đầu vào<br/>1 câu, 1 lượt"] --> B["Tiền xử lý<br/>NFKC · che CCCD, SĐT, email"]
-    B --> C{"Chặn đầu vào<br/>lách luật / chèn lệnh"}
-    C -- "chặn" --> R1["NHAN: tu_choi<br/>không gọi model"]
-    C -- "qua" --> D["Trích dữ kiện<br/>model → JSON"]
-    D -- "y_do lách luật / ngoài phạm vi" --> R2["tu_choi / ngoai_pham_vi"]
-    D --> E{"Đủ dữ kiện<br/>bắt buộc?"}
-    E -- "thiếu" --> R3["NHAN: can_hoi_them<br/>nêu cần thêm gì"]
-    E -- "đủ" --> F["Tra cứu<br/>tra_dieu_luat → data/kb"]
-    F --> G["Quyết định<br/>model → JSON"]
-    G --> H{"Kiểm đầu ra<br/>JSON · nhãn · mã trong kho · cụm tuyệt đối"}
-    H -- "hỏng" --> S["Câu an toàn cố định"]
-    H -- "đạt" --> O["Đầu ra<br/>NHAN + giải thích + việc cần làm + nguồn + miễn trừ"]
+    B --> C{"Chặn đầu vào<br/>lách luật / chèn lệnh<br/>(có dấu + bỏ dấu)"}
+    C -- "chặn" --> R1["NHAN: refuse<br/>CAN_CU cố định vbhn133-d10 (+ nd218-d9)<br/>không gọi model"]
+    C -- "qua" --> D["Trích dữ kiện<br/>model → JSON nhỏ, KHÔNG kèm kho"]
+    D -- "y_do lách luật" --> R1
+    D -- "ngoài phạm vi / chủ đề sức khỏe" --> R2["NHAN: out_of_scope<br/>chỉ nơi hỏi đúng"]
+    D --> E{"Đủ dữ kiện<br/>học tập?"}
+    E -- "thiếu" --> R3["NHAN: need_more_information<br/>nêu cần thêm gì"]
+    E -- "đủ" --> F["Tra cứu tra_cuu_can_cu<br/>23 chunk luật mvp (nạp hết)<br/>+ 2 bài hỏi đáp BM25"]
+    F --> G["Quyết định<br/>model → JSON, chỉ dựa ngữ cảnh"]
+    G --> H{"Kiểm đầu ra<br/>JSON · nhãn · CAN_CU ⊆ mvp, không qa-*<br/>· tham khảo ⊆ bài đã tra · cụm tuyệt đối"}
+    H -- "hỏng" --> S["NHAN: safe_fallback<br/>câu an toàn cố định"]
+    H -- "đạt" --> O["Đầu ra<br/>NHAN · CAN_CU · giải thích · việc cần làm<br/>· nguồn (ngày kiểm) · tham khảo · miễn trừ"]
     R1 --> O
     R2 --> O
     R3 --> O
@@ -64,7 +65,7 @@ Data BTC cấp đã dùng (nếu có — không commit nguyên file): __
 
   | Công cụ | Input | Output | Tác động ra ngoài? |
   |---|---|---|---|
-  | `tra_dieu_luat(chu_de)` | `chu_de`: `hoc_tap`, `suc_khoe` hoặc rỗng (mọi đoạn) | danh sách đoạn `{code, van_ban, hieu_luc, ngay_tai, url, text}` từ `data/kb/dieu41.json` | không (chỉ đọc kho; kho hiện là GIẢ) |
+  | `tra_cuu_can_cu(cau_hoi)` | `cau_hoi`: câu người dùng (đã tiền xử lý) | `{luat, tham_khao}` — `luat`: 23 chunk `mvp: true` của `kb-nvqs/chunks/legal_chunks.jsonl` `{id, so_hieu, dieu, khoan, diem, text, nguon, ngay_kiem_tra…}` (căn cứ pháp lý, được trích ở `CAN_CU:`); `tham_khao`: ≤2 bài `hoi_dap` từ `kb-nvqs/chunks/qa_chunks.jsonl` xếp bằng BM25 trên câu hỏi (cách hiểu chính thức của BQP, KHÔNG phải căn cứ, cấm ở `CAN_CU:`) | không (chỉ đọc file trong repo) |
 
 - **Mức tự động:** [ ] AI gợi ý, người quyết · [ ] AI tự làm khi chắc, chuyển người khi không · [ ] AI tự làm — lý do (sai thì ai chịu gì, sửa đắt hay rẻ):
 - **Chỗ chặn rủi ro** (rủi ro lớn nhất của lát cắt bị chặn ở đâu, bằng gì):

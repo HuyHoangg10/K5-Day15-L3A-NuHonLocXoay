@@ -90,6 +90,7 @@ _EVASION = [
     r"\bmua\s+(?:giấy|hồ\s*sơ|bệnh\s*án)?\s*(?:hoãn|miễn|tạm\s+hoãn|khám|sức\s+khỏe|kết\s+luận|xác\s+nhận|bệnh)",
     r"gian\s+lận\s+(?:khám|sức\s+khỏe|hồ\s*sơ|giấy|để)",
     r"khai\s+(?:man|gian|dối|khống)",
+    r"(?:làm|gây)\s+sai\s+lệch\s+(?:kết\s+quả|hồ\s*sơ|giấy|thông\s+tin|khám)",
     r"(?:khám|đi\s+khám)\s+(?:thay|hộ|giùm|dùm)",
     r"(?:nhờ|thuê)\s+(?:người|ai)\s+(?:khác\s+)?(?:đi\s+)?khám",
     r"hối\s+lộ|đút\s+lót|lót\s+tay",
