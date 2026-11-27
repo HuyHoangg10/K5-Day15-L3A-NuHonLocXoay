@@ -1,7 +1,6 @@
-> Đây là khung repo nộp bài. Điền mọi chỗ `____`, giữ nguyên tên các mục. **Mục 0 xoá đi sau khi tạo repo xong.**
-> Giờ, mốc, luật, rubric: xem `README.md`, `02-guide.md`, `03-rubric.md` trong repo đề (bộ đề BTC phát).
+# Nữ Hôn Lốc Xoáy — Trợ lý đối chiếu tạm hoãn gọi nhập ngũ cho sinh viên
 
-# NuHonLocXoay — [Tên lát cắt]
+**Track F · LegalTech / CivicTech.** Sinh viên trong độ tuổi gọi nhập ngũ khó đối chiếu quy định tạm hoãn với tình trạng học tập của mình vì thông tin tra cứu phân tán, nên mất thời gian xác định bước tiếp theo. Xem lát cắt và kế hoạch kiểm chứng trong [canvas.md](canvas.md).
 
 **Thành viên, lớp, track:** xem [TEAMS.md](TEAMS.md). **Điền TEAMS.md đúng format**: khi chấm và đánh giá, BTC quét file này để ghép điểm cho từng người.
 
