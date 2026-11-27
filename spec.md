@@ -3,19 +3,27 @@
 Track F · LegalTech / CivicTech. Nguồn kho: `kb-nvqs/README.md`, `kb-nvqs/SOURCES.csv`.
 
 ## §0. Hiện tại việc này diễn ra thế nào
-Đường tra cứu dự kiến: tìm văn bản hợp nhất qua cổng công bố, đọc điều liên quan, tìm bài hỏi đáp theo tình huống, rồi liên hệ nhà trường hoặc cơ quan quân sự để xác minh. Đây là mô tả đường tra cứu khả dụng, chưa phải quan sát người dùng. Nguồn văn bản và hỏi đáp: `kb-nvqs/SOURCES.csv`, `kb-nvqs/README.md`. Công cụ thực tế người dùng chọn (chưa kiểm).
+Đường tra cứu dự kiến: tìm văn bản hợp nhất qua cổng công bố, đọc điều liên quan, tìm bài hỏi đáp theo tình huống, rồi liên hệ nhà trường hoặc cơ quan quân sự để xác minh. Đây là mô tả đường tra cứu khả dụng, chưa phải quan sát người dùng. Nguồn văn bản và hỏi đáp: `kb-nvqs/SOURCES.csv`, `kb-nvqs/README.md`. Cách người dùng thực sự tìm (khảo sát, n = 19 người đã từng tra, chọn nhiều): Google/báo 17 · ChatGPT 10 · đọc văn bản luật 9 · hỏi bạn bè 8 · nhóm Facebook/TikTok/Reddit 8 · hỏi phòng đào tạo/Ban CHQS 7; trung vị 3 cách mỗi người (`evidence/survey/questions.md`).
 
 ## §1. Người dùng & bằng chứng
-Sinh viên nam trong độ tuổi gọi nhập ngũ muốn đối chiếu hoàn cảnh học tập với quy định tạm hoãn. Giả thuyết pain: các nguồn phân tán, khó đối chiếu với hoàn cảnh cá nhân; hậu quả thời gian tra cứu (chưa đo). Đã hoàn thành đào data Q&A công khai (`evidence/data-mining.md`, `evidence/count.py`): **21/24 bài (88%) / 13/15 ca (87%)** gặp vướng địa phương hoặc tình huống biên (`11/24` bài đã nộp giấy tờ vẫn chưa được giải quyết). Phỏng vấn ≥3 sinh viên ngoài nhóm và tổng hợp `evidence/summary.md` đang triển khai.
+Sinh viên nam trong độ tuổi gọi nhập ngũ muốn đối chiếu hoàn cảnh học tập với quy định tạm hoãn. Pain (sửa ngày 27/11 theo bằng chứng, `canvas.md` dòng 3): sinh viên không chắc trường hợp học tập của mình có được tạm hoãn không dù đã tra nhiều nguồn, nhất là khi nợ môn, quá hạn, liên thông hay chuyển trường; khi nộp giấy xác nhận, xã/phường có thể không nhận.
+
+| Nguồn | Số chính | File |
+|---|---|---|
+| Hỏi đáp cổng Chính phủ, N = 24 bài | 21/24 (88%) vướng địa phương hoặc tình huống biên; 11/24 (46%) đã nộp giấy vẫn chưa được giải quyết | `evidence/data-mining.md` |
+| Nhóm Facebook công khai, N = 180 bài | 38/180 (21%) đã nộp giấy mà xã/phường không nhận hoặc vẫn gọi khám; 117/180 (65%) tình huống biên | `evidence/data-mining-fb.md` |
+| Khảo sát, n = 19 người đúng tuổi đã từng tra | 9/19 tra ≥ 2 cách mà vẫn chưa chắc; 13/19 phải hỏi ≥ 2 câu mới rõ; 15/19 mất dưới 15 phút/lần | `evidence/survey/questions.md` |
+
+Giả thuyết CP1 ("thông tin phân tán… mất thời gian") phải đổi: ý "mất thời gian" ngược với khảo sát. Phỏng vấn ≥3 sinh viên ngoài nhóm chưa làm. Tổng hợp: `evidence/summary.md`.
 
 ## §2. Impact & quyết định chọn
 | Hướng | Người / tháng | Lần / người / tháng | Phút / lần | Impact | Quyết định |
 |---|---|---|---|---|---|
-| Học tập | (chưa có) | (chưa có) | (chưa có) | (chưa có) | Chọn, theo `canvas.md` dòng 1–5 |
+| Học tập | (chưa có) | 2–3 *(trung vị khảo sát, tháng gọi khám)* | 5–15 *(trung vị khảo sát)* | (chưa có) | Chọn, theo `canvas.md` dòng 1–5 |
 | Sức khỏe | (chưa có) | (chưa có) | (chưa có) | (chưa có) | Để sau vì ngoài lát cắt, `kb-nvqs/DATA_CARD.md` §4 |
 | Hoàn cảnh gia đình | (chưa có) | (chưa có) | (chưa có) | (chưa có) | Để sau vì ngoài lát cắt, `kb-nvqs/DATA_CARD.md` §4 |
 
-Impact / tháng = số người (chưa có) × số lần/người/tháng (chưa có) × số phút/lần (chưa có) = (chưa có). Nguồn dự kiến: `evidence/summary.md`. Tần suất từng persona (chưa có).
+Impact / tháng = số người (chưa có) × số lần/người/tháng (2–3 trong tháng gọi khám, khảo sát n = 19) × số phút/lần (5–15, khảo sát n = 19) = (chưa có, thiếu số người). Khảo sát hỏi tạm hoãn nói chung, không riêng lý do học tập. Nguồn dự kiến: `evidence/summary.md`. Tần suất từng persona (chưa có).
 
 ## §3. Giải pháp tương tự
 - Cổng văn bản Chính phủ cung cấp văn bản và PDF để đối chiếu: [VBHN 133](https://vanban.chinhphu.vn/?docid=219575&pageid=27160). Hướng nhóm là hỏi dữ kiện và hiển thị đoạn liên quan; mức độ khó tra cứu của sinh viên (chưa kiểm).
@@ -110,7 +118,7 @@ Lượt 1: 18/27 (67%), run ID `run-1@20261127-183305` — chưa đạt chuẩn.
 
 | Thời điểm | Đổi gì | Vì sao (trỏ về câu thử / lỗi / bằng chứng nào) |
 |---|---|---|
-|  |  |  |
+| 27/11 tối | Sửa câu pain (`canvas.md` dòng 3, §1); thêm số khảo sát vào §0, §1, §2 | Bằng chứng mới: nhóm Facebook N = 180 (`evidence/data-mining-fb.md`), khảo sát n = 19 (`evidence/survey/`); khảo sát cho thấy 15/19 mất dưới 15 phút/lần nên bỏ ý "mất thời gian" |
 
 **Sau CP4 (đến 23:59 Thứ Bảy 28/11)** (sửa theo góp ý — không sửa chuẩn "đạt", câu thử, số bằng chứng, kết quả các lượt đã chạy)
 
