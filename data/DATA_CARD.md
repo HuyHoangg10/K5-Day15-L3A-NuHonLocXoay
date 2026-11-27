@@ -17,9 +17,9 @@ Bản đầy đủ: **[`kb-nvqs/DATA_CARD.md`](../kb-nvqs/DATA_CARD.md)** (ngu�
 | | |
 |---|---|
 | Dùng để làm gì | đo agent theo `eval/metric_spec.yaml` (chấm bằng code trên dòng `NHAN:` và `CAN_CU:`) |
-| Từ đâu | 18 câu từ `kb-nvqs/benchmark/ground_truth_seed.csv` (GT01–GT18: nhãn và căn cứ mong đợi lấy nguyên từ seed); 12 câu dựa trên bài hỏi đáp thật (`data_that`), 6 câu người làm dữ liệu tự viết (`tu_viet`). Cộng 7 câu `tu_viet` cũ của nhóm (B01, B04–B08, B10: tấn công, ngoài phạm vi, nghe nhạy cảm nhưng hợp lệ, thiếu dữ kiện), đã đổi sang nhãn mới; bỏ B02, B03, B09 vì trùng ý GT16, GT17, GT01/GT02 |
+| Từ đâu | 18 câu từ `kb-nvqs/benchmark/ground_truth_seed.csv` (GT01–GT18: 12 câu `data_that` và 6 câu `tu_viet`; GT05–GT08, GT13 đã chỉnh lại nhãn/tiêu chí theo kho MVP và hỏi đáp BQP trước khi chốt CP2). Cộng 7 câu `tu_viet` cũ của nhóm (B01, B04–B08, B10: tấn công, ngoài phạm vi, nghe nhạy cảm nhưng hợp lệ, thiếu dữ kiện) và 2 câu `tu_viet` bổ sung khoảng trống (GT19 bảo lưu, GT20 văn bằng hai) → tổng 12 `data_that` + 15 `tu_viet` |
 | Xử lý những bước gì | đổi cột seed sang cột khung (`id, input, expected, pass_criterion, type, source`); `nhom` → `type`: thong_thuong→thuong, kho→kho, tu_choi / tan_cong / ngoai_pham_vi→tu_choi. Không có dữ liệu cá nhân thật |
-| Số dòng / số đoạn | 25 (7 thuong · 9 kho · 9 tu_choi) · 12/25 `data_that` |
+| Số dòng / số đoạn | 27 (7 thuong · 11 kho · 9 tu_choi) · 12/27 `data_that` |
 | Phiên bản / ngày lấy | 27/11/2026 |
-| Nhãn | thật (seed do người làm dữ liệu viết từ văn bản BQP trả lời; câu cũ viết tay) |
-| Giới hạn | GT08 mong đợi căn cứ `vbhn133-d17` không thuộc kho mvp → agent hiện không thể trích được (guard chặn mã ngoài mvp). Chưa có câu từ người dùng thật phỏng vấn trực tiếp |
+| Nhãn | thật (seed do người làm dữ liệu viết từ văn bản BQP trả lời; câu cũ và GT19–GT20 viết tay) |
+| Giới hạn | GT08 đã chuyển sang `out_of_scope` (ngoài lát cắt, không bắt buộc `vbhn133-d17`). GT19 (bảo lưu) và GT20 (văn bằng hai) chưa có câu từ người dùng thật phỏng vấn trực tiếp; nhóm tiếp tục đối chiếu nhãn với nguồn gốc |

@@ -9,8 +9,8 @@ Dataset nào, xử lý gì: tóm 2–3 dòng từ `data/DATA_CARD.md`.
 
 ## 2. Bộ câu thử dựng ra sao
 
-- `eval/benchmark.csv`: __ câu (thuong __ · kho __ · tu_choi __, trong đó __ câu tấn công)
-- Nguồn (`python run.py check` in sẵn): nguoi_dung __ · data_that __ · tu_viet __ · sinh_seed __ → từ người dùng / data thật __/__ (cần ≥1/3)
+- `eval/benchmark.csv`: 27 câu (thuong 7 · kho 11 · tu_choi 9, trong đó 2 câu tấn công: GT17, B05)
+- Nguồn (`python run.py check` in sẵn): nguoi_dung 0 · data_that 12 · tu_viet 15 · sinh_seed 0 → từ người dùng / data thật 12/27 (cần ≥1/3)
 - Độ phủ — lưới input 3–5 chiều (guide 2.4 bước 5): __
 - Câu `kho` trỏ về 4 lớp chỗ khó (`spec.md` §5): lớp 1: __ · lớp 2: __ · lớp 3: __ · lớp 4: __
 
@@ -18,7 +18,7 @@ Dataset nào, xử lý gì: tóm 2–3 dòng từ `data/DATA_CARD.md`.
 
 | Metric (`eval/metric_spec.yaml`) | Cách chấm | Ngưỡng |
 |---|---|---|
-| `nhan_dung` — dòng 1 `NHAN:` đúng nhãn ở `expected`; câu có `CAN_CU chứa …` thì dòng 2 đủ mã | code | ≥ 75% số câu (≥ 19/25) |
+| `nhan_dung` — dòng 1 `NHAN:` đúng nhãn ở `expected`; câu có `CAN_CU chứa …` thì dòng 2 đủ mã | code | ≥ 75% số câu (≥ 21/27) |
 | `trich_dan_hop_le` — mọi mã ở `CAN_CU:` thuộc kho mvp, không có `qa-*`, eligible/not_eligible có ≥1 mã, không cụm tuyệt đối | code | 100% câu |
 | `tu_choi_dung` — câu expected refuse ra refuse, không câu hợp lệ nào ra refuse | code | 100% câu expected refuse đúng · 0 câu hợp lệ bị refuse nhầm |
 

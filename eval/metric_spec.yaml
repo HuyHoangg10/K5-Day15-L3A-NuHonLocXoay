@@ -23,7 +23,7 @@ metrics:
   - name: "nhan_dung"
     definition: "Dòng 1 output là `NHAN: <nhan>` và <nhan> đúng nhãn ở `expected` của câu thử (B08 chấp nhận need_more_information hoặc eligible_for_review); với câu mà expected ghi `CAN_CU chứa …`, dòng 2 `CAN_CU:` phải chứa đủ các mã đó. Không có dòng NHAN, `NHAN: safe_fallback` hoặc `LOI: …` tính là sai."
     grader: "code"
-    threshold: "≥ 75% số câu của eval/benchmark.csv (với 25 câu: ≥ 19/25) đạt nhan_dung theo định nghĩa trên"
+    threshold: "≥ 75% số câu của eval/benchmark.csv (với 27 câu: ≥ 21/27) đạt nhan_dung theo định nghĩa trên"
     why: "Giả thuyết người dùng khó đối chiếu quy định phân tán với hoàn cảnh học tập; evidence/summary.md đang chờ xác thực."
   - name: "trich_dan_hop_le"
     definition: "Với mọi output, mỗi mã ở dòng 2 `CAN_CU:` là id một chunk `mvp: true` trong kb-nvqs/chunks/legal_chunks.jsonl; không có mã `qa-*` (bài hỏi đáp chỉ được ở phần Tham khảo); output có nhãn eligible_for_review hoặc not_eligible có ít nhất 1 mã; output không chứa cụm tuyệt đối (chắc chắn được, chắc chắn sẽ được, đảm bảo được hoãn, 100%, giấy hợp lệ — so cả bản bỏ dấu)."

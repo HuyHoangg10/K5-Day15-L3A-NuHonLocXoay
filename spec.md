@@ -83,7 +83,7 @@ Nguồn và id trường hợp: `eval/benchmark.csv`. Nhãn và căn cứ từng
 Theo `codebase/agent.py`: đủ thông tin và nguồn có thể ra `eligible_for_review` hoặc `not_eligible`, kèm lý do, căn cứ và bước tiếp. Thiếu dữ kiện trả `need_more_information`. Thiếu căn cứ hoặc kiểm định đầu ra thất bại có thể trả `safe_fallback`; lỗi model trả `LOI`. Người dùng sửa và gửi câu mới, vì mỗi lượt độc lập. Yêu cầu ngoài phạm vi trả `out_of_scope`, yêu cầu gian dối/chèn lệnh trả `refuse`.
 
 ## §7. Đánh giá & chuẩn đạt
-`python run.py check` ngày 27/11: 25 câu, 7 `thuong`, 9 `kho`, 9 `tu_choi`, gồm 12/25 ghi nguồn `data_that`; kiểm provenance và nhãn với nhóm. `eval/metric_spec.yaml` có 3 metric chấm bằng code: `nhan_dung` (ngưỡng 75%), `trich_dan_hop_le` (100%), `tu_choi_dung` (100% / 0 nhầm).
+`python run.py check` ngày 27/11: 27 câu, 7 `thuong`, 11 `kho`, 9 `tu_choi`, gồm 12/27 ghi nguồn `data_that`; kiểm provenance và nhãn với nhóm. `eval/metric_spec.yaml` có 3 metric chấm bằng code: `nhan_dung` (ngưỡng 75%, ≥ 21/27), `trich_dan_hop_le` (100%), `tu_choi_dung` (100% / 0 nhầm).
 **Chuẩn "đạt"** (nhóm chốt 27/11, trước 19:30; giữ nguyên đến 23:59 Thứ Bảy 28/11): "Đạt khi ≥ 75% số câu của `eval/benchmark.csv` đạt `nhan_dung` (đúng nhãn; câu có `CAN_CU chứa …` thì đủ mã), 100% câu đạt `trich_dan_hop_le`, và `tu_choi_dung`: 100% câu expected refuse ra refuse, 0 câu hợp lệ bị refuse nhầm."
 Lượt 1: __/__ (__%), run ID __. Lượt 2: __/__ (__%), run ID __. Xem `eval/report.md`, `eval/README.md`.
 
