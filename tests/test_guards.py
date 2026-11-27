@@ -27,7 +27,7 @@ def facts_json(**kw):
 
 
 def decision_json(**kw):
-    d = {"nhan": "co_can_cu_xem_xet", "ma_dieu_khoan": ["D41.K1.a"],
+    d = {"nhan": "co_can_cu_xem_xet", "ma_dieu_khoan": ["vbhn133-d41-k1-g"],
          "ly_do": "Dữ kiện bạn nêu có căn cứ để cơ quan có thẩm quyền xem xét.",
          "can_lam_gi": "Mang giấy khám khi đi khám tuyển nghĩa vụ quân sự và nộp để Hội đồng khám sức khỏe xem xét."}
     d.update(kw)
@@ -120,7 +120,7 @@ class OutputGuardTests(unittest.TestCase):
         out, model = self.run_case(facts_json(co_giay_kham=True), decision_json())
         text = out["output"]
         self.assertEqual(first_line(out), "NHAN: co_can_cu_xem_xet")
-        self.assertIn("D41.K1.a", text)
+        self.assertIn("vbhn133-d41-k1-g", text)
         self.assertIn("Hội đồng khám sức khỏe", text)
         self.assertIn("Nguồn:", text)
         self.assertEqual(len(model.calls), 2)
@@ -196,18 +196,12 @@ class FlowTests(unittest.TestCase):
             out = agent.answer("em đang học đại học")
         self.assertEqual(first_line(out), "NHAN: can_hoi_them")
 
-    def test_kb_fake_warning_is_shown(self):
-        out = None
-        model = scripted(facts_json(co_giay_kham=True), decision_json())
-        with mock.patch.object(agent, "call_model", model):
-            out = agent.answer("em có giấy khám")
-        self.assertIn("kho GIẢ", out["output"])
 
 
 class FixedTextTests(unittest.TestCase):
     def test_fixed_texts_have_no_absolute_phrases(self):
         texts = [P.DISCLAIMER, P.SAFE_SENTENCE, P.ERROR_MESSAGE, P.REFUSE_EVASION, P.REFUSE_INJECTION, P.OUT_OF_SCOPE,
-                 P.NOT_APPLICABLE_DEFAULT, P.KB_FAKE_WARNING, P.TOPIC_QUESTION] + list(P.FACT_QUESTIONS.values())
+                 P.NOT_APPLICABLE_DEFAULT, P.TOPIC_QUESTION] + list(P.FACT_QUESTIONS.values())
         for t in texts:
             for phrase in agent.ABSOLUTE_PHRASES:
                 self.assertNotIn(phrase, t.lower())

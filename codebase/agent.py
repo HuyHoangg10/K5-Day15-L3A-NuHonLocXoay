@@ -6,12 +6,12 @@ Hợp đồng khung: answer(text: str) -> {"output": str}. Mỗi câu thử là 
 
 Hình dạng: workflow cố định, 9 bước (sơ đồ ở spec.md §4):
   1 tiền xử lý (code) · 2 chặn đầu vào (code) · 3 trích dữ kiện (model→JSON) · 4 thiếu dữ kiện? (code)
-  5 tra căn cứ (công cụ tra_dieu_luat) · 6 quyết định (model→JSON) · 7 kiểm đầu ra (code)
+  5 tra căn cứ (công cụ tra_cuu_can_cu) · 6 quyết định (model→JSON) · 7 kiểm đầu ra (code)
   8 định dạng (code) · 9 lỗi model / quá thời gian → thông báo lỗi lịch sự (code)
 
 Tập nhãn: co_can_cu_xem_xet · khong_thuoc_dien_nay · can_hoi_them · tu_choi · ngoai_pham_vi
 Sức khỏe KHÔNG phải quyết định riêng của agent: chỉ nói "kết luận do Hội đồng khám sức khỏe đưa ra".
-Nội dung luật chỉ đến từ kho data/kb/dieu41.json (hiện là kho GIẢ, xem data/kb/README.md).
+Nội dung luật chỉ đến từ kho kb-nvqs/ (đọc qua codebase/kb.py).
 note() chỉ ghi LÝ DO, không bao giờ ghi nội dung người dùng gõ (trace không được chứa dữ liệu cá nhân).
 """
 import json
@@ -21,7 +21,8 @@ import unicodedata
 
 import prompts as P
 from ai import call_model
-from tools import all_codes, load_kb, tra_dieu_luat
+import kb
+from tools import tra_cuu_can_cu
 from tracing import note
 
 LABELS = P.LABELS
@@ -149,7 +150,7 @@ def clean_facts(d: dict):
     return f
 
 
-def render(nhan: str, giai_thich: str, viec: str = "", passages=None, kb_fake: bool = False) -> dict:
+def render(nhan: str, giai_thich: str, viec: str = "", passages=None) -> dict:
     """Bước 8. Dòng đầu LUÔN là `NHAN: <nhan>` để chấm bằng code."""
     lines = ["NHAN: " + nhan, "", "Giải thích: " + giai_thich]
     if viec:
@@ -157,12 +158,10 @@ def render(nhan: str, giai_thich: str, viec: str = "", passages=None, kb_fake: b
     if passages:
         lines.append("Nguồn:")
         for p in passages:
-            lines.append("- %s — %s; hiệu lực: %s; tải ngày %s; %s"
-                         % (p["code"], p["van_ban"], p["hieu_luc"], p["ngay_tai"], p["url"]))
+            lines.append("- %s — %s; %s; kiểm tra ngày %s"
+                         % (p["id"], p["so_hieu"], p["nguon"], p.get("ngay_kiem_tra") or "?"))
     else:
         lines.append("Nguồn: không dùng đoạn căn cứ nào.")
-    if kb_fake and passages:
-        lines.append(P.KB_FAKE_WARNING)
     lines.append("Lưu ý: " + P.DISCLAIMER)
     return {"output": "\n".join(lines)}
 
@@ -218,7 +217,7 @@ def validate_decision(raw: str):
     if not isinstance(codes, list) or not all(isinstance(c, str) for c in codes):
         return None, "ma_dieu_khoan không phải danh sách chuỗi"
     codes = list(dict.fromkeys(c.strip() for c in codes))
-    known = all_codes()
+    known = kb.legal_ids()
     bad = [c for c in codes if c not in known]
     if bad:
         return None, "mã điều khoản không có trong kho"
@@ -290,12 +289,7 @@ def answer(text: str) -> dict:
 
     # 5. Tra căn cứ (công cụ)
     try:
-        passages = []
-        for chu_de in topics:
-            for p in tra_dieu_luat(chu_de):
-                if p["code"] not in {q["code"] for q in passages}:
-                    passages.append(p)
-        kb_fake = load_kb()["la_kho_gia"]
+        passages = tra_cuu_can_cu(clean)["luat"]
     except Exception as e:        # thiếu / hỏng kho
         return error_answer("tra căn cứ — " + type(e).__name__)
     note("tra căn cứ: %d đoạn, chủ đề %s" % (len(passages), "+".join(topics)))
@@ -319,8 +313,6 @@ def answer(text: str) -> dict:
         return safe_answer(why)
 
     # 8. Định dạng đầu ra
-    by_code = {p["code"]: p for p in passages}
-    cited = [by_code[c] if c in by_code else next(q for q in load_kb()["doan"] if q["code"] == c)
-             for c in decision["ma_dieu_khoan"]]
+    cited = [kb.get_chunk(c) for c in decision["ma_dieu_khoan"]]
     note("quyết định: " + decision["nhan"])
-    return render(decision["nhan"], decision["ly_do"], decision["can_lam_gi"], cited, kb_fake)
+    return render(decision["nhan"], decision["ly_do"], decision["can_lam_gi"], cited)

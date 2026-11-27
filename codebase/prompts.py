@@ -1,7 +1,7 @@
 """Prompt hệ thống và câu cố định của agent tạm hoãn NVQS — NHÓM VIẾT (D rà theo văn bản gốc, A xác nhận).
 
-Quy tắc chung: prompt KHÔNG chứa nội dung luật. Căn cứ luật chỉ đến từ kho `data/kb/dieu41.json`
-qua công cụ `tra_dieu_luat`, và được đưa vào prompt ở từng lượt gọi.
+Quy tắc chung: prompt KHÔNG chứa nội dung luật. Căn cứ luật chỉ đến từ kho `kb-nvqs/`
+qua công cụ `tra_cuu_can_cu`, và được đưa vào prompt ở từng lượt gọi.
 Mọi câu cố định dưới đây KHÔNG được chứa cụm tuyệt đối bị chặn ở bước 7 (test_guards.py kiểm).
 """
 
@@ -59,7 +59,7 @@ def user_trich(text: str) -> str:
 def user_quyet_dinh(text: str, facts: dict, passages: list) -> str:
     lines = []
     for p in passages:
-        lines.append("[%s] (%s; hiệu lực: %s) %s" % (p["code"], p["van_ban"], p["hieu_luc"], p["text"]))
+        lines.append("[%s] %s – %s" % (p["id"], p["so_hieu"], p["text"]))
     context = "\n".join(lines) if lines else "(không có đoạn căn cứ nào khớp)"
     known = ", ".join("%s=%s" % (k, v) for k, v in facts.items() if v is not None and k != "y_do") or "(chưa có)"
     return ("Căn cứ được cung cấp:\n%s\n\nDữ kiện đã trích: %s\n\nCâu của người dùng:\n<<<NGUOI_DUNG\n%s\nNGUOI_DUNG>>>"
@@ -90,9 +90,6 @@ OUT_OF_SCOPE = ("Câu hỏi này nằm ngoài phạm vi của mình: mình chỉ
                 "Với việc khác, bạn nên hỏi đúng cơ quan hoặc nguồn chính thống.")
 
 NOT_APPLICABLE_DEFAULT = "Với các dữ kiện bạn nêu, mình không thấy đoạn căn cứ nào trong kho khớp."
-
-KB_FAKE_WARNING = ("CẢNH BÁO: kho căn cứ hiện là kho GIẢ ([CHỜ VĂN BẢN GỐC vbpl.vn]), chưa phải nội dung luật. "
-                   "Đừng dựa vào kết quả này.")
 
 # Tên dễ đọc của dữ kiện, dùng khi hỏi thêm (bước 4)
 FACT_QUESTIONS = {
