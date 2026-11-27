@@ -119,7 +119,7 @@ ____
 | 1 | Bằng chứng pain | `evidence/` (tổng hợp ở `evidence/summary.md`) |
 | 2 | Impact có số | `spec.md` §2 |
 | 3 | Thiết kế giải pháp | `spec.md` §4 |
-| 4 | Bản chạy thử làm trọn lát cắt | `codebase/` · lệnh ở mục "Lệnh" |
+| 4 | Bản chạy thử làm trọn lát cắt | `codebase/` · lệnh ở mục "Lệnh" · video 30 giây gọi AI thật (CP3, `gpt-6.1-terra`): [Google Drive](https://drive.google.com/file/d/1lffjdLlopMako0CvnkQevkklQDhLKPLM/view?usp=sharing) · kịch bản: [docs/video-cp3.md](docs/video-cp3.md) |
 | 5 | Định nghĩa "tốt" + bộ câu thử | `data/DATA_CARD.md` · `eval/` |
 | 6 | Mô phỏng chi phí khi dùng thật | `cost/` |
 | 7 | Slide + demo + video dự phòng | `demo-slides.pdf` ở thư mục gốc · link video: ____ |
