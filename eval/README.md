@@ -23,8 +23,8 @@
 | `trich_dan_hop_le` — mọi mã ở `CAN_CU:` thuộc kho mvp, không có `qa-*`, eligible/not_eligible có ≥1 mã, không cụm tuyệt đối | code | 100% câu |
 | `tu_choi_dung` — câu expected refuse ra refuse, không câu hợp lệ nào ra refuse | code | 100% câu expected refuse đúng · 0 câu hợp lệ bị refuse nhầm |
 
-- **Người thứ hai chấm thử:** (chưa thực hiện — còn chờ, ghi khi xong) chấm độc lập 5 output → khớp __/5 *(cần ≥4/5; lệch thì viết lại định nghĩa)*
-- LLM chấm (nếu có): đã kiểm tay __ câu, khớp __/__
+- **Người thứ hai chấm thử:** chưa thực hiện (còn chờ người thứ hai trong nhóm tự chấm độc lập 5 output theo `eval/metric_spec.yaml` rồi đối chiếu khớp `x/5`; mục tiêu ≥4/5, lệch thì viết lại định nghĩa).
+- LLM chấm (nếu có): không dùng (cả 3 metric trong `eval/metric_spec.yaml` đều chấm theo quy tắc kiểm chứng bằng code trên dòng `NHAN:` và `CAN_CU:`).
 - **Chuẩn "đạt"** (chép nguyên từ `spec.md` §7, chốt trước 19:30 Thứ Sáu 27/11): "Đạt khi ≥ 75% số câu của `eval/benchmark.csv` đạt `nhan_dung` (đúng nhãn; câu có `CAN_CU chứa …` thì đủ mã), 100% câu đạt `trich_dan_hop_le`, và `tu_choi_dung`: 100% câu expected refuse ra refuse, 0 câu hợp lệ bị refuse nhầm."
 
 ## 4. Lệnh
