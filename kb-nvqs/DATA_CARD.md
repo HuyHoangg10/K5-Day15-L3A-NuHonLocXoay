@@ -32,7 +32,11 @@ File lưu ở `sources/` (không commit), sha256 trong `SOURCES.csv`.
 Kết quả đối chiếu với `legal_chunks.jsonl`:
 - 23/23 chunk `mvp` khớp nguyên văn. Các chunk điểm Đ41 chỉ khác ở tiền tố "Điều 41 khoản … – điểm …" do kho thêm.
 - Đ4–5 TT 148 chép tay khớp nội dung với 36/VBHN-BQP. Đ4 khác đúng ở các chỗ TT 173/2026 đã sửa.
-- Ngoài `mvp` còn lỗi trích PDF, chưa sửa: số chú thích dính chữ ở `vbhn133-d3`, `vbhn133-d18`, `tt106-d4`; Điều cuối của mỗi văn bản dính nơi nhận, chữ ký, phụ lục.
+- Đã sửa lỗi trích PDF ngoài `mvp` (không đổi id, không đổi nội dung quy phạm):
+  - `vbhn133-d3`, `vbhn133-d18`, `vbhn133-d20`: bỏ số chú thích dính chữ ("nhân dân2.", "trách nhiệm:17") và lời chú thích lọt vào thân điều.
+  - `vbhn133-d62`, `nd218-d69`, `tt173-d28`, `tt106-d4`: cắt phần nơi nhận, chữ ký và phụ lục. Phụ lục mẫu biểu của TT 173 và TT 106 vẫn còn trong `sources/text/`.
+  - `ghi_chu_sua_doi` của `vbhn133-d3`, `d18`, `d20`, `d61`, `d62` được gán lại theo vị trí dấu chú thích trong văn bản. Trước đây chú thích của Đ15–Đ18 bị gán nhầm sang Đ3, Đ61, Đ62. Kho vẫn gộp các chú thích trùng nhau.
+  - Sau khi sửa, 163/163 chunk theo Điều của VBHN 133, NĐ 218, TT 173, TT 106 khớp ≥ 99% với bản đối chiếu.
 
 ### 2.2. Văn bản trả lời của cơ quan nhà nước (mức B)
 58 bài từ baochinhphu.vn, xaydungchinhsach.chinhphu.vn, chinhsachonline.chinhphu.vn (Bộ Quốc phòng / Cục Quân lực trả lời công dân và cử tri, 2022–11/2026), cộng bộ 14 tình huống của Sở Tư pháp TP Cần Thơ. Đây là cách hiểu chính thức nhưng **không phải văn bản quy phạm**.
