@@ -34,3 +34,52 @@ def has_absolute(text: str) -> bool:
             if not _NEGATION_TAIL.search(before[cut:]):
                 return True
     return False
+
+
+# ---------------------------------------------------------------- B3: "Điều N" (và khoản / điểm) phải có trong ngữ cảnh
+_ARTICLE = re.compile(r"(?<!\w)điều\s+(\d{1,3})(?!\d)", re.IGNORECASE)
+_DIEM_KHOAN_DIEU = re.compile(r"điểm\s+([a-zđ])\s+khoản\s+(\d{1,2})\s+(?:của\s+)?điều\s+(\d{1,3})(?!\d)", re.IGNORECASE)
+_DIEU_KHOAN_DIEM = re.compile(r"điều\s+(\d{1,3})\s+khoản\s+(\d{1,2})\s+điểm\s+([a-zđ])(?!\w)", re.IGNORECASE)
+_KHOAN_DIEU = re.compile(r"khoản\s+(\d{1,2})\s+(?:của\s+)?điều\s+(\d{1,3})(?!\d)", re.IGNORECASE)
+_DIEU_KHOAN = re.compile(r"điều\s+(\d{1,3})\s+khoản\s+(\d{1,2})(?!\d)", re.IGNORECASE)
+_KHOAN_NUM = re.compile(r"(?:^|\n|\s)(\d{1,2})\.\s")
+
+
+def _article_index(passages, context: str):
+    """→ (tập số Điều có trong ngữ cảnh, {Điều: tập khoản biết được}, {(Điều, khoản): tập điểm biết được})."""
+    dieu = {str(p.get("dieu")) for p in passages if p.get("dieu")}
+    dieu |= set(m.group(1) for m in _ARTICLE.finditer(context or ""))
+    khoan, diem = {}, {}
+    for p in passages:
+        d = str(p.get("dieu") or "")
+        if not d:
+            continue
+        ks = khoan.setdefault(d, set())
+        if p.get("khoan"):
+            ks.update(str(p["khoan"]).split("-"))
+            if p.get("diem"):
+                diem.setdefault((d, str(p["khoan"])), set()).add(str(p["diem"]).lower())
+        else:                                   # chunk cả Điều: khoản là các dòng "1. …", "2. …"
+            ks.update(_KHOAN_NUM.findall(p.get("text") or ""))
+    return dieu, khoan, diem
+
+
+def unknown_article(text: str, passages, context: str = ""):
+    """Cụm "Điều N" / "khoản K Điều N" / "điểm X khoản K Điều N" mà ngữ cảnh không có → trả cụm đó; không có → None."""
+    t = text or ""
+    dieu, khoan, diem = _article_index(passages or [], context)
+    for m in _ARTICLE.finditer(t):
+        if m.group(1) not in dieu:
+            return m.group(0)
+    for rx, order in ((_DIEM_KHOAN_DIEU, "xkd"), (_DIEU_KHOAN_DIEM, "dkx")):
+        for m in rx.finditer(t):
+            x, k, d = (m.group(1), m.group(2), m.group(3)) if order == "xkd" else (m.group(3), m.group(2), m.group(1))
+            known = diem.get((d, k))
+            if known is not None and x.lower() not in known:
+                return m.group(0)
+    for rx, order in ((_KHOAN_DIEU, "kd"), (_DIEU_KHOAN, "dk")):
+        for m in rx.finditer(t):
+            k, d = (m.group(1), m.group(2)) if order == "kd" else (m.group(2), m.group(1))
+            if khoan.get(d) and k not in khoan[d]:
+                return m.group(0)
+    return None

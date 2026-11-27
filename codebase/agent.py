@@ -294,10 +294,13 @@ def _str_list(v):
     return list(dict.fromkeys(kb.nfc(x).strip() for x in v if x.strip()))
 
 
-def validate_decision(raw: str, qa_allowed=(), must_be_out_of_scope: bool = False):
+def validate_decision(raw: str, qa_allowed=(), must_be_out_of_scope: bool = False, passages=None, refs=None,
+                      context: str = "", user_text: str = ""):
     """→ (quyết định đã chuẩn hóa, None) nếu đạt; (None, lý do) nếu hỏng.
     qa_allowed: id hỏi đáp đã đưa vào ngữ cảnh — tham_khao chỉ được chứa các id này.
-    must_be_out_of_scope: chủ đề ngoài lát cắt → mọi nhãn khác out_of_scope đều bị chặn."""
+    must_be_out_of_scope: chủ đề ngoài lát cắt → mọi nhãn khác out_of_scope đều bị chặn.
+    passages / refs / context / user_text: ngữ cảnh đã đưa cho model; có thì kiểm thêm lời văn model viết
+    (Điều N, URL, số liệu) phải có trong ngữ cảnh. passages=None (gọi lẻ trong test cũ) → bỏ qua các kiểm đó."""
     d = parse_json(raw)
     if d is None:
         return None, "JSON không hợp lệ"
@@ -327,8 +330,13 @@ def validate_decision(raw: str, qa_allowed=(), must_be_out_of_scope: bool = Fals
         viec = "; ".join(str(x) for x in viec)
     if not isinstance(viec, str):
         return None, "can_lam_gi sai kiểu"
-    if has_absolute(" ".join([ly_do, viec] + hoi_them)):
+    model_text = " ".join([ly_do, viec] + hoi_them)
+    if has_absolute(model_text):
         return None, "chứa cụm tuyệt đối"
+    if passages is not None:
+        art = guards.unknown_article(model_text, passages, context)
+        if art:
+            return None, "G_ARTICLE: lời văn nêu \"%s\" không có trong ngữ cảnh" % art
     return {"nhan": nhan, "can_cu": can_cu, "tham_khao": tham_khao, "ly_do": ly_do.strip(),
             "can_lam_gi": viec.strip(), "can_hoi_them": hoi_them}, None
 
@@ -411,7 +419,8 @@ def answer(text: str) -> dict:
 
     # 7. Kiểm đầu ra (code)
     try:
-        decision, why = validate_decision(res.get("text"), [q["id"] for q in refs], must_be_out_of_scope=out_of_slice)
+        decision, why = validate_decision(res.get("text"), [q["id"] for q in refs], must_be_out_of_scope=out_of_slice,
+                                          passages=passages, refs=refs, context=context, user_text=clean)
     except Exception as e:        # không đọc được kho để kiểm mã → không dám tin đầu ra
         return error_answer("kiểm đầu ra — " + type(e).__name__)
     if decision is None:
