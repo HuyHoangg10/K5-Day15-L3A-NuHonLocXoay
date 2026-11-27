@@ -114,7 +114,11 @@ class Handler(BaseHTTPRequestHandler):
         if host not in ("localhost", "127.0.0.1", "::1"):
             return False
         origin = self.headers.get("Origin")
-        return not origin or re.match(r"^https?://(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$", origin) is not None
+        if not origin or re.match(r"^https?://(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$", origin):
+            return True
+        # tunnel tạm (vd trycloudflare.com): chỉ khi người chạy bật WEB_ALLOW_ORIGIN_SUFFIX
+        suf = (os.environ.get("WEB_ALLOW_ORIGIN_SUFFIX") or "").strip().lower()
+        return bool(suf) and re.match(r"^https://[a-z0-9-]+(\.[a-z0-9-]+)*$", origin) is not None and origin.endswith(suf)
 
     def _send(self, code, body, ctype="application/json; charset=utf-8"):
         data = body if isinstance(body, bytes) else json.dumps(body, ensure_ascii=False).encode("utf-8")
