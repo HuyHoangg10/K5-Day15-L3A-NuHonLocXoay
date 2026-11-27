@@ -479,7 +479,7 @@ class StyleTests(unittest.TestCase):
             out = agent.answer("Em học đại học chính quy năm 2, có được hoãn không?")["output"]
         lines = out.splitlines()
         self.assertEqual(lines[0], "NHAN: eligible_for_review")
-        self.assertEqual(lines[1], "CAN_CU: vbhn133-d41-k1-g")
+        self.assertEqual(lines[1], "CAN_CU: vbhn133-d41-k1-g,vbhn133-d42")   # + điều về thẩm quyền (W_CITE_AUTHORITY)
         i = lines.index("Việc cần làm:")
         self.assertEqual(lines[i + 1], "1. Xin giấy xác nhận của nhà trường.")
         self.assertEqual(lines[i + 2], "2. Nộp cho Ban Chỉ huy quân sự cấp xã.")

@@ -23,7 +23,7 @@ Mã lý do (B10) — mỗi lần chặn / rẽ nhánh, note() ghi "<MÃ>: <mô t
   rẽ nhánh  G_OFFTOPIC · G_HEALTH · G_ASK_TOPIC · G_ASK_STUDY (chỉ ghi trace, vẫn tra cứu)
   đầu ra    G_EXTRACT · G_JSON · G_LABEL · G_SCOPE · G_FIELD · G_CITE_QA · G_CITE_MVP · G_REF · G_NEED_CITE
             G_ABSOLUTE · G_LEAK · G_ARTICLE · G_URL · G_NUMBER · G_LEN_OUT · G_PREMATURE
-  ghi chú   W_CITE_DEFAULT
+  ghi chú   W_CITE_DEFAULT · W_CITE_UNIT · W_CITE_AUTHORITY
   lỗi       E_MODEL · E_TIMEOUT · E_KB      cảnh báo  W_CONTEXT
 """
 import json
@@ -95,10 +95,17 @@ GUARD_CODES = {
     "E_KB": "không đọc được kho → LOI:",
     "W_CONTEXT": "ngữ cảnh dài hơn MAX_CONTEXT_CHARS (chỉ cảnh báo)",
     "W_CITE_DEFAULT": "câu học tập ra need_more_information không có căn cứ → thêm điểm luật tạm hoãn vì học tập",
+    "W_CITE_UNIT": "can_cu dẫn cả điều trong khi kho có khoản/điểm của điều đó → bỏ mã điều nếu đã dẫn khoản/điểm, "
+                   "hoặc đổi sang điểm luật tạm hoãn vì học tập với câu chủ đề học tập",
+    "W_CITE_AUTHORITY": "eligible_for_review chưa dẫn điều luật về thẩm quyền quyết định tạm hoãn (câu trả lời luôn nói ai "
+                        "quyết định) → thêm",
 }
 
 # Câu học tập: điểm luật chi phối việc tạm hoãn vì học tập (điểm g khoản 1 Điều 41, có trong kho mvp).
 STUDY_CAN_CU = "vbhn133-d41-k1-g"
+# Điều luật về thẩm quyền quyết định tạm hoãn: mọi câu trả lời (trừ refuse / lỗi) có câu cố định P.DISCLAIMER nói
+# "Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn" — chính là nội dung điều này.
+AUTHORITY_CAN_CU = "vbhn133-d42"
 _PHO_THONG = ("thpt", "pho thong", "gdtx", "giao duc thuong xuyen", "lop 10", "lop 11", "lop 12", "cap 3")
 
 REFUSE_CAN_CU = "vbhn133-d10"
@@ -449,6 +456,45 @@ def key_study_facts_missing(facts: dict) -> bool:
     return facts.get("he_chinh_quy") is not True and not any(w in tr for w in _PHO_THONG)
 
 
+def sub_units(cid: str) -> list:
+    """Id các chunk khoản/điểm (mvp) thuộc cùng điều với chunk `cid`, nếu `cid` là chunk CẢ điều; ngược lại []."""
+    c = kb.get_chunk(cid)
+    if not c or c.get("khoan") is not None or c.get("diem") is not None:
+        return []
+    return [x["id"] for x in kb.legal_mvp()
+            if x["id"] != cid and x.get("doc") == c.get("doc") and x.get("dieu") == c.get("dieu") and x.get("khoan") is not None]
+
+
+def narrow_citations(decision: dict, chu_de) -> dict:
+    """Bước 7 (sau validate_decision) — W_CITE_UNIT, ưu tiên đơn vị luật nhỏ nhất, chỉ dùng mã đã có trong kho mvp:
+    mã CẢ điều mà đã dẫn khoản/điểm của điều đó → bỏ mã điều (thừa); chỉ dẫn cả điều, câu chủ đề học tập và điểm luật
+    học tập thuộc điều đó → đổi sang điểm luật học tập; còn lại (mơ hồ: không biết khoản/điểm nào) → giữ nguyên."""
+    d = dict(decision)
+    out = []
+    for c in d["can_cu"]:
+        subs = sub_units(c)
+        if subs and any(x in d["can_cu"] for x in subs):
+            note("W_CITE_UNIT: bỏ %s (đã dẫn khoản/điểm của điều này)" % c)
+            continue
+        if subs and chu_de == "hoc_tap" and STUDY_CAN_CU in subs:
+            note("W_CITE_UNIT: %s → %s" % (c, STUDY_CAN_CU))
+            c = STUDY_CAN_CU
+        if c not in out:
+            out.append(c)
+    d["can_cu"] = out
+    return d
+
+
+def cite_authority(decision: dict) -> dict:
+    """Bước 7, sau khi nhãn đã chốt — W_CITE_AUTHORITY: eligible_for_review thêm điều luật về thẩm quyền quyết định
+    tạm hoãn, vì câu trả lời luôn nói ai quyết định (câu cố định P.DISCLAIMER) và đó là bước tiếp theo của người dùng."""
+    d = dict(decision)
+    if d["nhan"] == "eligible_for_review" and AUTHORITY_CAN_CU in kb.legal_ids() and AUTHORITY_CAN_CU not in d["can_cu"]:
+        note("W_CITE_AUTHORITY: eligible_for_review → thêm " + AUTHORITY_CAN_CU)
+        d["can_cu"] = d["can_cu"] + [AUTHORITY_CAN_CU]
+    return d
+
+
 def study_checks(decision: dict, facts: dict) -> dict:
     """Bước 7 (câu học tập, sau validate_decision): (a) câu kể tình trạng RIÊNG (không phải hỏi quy định chung) mà
     eligible_for_review khi thiếu dữ kiện then chốt → đổi thành
@@ -552,8 +598,10 @@ def answer(text: str) -> dict:
         return error_answer("E_KB: kiểm đầu ra — " + type(e).__name__)
     if decision is None:
         return safe_answer(why)
+    decision = narrow_citations(decision, chu_de)
     if chu_de == "hoc_tap":
         decision = study_checks(decision, facts)
+    decision = cite_authority(decision)
 
     # 8. Định dạng đầu ra
     note("quyết định: " + decision["nhan"])
