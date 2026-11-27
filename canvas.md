@@ -8,7 +8,7 @@
 | 4 | Bằng chứng đầu | **Giả thuyết:** sinh viên phải tra nhiều nguồn và vẫn khó xác định dữ kiện học tập có liên quan. **Nguồn sẽ kiểm:** phỏng vấn ít nhất 3 sinh viên đúng vai ngoài nhóm và đối chiếu các hỏi đáp công khai phù hợp, ưu tiên Báo Điện tử Chính phủ. Lưu số liệu và trích dẫn ẩn danh tại `evidence/summary.md`. |
 | 5 | Lát cắt một câu | Khi sinh viên nam trong độ tuổi gọi nhập ngũ tìm hiểu trường hợp học tập của mình, AI phân loại tình huống theo căn cứ đã xác minh hoặc hỏi thêm dữ kiện để đưa ra nhận định sơ bộ kèm trích dẫn và checklist bước tiếp theo khi đủ căn cứ. |
 | 6 | Mức tự động | AI hỏi thêm, phân loại và giải thích dựa trên nguồn đã xác minh. Người dùng kiểm tra căn cứ và cơ quan có thẩm quyền quyết định, vì nhận định sai có thể khiến sinh viên hiểu sai nghĩa vụ hoặc chuẩn bị thiếu hồ sơ. |
-| 7 | Phân công có tên | `<tên>` khám phá người dùng · `<tên>` kiểm chứng nguồn luật · `<tên>` triển khai bản chạy thử · `<tên>` đánh giá và chuẩn bị demo. |
+| 7 | Phân công có tên | `Nhi` khám phá người dùng · `Hiếu` kiểm chứng nguồn luật · `Tùng` triển khai bản chạy thử · `Hoàng` đánh giá và chuẩn bị demo. |
 | — | *(CP2)* Đã đổi gì so với CP1 | |
 
 ## Track F · Đối chiếu tạm hoãn gọi nhập ngũ vì lý do học tập
