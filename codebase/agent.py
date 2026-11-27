@@ -54,9 +54,12 @@ REFUSE_CAN_CU_KHAM = "nd218-d9"
 # ================================================================ bước 1: tiền xử lý
 
 _RE_EMAIL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
-_RE_PHONE = re.compile(r"(?<!\w)(?:\+?84|0)(?:[\s.\-]?\d){9}(?!\d)")
-_RE_CCCD = re.compile(r"(?<!\d)\d{12}(?!\d)")
-_RE_CMND = re.compile(r"(?<!\d)\d{9}(?!\d)")
+# CCCD 12 số: liền, hoặc nhóm 3-3-3-3 / 4-4-4 cách nhau dấu cách, chấm, gạch ("001 203 004 567", "079.203.012.345")
+_RE_CCCD = re.compile(r"(?<!\d)(?:\d{12}|\d{3}(?:[\s.\-]\d{3}){3}|\d{4}(?:[\s.\-]\d{4}){2})(?!\d)")
+# SĐT VN: 0 / 84 / +84 / (+84) + 9 số, giữa các số được có dấu cách, chấm, gạch ("0912.345.678", "(+84) 912-345-678")
+_RE_PHONE = re.compile(r"(?<!\w)(?:\(\s*\+?84\s*\)|\+?84|0)(?:[\s.\-]?\d){9}(?!\d)")
+# CMND 9 số: liền hoặc nhóm 3-3-3
+_RE_CMND = re.compile(r"(?<!\d)(?:\d{9}|\d{3}(?:[\s.\-]\d{3}){2})(?!\d)")
 
 
 def preprocess(text: str):
@@ -67,8 +70,9 @@ def preprocess(text: str):
     if not any(c.isalnum() for c in t):
         return "", []
     kinds = []
-    for kind, rx, token in (("email", _RE_EMAIL, "[EMAIL]"), ("sdt", _RE_PHONE, "[SĐT]"),
-                            ("cccd", _RE_CCCD, "[CCCD]"), ("cmnd", _RE_CMND, "[CCCD]")):
+    # CCCD trước SĐT: 12 số có dấu phân cách không được để regex SĐT cắt mất một phần
+    for kind, rx, token in (("email", _RE_EMAIL, "[EMAIL]"), ("cccd", _RE_CCCD, "[CCCD]"),
+                            ("sdt", _RE_PHONE, "[SĐT]"), ("cmnd", _RE_CMND, "[CCCD]")):
         t, n = rx.subn(token, t)
         if n:
             kinds.append(kind)
