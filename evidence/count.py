@@ -73,7 +73,7 @@ def norm(text):
     return re.sub(r"\s+", " ", unicodedata.normalize("NFC", text or "")).strip()
 
 
-# "Sinh viên Hà hỏi", "Ông Minh đã…" → "Sinh viên [ẩn danh] hỏi".
+# "Sinh viên <Tên> hỏi", "Ông <Tên> đã…" → "Sinh viên [ẩn danh] hỏi".
 _ROLE_NAME = re.compile(r"\b(Sinh viên|sinh viên|Học sinh|học sinh|Ông|ông|Bà|bà|Anh|anh|Chị|chị)\s+"
                         r"(?:[%s][^\s,.;:]*\s+){1,3}(?=hỏi|đã|có|cho|đang|được|nộp)" % _UP)
 
