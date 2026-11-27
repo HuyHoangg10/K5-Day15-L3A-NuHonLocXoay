@@ -54,3 +54,114 @@ Dán đoạn nhiều dòng được gộp thành một câu hỏi. Dưới mỗi
   ngữ cảnh, câu khẳng định tuyệt đối, rò rỉ prompt → câu an toàn.
 - *Dữ liệu cá nhân?* — Email, SĐT, CCCD, họ tên (sau "tên là…"), key bị che trước khi gửi model, ghi trace hay lưu phiên;
   không lưu gì xuống đĩa trong app.
+
+## 6. Sau khi PR #24 merge vào main
+
+Làm trên máy của một người, **không gọi API thật** (mọi lệnh đều đặt `MODEL_PROVIDER=fake`). Không rebase, không
+force-push. Mỗi bước kiểm xong mới sang bước sau.
+
+**6.1. Đưa main mới vào demo/final (merge, không rebase)**
+
+```powershell
+git fetch origin
+git switch demo/final
+git pull --ff-only origin demo/final
+git merge --no-ff origin/main -m "Merge main (có PR #24) vào demo/final"
+```
+
+Nếu báo xung đột: `git merge --abort` (trở về như trước khi merge) rồi báo nhóm; đừng tự sửa quy tắc 6 / 6a / 16 / 17
+để "cho qua".
+
+**6.2. Sinh lại bản chụp bất biến một lượt** (PR #24 đổi quy tắc 6 / 6a / 2 và danh sách mã hợp lệ → bản chụp
+đổi là ĐÚNG, có chủ đích)
+
+```powershell
+$env:MODEL_PROVIDER="fake"; python tests/make_single_turn_golden.py
+git diff --stat tests/fixtures/single_turn_golden.json
+```
+
+Lần tập dượt merge trước: 68 trường hợp, phần đổi khớp byte với mã thuần của PR #24 (không có thay đổi nào từ
+demo/final). Nếu `git diff` cho thấy đổi ở câu **bị chặn bằng code** (refuse / chèn lệnh / ngoài phạm vi) → dừng,
+không commit: đó không phải do PR #24.
+
+**6.3. Chạy test và kiểm**
+
+```powershell
+$env:MODEL_PROVIDER="fake"; python -m unittest discover -s tests
+```
+
+```powershell
+$env:MODEL_PROVIDER="fake"; python run.py check
+```
+
+Đều phải OK. Rồi commit bản chụp:
+
+```powershell
+git add tests/fixtures/single_turn_golden.json
+git commit -m "Sinh lại bản chụp một lượt sau khi merge PR #24 (model giả)"
+```
+
+**6.4. Rút gọn quy tắc 16** (chỉ khối `RULES_PHIEN` trong `codebase/prompts.py` — đường có phiên; đường eval một lượt
+KHÔNG đổi). Câu cuối của luật 6a (PR #24) đã nói "đủ dữ kiện thì kết luận", nên quy tắc 16 chỉ giữ phần bổ sung. Thay
+nguyên ba dòng của quy tắc 16 (từ `16. Đủ dữ kiện thì kết luận…` tới `…đã từng được tạm hoãn chưa.`) bằng đúng một
+mục sau, giữ nguyên quy tắc 17:
+
+```text
+16. (Cuộc trò chuyện) Khi áp dụng phần eligible_for_review của 6a: 'không nhắc tới' gồm cả tốt nghiệp trình độ khác, liên thông, văn bằng hai, thôi học, chuyển trường, bảo lưu, nợ môn, quá hạn, du học; không hỏi về học gián đoạn; nêu điều kiện một khóa học trong ly_do.
+```
+
+Thêm test `tests/test_rule16_short.py`:
+
+```python
+import os, sys, unittest
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(HERE), "codebase"))
+os.environ["MODEL_PROVIDER"] = "fake"
+import prompts as P  # noqa: E402
+
+
+class Rule16ShortTests(unittest.TestCase):
+    def test_rule16_short_and_17_kept(self):
+        self.assertIn("16. (Cuộc trò chuyện) Khi áp dụng phần eligible_for_review của 6a", P.RULES_PHIEN)
+        self.assertNotIn("Đủ dữ kiện thì kết luận, không hỏi lại", P.RULES_PHIEN)
+        self.assertIn("17. can_hoi_them chỉ hỏi dữ kiện còn thiếu", P.RULES_PHIEN)
+
+    def test_single_turn_prompt_untouched(self):
+        self.assertNotIn("16. (Cuộc trò chuyện)", P.SYSTEM_QUYET_DINH)
+        self.assertTrue(P.SYSTEM_QUYET_DINH_PHIEN.startswith(P.SYSTEM_QUYET_DINH))
+
+
+if __name__ == "__main__":
+    unittest.main()
+```
+
+Kiểm lại: bản chụp một lượt **không được đổi** ở bước này (quy tắc 16 chỉ nằm ở đường có phiên):
+
+```powershell
+$env:MODEL_PROVIDER="fake"; python -m unittest discover -s tests
+```
+
+```powershell
+git diff --exit-code tests/fixtures/single_turn_golden.json
+```
+
+```powershell
+git add codebase/prompts.py tests/test_rule16_short.py
+git commit -m "Rút gọn quy tắc 16 (đường có phiên) sau PR #24 — chưa kiểm bằng model thật"
+git push origin demo/final
+```
+
+Rồi chạy thử bằng model thật 3–5 cuộc trò chuyện của mục 3 (đây là lần duy nhất gọi API, có chủ đích) trước khi dùng
+để demo.
+
+**6.5. Lùi lại nếu có lỗi**
+
+- Chưa push, đang merge dở: `git merge --abort`.
+- Chưa push, đã commit merge: `git reset --keep HEAD~1` (bỏ commit merge vừa tạo, giữ file đang sửa dở). Kiểm
+  `git log --oneline -3` trước.
+- Đã push: KHÔNG force-push. Lùi bằng commit mới:
+  - lùi quy tắc 16: `git revert <sha-commit-quy-tắc-16>`;
+  - lùi cả merge: `git revert -m 1 <sha-commit-merge>` (giữ phía demo/final), rồi sinh lại bản chụp như 6.2 và
+    commit;
+  - `git push origin demo/final`.
+- Sau khi lùi, chạy lại 6.3; bản demo phải chạy như trước khi merge.
