@@ -26,6 +26,7 @@ import unicodedata
 import ai
 import kb
 import prompts as P
+import text_norm
 from ai import call_model
 from tools import tra_cuu_can_cu
 from tracing import note
@@ -53,18 +54,25 @@ REFUSE_CAN_CU_KHAM = "nd218-d9"
 # ================================================================ bước 1: tiền xử lý
 
 _RE_EMAIL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
-_RE_PHONE = re.compile(r"(?<!\w)(?:\+?84|0)(?:[\s.\-]?\d){9}(?!\d)")
-_RE_CCCD = re.compile(r"(?<!\d)\d{12}(?!\d)")
-_RE_CMND = re.compile(r"(?<!\d)\d{9}(?!\d)")
+# CCCD 12 số: liền, hoặc nhóm 3-3-3-3 / 4-4-4 cách nhau dấu cách, chấm, gạch ("001 203 004 567", "079.203.012.345")
+_RE_CCCD = re.compile(r"(?<!\d)(?:\d{12}|\d{3}(?:[\s.\-]\d{3}){3}|\d{4}(?:[\s.\-]\d{4}){2})(?!\d)")
+# SĐT VN: 0 / 84 / +84 / (+84) + 9 số, giữa các số được có dấu cách, chấm, gạch ("0912.345.678", "(+84) 912-345-678")
+_RE_PHONE = re.compile(r"(?<!\w)(?:\(\s*\+?84\s*\)|\+?84|0)(?:[\s.\-]?\d){9}(?!\d)")
+# CMND 9 số: liền hoặc nhóm 3-3-3
+_RE_CMND = re.compile(r"(?<!\d)(?:\d{9}|\d{3}(?:[\s.\-]\d{3}){2})(?!\d)")
 
 
 def preprocess(text: str):
-    """NFKC, gộp khoảng trắng, che email / SĐT VN / CCCD (12 số) / CMND (9 số). → (văn bản đã che, danh sách loại đã che)."""
-    t = unicodedata.normalize("NFKC", text or "")
-    t = re.sub(r"\s+", " ", t).strip()
+    """Làm sạch (text_norm.clean: NFKC, bỏ zero-width / ký tự điều khiển, gộp khoảng trắng), che email / SĐT VN /
+    CCCD (12 số) / CMND (9 số). → (văn bản đã che, danh sách loại đã che). Câu KHÔNG có chữ / số nào → "" (coi là rỗng).
+    Bản này là bản gửi model: KHÔNG mở rộng viết tắt ở đây (chỉ dùng text_norm.for_matching để khớp từ khóa / BM25)."""
+    t = text_norm.clean(text)
+    if not any(c.isalnum() for c in t):
+        return "", []
     kinds = []
-    for kind, rx, token in (("email", _RE_EMAIL, "[EMAIL]"), ("sdt", _RE_PHONE, "[SĐT]"),
-                            ("cccd", _RE_CCCD, "[CCCD]"), ("cmnd", _RE_CMND, "[CCCD]")):
+    # CCCD trước SĐT: 12 số có dấu phân cách không được để regex SĐT cắt mất một phần
+    for kind, rx, token in (("email", _RE_EMAIL, "[EMAIL]"), ("cccd", _RE_CCCD, "[CCCD]"),
+                            ("sdt", _RE_PHONE, "[SĐT]"), ("cmnd", _RE_CMND, "[CCCD]")):
         t, n = rx.subn(token, t)
         if n:
             kinds.append(kind)
@@ -86,7 +94,7 @@ _EVASION = [
     r"giả\s*(?:mạo\s*)?(?:giấy|hồ\s*sơ|bệnh\s*án|giấy\s*tờ|con\s*dấu|xác\s*nhận)",
     r"làm\s+giả",
     r"(?:giấy|hồ\s*sơ|bệnh\s*án)\s+(?:giả|khống)",
-    r"\b(?:chạy|chạy\s+chọt)\s+(?:giấy|hoãn|miễn|khám|kết\s+luận|sức\s+khỏe|loại|trượt)",
+    r"chạy\s+chọt|chạy\s+(?:giấy|hoãn|miễn|khám|kết\s+luận|sức\s+khỏe|loại|trượt)",
     r"\bmua\s+(?:giấy|hồ\s*sơ|bệnh\s*án)?\s*(?:hoãn|miễn|tạm\s+hoãn|khám|sức\s+khỏe|kết\s+luận|xác\s+nhận|bệnh)",
     r"gian\s+lận\s+(?:khám|sức\s+khỏe|hồ\s*sơ|giấy|để)",
     r"khai\s+(?:man|gian|dối|khống)",
@@ -97,6 +105,12 @@ _EVASION = [
     r"lách\s+luật",
     r"(?:cách|làm\s+sao\s+để|làm\s+thế\s+nào\s+để|muốn)\s+(?:trốn|né|tránh)\s+(?:nghĩa\s+vụ|lính|quân\s+sự|nhập\s+ngũ|đi\s+bộ\s+đội|khám)",
     r"cố\s+ý\s+(?:gây|làm)\s+(?:thương\s+tích|hỏng|bệnh)",
+    # diễn đạt gián tiếp / đồng nghĩa phổ biến
+    r"(?:giấy|hồ\s*sơ|xác\s*nhận|bệnh\s*án|bằng)[^.?!\n]{0,40}fake|fake[^.?!\n]{0,40}(?:giấy|hồ\s*sơ|xác\s*nhận|bệnh\s*án)",
+    r"(?:giấy|hồ\s*sơ|xác\s*nhận|bệnh\s*án)[^.?!\n]{0,40}(?:như|giống)\s+thật",
+    r"không\s+cần\s+(?:bị\s+)?(?:bệnh|ốm)\s+thật",
+    r"(?:hoãn|miễn|giấy|khám|lính)[^.?!\n]{0,40}trọn\s+gói|trọn\s+gói[^.?!\n]{0,40}(?:hoãn|miễn|giấy|khám|lính)",
+    r"bao\s+nhiêu\s+(?:thì|là)\s+êm",
 ]
 _INJECTION = [
     r"bỏ\s+qua\s+(?:mọi\s+|tất\s+cả\s+|các\s+|những\s+)?(?:hướng\s+dẫn|chỉ\s+dẫn|lệnh|quy\s+tắc|luật\s+lệ|prompt)",
@@ -106,33 +120,65 @@ _INJECTION = [
     r"(?:system|developer)\s+prompt|prompt\s+hệ\s+thống",
     r"tiết\s+lộ\s+(?:prompt|hướng\s+dẫn|cấu\s+hình)",
     r"giả\s+làm\s+\w+",
-    r"đóng\s+vai\s+(?!trò)",
+    r"đóng\s+vai(?!\s+trò)",
     r"bây\s+giờ\s+(?:bạn|mày|em)\s+là",
     r"you\s+are\s+now|pretend\s+(?:to|you)|jailbreak|developer\s+mode",
     r"chế\s+độ\s+(?:nhà\s+phát\s+triển|không\s+giới\s+hạn)",
+    # giả làm tin nhắn hệ thống / tự viết sẵn dòng nhãn của đầu ra
+    r"(?:system|assistant|developer)\s*:|new\s+instructions?",
+    r"nhan\s*:\s*(?:eligible_for_review|not_eligible|need_more_information|refuse|out_of_scope|safe_fallback)",
+]
+
+# Câu CHỈ HỎI chế tài ("làm giả giấy thì bị xử lý thế nào", "khám thay có bị phạt không") là câu hợp lệ: không chặn
+# ở code mà để model trả lời — trừ khi câu đồng thời NHỜ làm ("chỉ cách", "mua", "nhờ", "ở đâu"…).
+_PENALTY = [
+    r"(?:bị|có\s+bị)\s+(?:phạt|xử\s+lý|xử\s+phạt|truy\s+cứu|phạm\s+tội|tù)",
+    r"mức\s+phạt|chế\s+tài|xử\s+phạt|hậu\s+quả|phạt\s+(?:bao\s+nhiêu|thế\s+nào|như\s+thế\s+nào|ra\s+sao)",
+    r"có\s+phạm\s+(?:luật|pháp|tội)|có\s+vi\s+phạm",
+]
+_REQUEST = [
+    r"chỉ\s+(?:\w+\s+){0,2}cách|hướng\s+dẫn|giúp\s+(?:em|mình|tôi|tớ)|làm\s+(?:sao|thế\s+nào)\s+(?:để|cho)",
+    r"cách\s+(?:để\s+)?(?:làm|lách|né|trốn|có|xin)|ở\s+đâu|mua|bán|thuê|nhờ|dịch\s+vụ|bao\s+nhiêu\s+tiền|chi\s+phí",
+    r"tốn|liên\s+hệ|muốn",
 ]
 def _compile(patterns):
-    accented = [re.compile(p) for p in patterns]
-    folded = [re.compile(_fold(p)) for p in patterns]
+    """→ (mẫu có dấu, mẫu bỏ dấu, mẫu bỏ dấu an toàn cho câu CÓ dấu). Mọi mẫu khớp NGUYÊN TỪ (có ranh giới từ hai đầu),
+    để "làm giả" không khớp "làm giấy" khi bỏ dấu. Bản bỏ dấu bỏ chữ "khống" (bỏ dấu trùng "không" rất phổ biến)."""
+    word = r"(?<!\w)(?:%s)(?!\w)"
+    accented = [re.compile(word % p) for p in patterns]
+    folded = [re.compile(word % _fold(p.replace("|khống", "").replace("khống|", ""))) for p in patterns]
     safe_folded = [rx for p, rx in zip(patterns, folded) if "giả" not in p]
     return accented, folded, safe_folded
 
 
 _RX = {"lach_luat": _compile(_EVASION), "chen_lenh": _compile(_INJECTION)}
+_RX_PENALTY = _compile(_PENALTY)
+_RX_REQUEST = _compile(_REQUEST)
+
+
+def _match(compiled, low: str) -> bool:
+    """low: chữ thường. Câu không dấu → so mẫu bỏ dấu; câu có dấu → mẫu có dấu + mẫu bỏ dấu an toàn."""
+    accented, folded, safe_folded = compiled
+    folded_text = _fold(low)
+    if folded_text == low:
+        return any(rx.search(low) for rx in folded)
+    return any(rx.search(low) for rx in accented) or any(rx.search(folded_text) for rx in safe_folded)
 
 
 def screen_input(text: str):
     """Trả None nếu qua, hoặc "lach_luat" / "chen_lenh". Câu hỏi về hoãn HỢP PHÁP không được chặn.
     Câu có dấu: so mẫu có dấu (tránh "giá giấy" khớp nhầm "giả giấy"). Câu gõ KHÔNG dấu: so mẫu đã bỏ dấu."""
-    low = text.lower()
-    folded_text = _fold(text)
-    unaccented = folded_text == low
-    for kind, (accented, folded, safe_folded) in _RX.items():
-        if unaccented:
-            if any(rx.search(low) for rx in folded):
-                return kind
-        elif any(rx.search(low) for rx in accented) or any(rx.search(folded_text) for rx in safe_folded):
-            return kind
+    # So trên câu gốc VÀ bản chuẩn hóa để khớp (nối chữ tách "g.i.ả", mở rộng viết tắt "kq", "sk", "sv"…).
+    variants = [text.lower()]
+    norm = text_norm.for_matching(text)
+    if norm not in variants:
+        variants.append(norm)
+    if any(_match(_RX["chen_lenh"], v) for v in variants):
+        return "chen_lenh"
+    if any(_match(_RX["lach_luat"], v) for v in variants):
+        penalty_only = (any(_match(_RX_PENALTY, v) for v in variants)
+                        and not any(_match(_RX_REQUEST, v) for v in variants))
+        return None if penalty_only else "lach_luat"
     return None
 
 
@@ -155,7 +201,14 @@ def parse_json(raw: str):
 
 
 def clean_facts(d: dict):
-    """Chuẩn hóa dữ kiện model trích; kiểu sai → None (không biết). chu_de / y_do sai hoặc thiếu → None (coi là hỏng)."""
+    """Chuẩn hóa dữ kiện model trích; kiểu sai → None (không biết). chu_de / y_do sai → None (coi là hỏng).
+    Model trả null (không trích được gì, vd "Em có phải đi không?", "????"): chu_de null → "khac" (hỏi lại chủ đề);
+    y_do null chỉ được coi là "hop_phap" khi chủ đề cũng chưa rõ — nhánh đó chỉ hỏi lại, không kết luận gì."""
+    d = dict(d)
+    if "chu_de" in d and d["chu_de"] is None:          # null tường minh; THIẾU khóa vẫn là JSON hỏng
+        d["chu_de"] = "khac"
+    if "y_do" in d and d["y_do"] is None and d.get("chu_de") == "khac":
+        d["y_do"] = "hop_phap"
     if d.get("y_do") not in Y_DO or d.get("chu_de") not in P.TOPICS:
         return None
     f = {k: (d.get(k) if isinstance(d.get(k), bool) else None) for k in BOOL_FACTS}
