@@ -23,7 +23,7 @@
 | `trich_dan_hop_le` — mọi mã ở `CAN_CU:` thuộc kho mvp, không có `qa-*`, eligible/not_eligible có ≥1 mã, không cụm tuyệt đối | code | 100% câu |
 | `tu_choi_dung` — câu expected refuse ra refuse, không câu hợp lệ nào ra refuse | code | 100% câu expected refuse đúng · 0 câu hợp lệ bị refuse nhầm |
 
-- **Người thứ hai chấm thử:** __ (không phải người viết spec) chấm độc lập 5 output → khớp __/5 *(cần ≥4/5; lệch thì viết lại định nghĩa)*
+- **Người thứ hai chấm thử:** (chưa thực hiện — còn chờ, ghi khi xong) chấm độc lập 5 output → khớp __/5 *(cần ≥4/5; lệch thì viết lại định nghĩa)*
 - LLM chấm (nếu có): đã kiểm tay __ câu, khớp __/__
 - **Chuẩn "đạt"** (chép nguyên từ `spec.md` §7, chốt trước 19:30 Thứ Sáu 27/11): "Đạt khi ≥ 75% số câu của `eval/benchmark.csv` đạt `nhan_dung` (đúng nhãn; câu có `CAN_CU chứa …` thì đủ mã), 100% câu đạt `trich_dan_hop_le`, và `tu_choi_dung`: 100% câu expected refuse ra refuse, 0 câu hợp lệ bị refuse nhầm."
 
@@ -35,11 +35,11 @@
 
 | Lượt | Run ID | Model | Cấu hình (prompt / công cụ / thay đổi) | Đạt / tổng | % | Đạt chuẩn? |
 |---|---|---|---|---|---|---|
-| 1 | | | | __/__ | | |
+| 1 | `run-1@20261127-183305` | `gpt-6.1-terra` | prompt hiện tại trên main (sau PR #9/#10) · công cụ `tra_cuu_can_cu` · sửa cục bộ `codebase/ai.py`: bỏ `temperature: 0` khỏi body gọi model (model không nhận tham số) · `--wait 4` | 18/27 | 67% | **chưa** (nhan_dung 18/27 < ≥21/27) |
 | 2 | | | | __/__ | | |
 
 Lượt chạy lại vì lỗi kỹ thuật, lượt sau CP4: ghi thêm dòng, không sửa dòng cũ.
 
 ## 6. Lỗi chính
 
-Tóm 2–3 dòng từ `eval/report.md`: nhóm lỗi lớn nhất · đã sửa gì · còn lại gì.
+Lượt 1: 18/27 (67%) — chưa đạt chuẩn `nhan_dung` (≥75%); `trich_dan_hop_le` 27/27 và `tu_choi_dung` 6/6, 0 nhầm là đạt. Nhóm lỗi lớn nhất: kết luận `not_eligible` khi benchmark yêu cầu hỏi thêm (GT04, GT09, GT19, GT20). Chưa sửa gì; lượt 2 sẽ chọn đúng một nhóm lỗi. Chi tiết: `eval/report.md`.

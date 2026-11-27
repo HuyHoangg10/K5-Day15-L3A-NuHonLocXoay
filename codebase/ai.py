@@ -125,7 +125,7 @@ def _wants_json(system: str) -> bool:
 
 def build_body(system: str, user: str, spec: dict) -> dict:
     messages = ([{"role": "system", "content": system}] if system else []) + [{"role": "user", "content": user}]
-    body = {"model": MODEL_NAME, "messages": messages, "temperature": 0, spec["max_key"]: _max_tokens()}
+    body = {"model": MODEL_NAME, "messages": messages, spec["max_key"]: _max_tokens()}
     body.update(spec["extra"])
     if _wants_json(system):
         body["response_format"] = {"type": "json_object"}

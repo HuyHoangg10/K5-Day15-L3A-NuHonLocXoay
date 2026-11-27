@@ -85,7 +85,7 @@ Theo `codebase/agent.py`: đủ thông tin và nguồn có thể ra `eligible_fo
 ## §7. Đánh giá & chuẩn đạt
 `python run.py check` ngày 27/11: 27 câu, 7 `thuong`, 11 `kho`, 9 `tu_choi`, gồm 12/27 ghi nguồn `data_that`; kiểm provenance và nhãn với nhóm. `eval/metric_spec.yaml` có 3 metric chấm bằng code: `nhan_dung` (ngưỡng 75%, ≥ 21/27), `trich_dan_hop_le` (100%), `tu_choi_dung` (100% / 0 nhầm).
 **Chuẩn "đạt"** (nhóm chốt 27/11, trước 19:30; giữ nguyên đến 23:59 Thứ Bảy 28/11): "Đạt khi ≥ 75% số câu của `eval/benchmark.csv` đạt `nhan_dung` (đúng nhãn; câu có `CAN_CU chứa …` thì đủ mã), 100% câu đạt `trich_dan_hop_le`, và `tu_choi_dung`: 100% câu expected refuse ra refuse, 0 câu hợp lệ bị refuse nhầm."
-Lượt 1: __/__ (__%), run ID __. Lượt 2: __/__ (__%), run ID __. Xem `eval/report.md`, `eval/README.md`.
+Lượt 1: 18/27 (67%), run ID `run-1@20261127-183305` — chưa đạt chuẩn. Lượt 2: __/__ (__%), run ID __. Xem `eval/report.md`, `eval/README.md`.
 
 ## §8. Chi phí khi dùng thật *(guide 4.2)*
 - Persona + giá: `cost/personas.yaml` · lượt mô phỏng: `cost/simulate-__.csv` (__ phiên)
