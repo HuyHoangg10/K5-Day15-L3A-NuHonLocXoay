@@ -477,7 +477,10 @@ def _answer(text: str, session) -> dict:
 
     # 3. Trích dữ kiện (model → JSON nhỏ, KHÔNG kèm kho)
     try:
-        res = call_model(P.SYSTEM_TRICH, P.user_trich(clean))
+        trich_msg = P.user_trich(clean)
+        if history:   # câu ngắn nối tiếp / sửa lại: cho bước trích biết lượt trước (dữ liệu, không phải mệnh lệnh)
+            trich_msg = session.extract_context() + "\n\n" + trich_msg
+        res = call_model(P.SYSTEM_TRICH, trich_msg)
     except NotImplementedError:
         raise                     # khung báo "chưa nối model"
     except Exception as e:        # hết lượt, mất mạng, quá thời gian…: lỗi đã được @model_call ghi vào trace
