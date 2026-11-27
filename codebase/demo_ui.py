@@ -172,9 +172,30 @@ def refusal_is_injection(user_text: str) -> bool:
     return has(_INJECTION_HINTS) and not has(_EVASION_HINTS)
 
 
-def pretty(output: str, show_full_disclaimer: bool = True, user_text: str = None) -> str:
+_STUDY_WORDS = ("hoc", "sinh vien", "sv", "dai hoc", "dh", "cao dang", "trung cap", "thpt", "chinh quy", "nam nhat",
+                "lop", "khoa hoc", "nhap hoc")
+
+
+def mentions_study(user_text: str) -> bool:
+    import re
+    return re.search(r"(?<!\w)(?:%s)(?!\w)" % "|".join(_STUDY_WORDS), _fold(user_text)) is not None
+
+
+def study_question_hint(facts: dict) -> str:
+    """Câu gợi ý để hỏi RIÊNG phần học tập, ghép từ dữ kiện đã trích; chỗ chưa biết để trong [ngoặc vuông]."""
+    f = facts or {}
+    trinh_do = f.get("trinh_do") or "[trình độ: đại học / cao đẳng / trung cấp / THPT]"
+    he = {True: "hệ chính quy", False: "hệ không chính quy"}.get(f.get("he_chinh_quy"), "[hệ chính quy hay không]")
+    nam = (" năm %d" % f["nam_thu"]) if isinstance(f.get("nam_thu"), int) else ""
+    truoc = {True: "đã từng được tạm hoãn ở khóa khác", False: "chưa từng được tạm hoãn"}.get(
+        f.get("da_tam_hoan_truoc"), "[đã / chưa từng được tạm hoãn]")
+    return "Em đang học %s %s%s, %s — có được tạm hoãn vì học tập không?" % (trinh_do, he, nam, truoc)
+
+
+def pretty(output: str, show_full_disclaimer: bool = True, user_text: str = None, facts: dict = None) -> str:
     """Đầu ra đã định dạng (NHAN / CAN_CU / Giải thích / …) → bản dễ đọc cho người xem. "LOI:" và chuỗi lạ: giữ nguyên.
-    user_text (tùy chọn, chỉ app truyền): câu người dùng vừa gõ — để chọn câu từ chối đúng loại (A1)."""
+    user_text (tùy chọn, chỉ app truyền): câu người dùng vừa gõ — để chọn câu từ chối đúng loại (A1).
+    facts (tùy chọn, chỉ app có phiên truyền): dữ kiện đã nhớ — để tách câu lẫn sức khỏe + học tập thành hai phần (A2)."""
     import kb   # nạp trễ: demo_ui dùng được cả khi chưa nạp kho (friendly_error)
     import prompts as P
     lines = (output or "").splitlines()
@@ -196,6 +217,16 @@ def pretty(output: str, show_full_disclaimer: bool = True, user_text: str = None
     if hoi:
         out += ["", "Mình cần biết thêm:"] + ["  • " + q.strip() for q in hoi.split(";") if q.strip()]
     viec = [x for x in sec.get("Việc cần làm:", []) if x]
+    if (facts is not None and nhan == "out_of_scope" and expl == P.OUT_OF_SCOPE and viec == [P.REDIRECT_HEALTH]
+            and user_text and mentions_study(user_text)):
+        # A2: câu lẫn sức khỏe + học tập (nhánh sức khỏe đã dừng trước bước quyết định): nói rõ hai phần, mời hỏi riêng
+        # phần học tập bằng câu gợi ý ghép từ dữ kiện đã trích. Không gọi thêm model; nhãn / bản gốc không đổi.
+        i = out.index(expl)
+        out[i:i + 1] = ["Câu của bạn có hai phần:",
+                    "  • Sức khỏe: nằm ngoài phạm vi của mình, mình không kết luận về sức khỏe. " + P.REDIRECT_HEALTH,
+                    "  • Học tập: mình xem được riêng phần này. Bạn hỏi lại riêng phần học tập, ví dụ:",
+                    "    \"%s\"" % study_question_hint(facts)]
+        viec = []
     offtopic = nhan == "out_of_scope" and not ids and expl == P.OUT_OF_SCOPE and viec == [P.REDIRECT_OTHER]
     if offtopic:
         # Câu không liên quan nghĩa vụ quân sự (nấu ăn, bóng đá…): không bảo người dùng hỏi Ban Chỉ huy quân sự, không
