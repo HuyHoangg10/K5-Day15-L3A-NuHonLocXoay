@@ -64,7 +64,7 @@ MAX_LY_DO_CHARS = 800
 MAX_STEPS, MAX_STEP_CHARS = 4, 300
 MAX_QUESTIONS, MAX_QUESTION_CHARS = 2, 200
 
-Y_DO = ("hop_phap", "lach_luat", "ngoai_pham_vi")
+Y_DO = ("hop_phap", "lach_luat", "chen_lenh", "ngoai_pham_vi")
 BOOL_FACTS = ("dang_hoc", "he_chinh_quy", "qua_han", "bao_luu", "du_hoc", "da_tot_nghiep", "da_tam_hoan_truoc")
 # Bước 4: câu về tình trạng riêng của mình mà KHÔNG có dữ kiện học tập nào trong số này → need_more_information
 STUDY_DETAIL_FACTS = ("trinh_do", "he_chinh_quy", "nam_thu", "qua_han", "bao_luu", "du_hoc", "da_tot_nghiep",
@@ -81,7 +81,7 @@ GUARD_CODES = {
     "G_EMPTY": "đầu vào rỗng / chỉ ký hiệu → need_more_information, không gọi model",
     "G_LEN_IN": "đầu vào quá MAX_INPUT_CHARS → nhắc rút gọn, không gọi model",
     "G_EVASION": "nhờ lách luật / gian dối (code chặn, hoặc model trích y_do=lach_luat) → refuse",
-    "G_INJECTION": "chèn lệnh / đổi vai / đòi lộ prompt ở đầu vào → refuse",
+    "G_INJECTION": "chèn lệnh / đổi vai / đòi lộ prompt (code chặn, hoặc model trích y_do=chen_lenh) → refuse",
     "G_OFFTOPIC": "không phải nghĩa vụ quân sự → out_of_scope",
     "G_HEALTH": "chủ đề sức khỏe → out_of_scope, không gọi bước quyết định",
     "G_ASK_TOPIC": "chưa rõ chủ đề → need_more_information",
@@ -676,6 +676,9 @@ def _answer(text: str, session) -> dict:
     if facts["y_do"] == "lach_luat":
         note("G_EVASION: model đánh dấu y_do=lach_luat — không tra căn cứ")
         return refuse_answer(clean, P.REFUSE_EVASION)
+    if facts["y_do"] == "chen_lenh":
+        note("G_INJECTION: model đánh dấu y_do=chen_lenh — không tra căn cứ")
+        return refuse_answer(clean, P.REFUSE_INJECTION, cite=False)
     if facts["y_do"] == "ngoai_pham_vi" and session is not None and mentions_nvqs(clean):
         # Bản demo: câu rất ngắn ("hoãn?", "em là sinh viên") hay bị bước trích coi là ngoài chủ đề. Câu có từ khóa của
         # chủ đề thì không kết luận out_of_scope mà đi tiếp (thường là nhánh hỏi lại ở bước 4). Đường đo không đổi.
