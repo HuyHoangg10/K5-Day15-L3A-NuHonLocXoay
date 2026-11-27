@@ -22,6 +22,51 @@ FRIENDLY = {
 }
 FOOTER = "(Bạn có thể hỏi tiếp — cuộc trò chuyện vẫn được giữ.)"
 
+# ---------------------------------------------------------------- lệnh và trình bày dòng lệnh (app.py)
+CMD_RESET = ("/moi", "/mới", "/reset")
+CMD_RAW = ("/goc", "/gốc")
+CMD_HELP = ("/help", "/h", "/?", "/trogiup", "/trợgiúp")
+CMD_EXIT = ("/thoat", "/thoát", "/exit", "/quit", "/q")
+HELP_TEXT = """Cách dùng:
+  • Gõ câu hỏi về việc tạm hoãn gọi nhập ngũ vì đang đi học rồi Enter, ví dụ:
+    "Em học cao đẳng chính quy năm nhất, chưa hoãn lần nào thì sao?"
+  • Mình nhớ các lượt trong cuộc trò chuyện này, nên bạn có thể trả lời tiếp câu mình hỏi lại.
+Lệnh:
+  /moi    bắt đầu cuộc trò chuyện mới (xóa những gì mình đã nhớ)
+  /goc    xem bản gốc của câu trả lời vừa rồi (có dòng NHAN / CAN_CU để chấm)
+  /help   xem hướng dẫn này
+  /thoat  thoát (hoặc Ctrl+C, hoặc Enter hai lần với dòng trống)"""
+UNKNOWN_CMD = "Mình chưa hiểu lệnh \"%s\". Gõ /help để xem các lệnh."
+TOO_LONG_CHAT = "(Cuộc trò chuyện đã khá dài; gõ /moi để bắt đầu lại cho câu trả lời gọn và chính xác hơn.)"
+BYE = "Tạm biệt! (Mình không lưu gì xuống máy.)"
+
+
+def term_width(default: int = 100) -> int:
+    """Độ rộng để ngắt dòng: theo cửa sổ dòng lệnh, trong khoảng 40–100 ký tự."""
+    import shutil
+    try:
+        cols = shutil.get_terminal_size((default, 24)).columns
+    except Exception:
+        cols = default
+    return max(40, min(cols - 2, 100))
+
+
+def wrap(text: str, width: int = None) -> str:
+    """Ngắt từng dòng theo độ rộng, giữ thụt lề của dòng gạch đầu dòng / đánh số (dòng tiếp thụt thẳng hàng chữ)."""
+    import re
+    import textwrap
+    width = width or term_width()
+    out = []
+    for line in (text or "").split("\n"):
+        if len(line) <= width:
+            out.append(line)
+            continue
+        m = re.match(r"^(\s*(?:[•\-–*]|\d+\.)?\s*)", line)
+        lead = m.group(1) if m else ""
+        out.extend(textwrap.wrap(line, width=width, subsequent_indent=" " * len(lead),
+                                 break_long_words=True, break_on_hyphens=False) or [""])
+    return "\n".join(out)
+
 
 def classify(text: str) -> str:
     """Loại lỗi từ chuỗi lỗi kỹ thuật (chỉ dùng để phân loại, không hiển thị)."""

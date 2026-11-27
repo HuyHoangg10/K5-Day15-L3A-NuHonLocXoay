@@ -41,32 +41,44 @@ def main() -> int:
         print("Không nạp được codebase/ — lỗi ở %s: %s: %s" % (_where(e), type(e).__name__, e))
         print("Sửa lỗi rồi chạy lại. Cách nối model: docs/connect-model.md")
         return 1
-    print("Bản chạy thử — gõ đầu vào rồi Enter. Thoát: Ctrl+C (hoặc Enter 2 lần với dòng trống).")
+    print("Bản chạy thử — gõ câu hỏi rồi Enter. Gõ /help để xem hướng dẫn, /thoat để thoát.")
     session = ChatSession()
     print("(%s Gõ /moi để bắt đầu lại.)" % session.status())
     agent.on_step = lambda name: print("   " + demo_ui.STEP_TEXT.get(name, "…"), flush=True)
-    print("(Lệnh: /moi bắt đầu lại · /goc xem bản gốc của câu trả lời vừa rồi, có dòng NHAN / CAN_CU.)")
+    print("(Lệnh: /moi bắt đầu lại · /goc xem bản gốc của câu trả lời vừa rồi · /help hướng dẫn · /thoat thoát.)")
     shown_disclaimer, last_raw = False, ""
     blank = 0
     while True:
         try:
             text = input("> ").strip()
-        except (EOFError, KeyboardInterrupt):
+        except (EOFError, KeyboardInterrupt):     # Ctrl+D / Ctrl+Z, Ctrl+C ở dấu nhắc: thoát gọn, không in traceback
             print()
+            print(demo_ui.BYE)
             return 0
         if not text:
             blank += 1
             if blank >= 2:
+                print(demo_ui.BYE)
                 return 0
             continue
         blank = 0
-        if text.lower() in ("/moi", "/mới", "/reset"):
+        cmd = text.lower()
+        if cmd in demo_ui.CMD_EXIT:
+            print(demo_ui.BYE)
+            return 0
+        if cmd in demo_ui.CMD_HELP:
+            print(demo_ui.HELP_TEXT)
+            continue
+        if cmd in demo_ui.CMD_RESET:
             session.reset()
             shown_disclaimer, last_raw = False, ""
             print("(Đã xóa cuộc trò chuyện. %s)" % session.status())
             continue
-        if text.lower() in ("/goc", "/gốc"):
+        if cmd in demo_ui.CMD_RAW:
             print(last_raw or "(Chưa có câu trả lời nào.)")
+            continue
+        if cmd.startswith("/") and " " not in cmd and len(cmd) <= 20:   # lệnh gõ sai ("/mooi"), không gửi cho agent
+            print(demo_ui.UNKNOWN_CMD % text)
             continue
         tracing.begin("app")
         t0 = time.perf_counter()
@@ -89,13 +101,16 @@ def main() -> int:
         output = result.get("output", "") if isinstance(result, dict) else str(result)
         last_raw = output
         nice = demo_ui.friendly_error(output, events)
-        print(nice if nice else demo_ui.pretty(output, show_full_disclaimer=not shown_disclaimer))
+        # câu báo lỗi thân thiện ngắn, in nguyên; câu trả lời dài thì ngắt dòng theo độ rộng cửa sổ
+        print(nice if nice else demo_ui.wrap(demo_ui.pretty(output, show_full_disclaimer=not shown_disclaimer)))
         shown_disclaimer = shown_disclaimer or "Lưu ý:" in output
         t = demo_ui.step_timings(events, time.perf_counter() - t0)
         print("   (model: %s · gọi model %d lần · công cụ %d lần · token vào %d / ra %d · %.1f s: trích %.1f, tra cứu %.1f, "
               "quyết định %.1f)" % (", ".join(s["models"]) or "—", s["model_calls"], s["tool_calls"], s["tokens_in"],
                                     s["tokens_out"], t["tong"], t["trich"], t["tra_cuu"], t["quyet_dinh"]))
         print("   (%s)" % session.status())
+        if session.too_long():
+            print(demo_ui.TOO_LONG_CHAT)
 
 
 if __name__ == "__main__":
