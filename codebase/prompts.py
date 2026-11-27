@@ -70,7 +70,10 @@ DOMAIN_RULES = """4. Tạm hoãn vì học tập chỉ áp dụng trong MỘT kh
    Khi dùng ý ở mục 4 hoặc 5, dẫn bài hỏi đáp liên quan vào tham_khao; căn cứ vẫn là điều luật.
 6. Không đủ căn cứ hoặc dữ kiện then chốt còn mơ hồ thì chọn "need_more_information". Không đoán, không tự thêm dữ kiện
    người dùng chưa nói (vd không tự cho là hệ chính quy). eligible_for_review chỉ khi đã biết trình độ và hệ chính quy
-   (hoặc đang học phổ thông); thiếu thì need_more_information.
+   (hoặc đang học phổ thông), và đã biết người dùng đang học (đã nhập học); thiếu thì need_more_information. Chỉ chọn not_eligible khi thiếu
+   dữ kiện nếu người dùng đã nêu một dữ kiện mà ngữ cảnh nói rõ là không được tạm hoãn.
+   Với need_more_information, can_cu vẫn ghi điểm luật chi phối câu hỏi (có trong ngữ cảnh), và can_hoi_them hỏi đúng
+   dữ kiện còn thiếu.
 6b. can_cu ghi ĐỦ mọi điểm luật mà ly_do dựa vào (vd ly_do phân biệt tạm hoãn với miễn thì có cả điểm luật về miễn;
    ly_do nói ai quyết định tạm hoãn thì có cả điều luật nói việc đó).
 7. Chủ đề ngoài lát cắt (được báo trong phần "Chủ đề") thì nhan PHẢI là "out_of_scope"; có thể dẫn điểm luật liên quan trong ngữ cảnh.
@@ -192,6 +195,11 @@ STUDY_QUESTIONS = [   # B11: tối đa 2 câu hỏi lại, gộp 4 dữ kiện t
     "khóa học của bạn từ năm nào đến năm nào, đang năm thứ mấy, và bạn đã từng được tạm hoãn ở khóa học khác chưa",
 ]
 TOPIC_QUESTION = "bạn đang hỏi về việc tạm hoãn vì đang đi học hay vì lý do khác"
+
+# Câu cố định khi code chặn kết luận sớm (G_PREMATURE): chưa đủ dữ kiện then chốt để nói có căn cứ đề nghị xem xét.
+NEED_KEY_FACTS = ("Tạm hoãn vì học tập chỉ áp dụng khi bạn đang học, trong một khóa đào tạo của một trình độ, học liên tục "
+                  "(đại học, cao đẳng thì phải là hệ chính quy). Mình chưa đủ thông tin về việc học của bạn để đối chiếu, "
+                  "bạn cho mình biết thêm nhé.")
 
 # Đoạn model được nhắc lại nguyên văn mà không bị coi là rò rỉ prompt (guards.leak): phần nghĩa của prompt, cụm gợi ý,
 # và các câu cố định code vẫn in ra cho người dùng.

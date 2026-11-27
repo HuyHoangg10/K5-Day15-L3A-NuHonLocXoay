@@ -20,9 +20,10 @@ note() chỉ ghi LÝ DO, không bao giờ ghi nội dung người dùng gõ (tra
 
 Mã lý do (B10) — mỗi lần chặn / rẽ nhánh, note() ghi "<MÃ>: <mô tả ngắn>" (GUARD_CODES bên dưới là danh sách đủ):
   đầu vào   G_EMPTY · G_LEN_IN · G_EVASION · G_INJECTION
-  rẽ nhánh  G_OFFTOPIC · G_HEALTH · G_ASK_TOPIC · G_ASK_STUDY
+  rẽ nhánh  G_OFFTOPIC · G_HEALTH · G_ASK_TOPIC · G_ASK_STUDY (chỉ ghi trace, vẫn tra cứu)
   đầu ra    G_EXTRACT · G_JSON · G_LABEL · G_SCOPE · G_FIELD · G_CITE_QA · G_CITE_MVP · G_REF · G_NEED_CITE
-            G_ABSOLUTE · G_LEAK · G_ARTICLE · G_URL · G_NUMBER · G_LEN_OUT
+            G_ABSOLUTE · G_LEAK · G_ARTICLE · G_URL · G_NUMBER · G_LEN_OUT · G_PREMATURE
+  ghi chú   W_CITE_DEFAULT
   lỗi       E_MODEL · E_TIMEOUT · E_KB      cảnh báo  W_CONTEXT
 """
 import json
@@ -72,7 +73,8 @@ GUARD_CODES = {
     "G_OFFTOPIC": "không phải nghĩa vụ quân sự → out_of_scope",
     "G_HEALTH": "chủ đề sức khỏe → out_of_scope, không gọi bước quyết định",
     "G_ASK_TOPIC": "chưa rõ chủ đề → need_more_information",
-    "G_ASK_STUDY": "chưa có dữ kiện học tập nào → need_more_information",
+    "G_ASK_STUDY": "chưa có dữ kiện học tập nào → VẪN tra cứu + bước quyết định (hỏi thêm kèm căn cứ), chỉ ghi trace",
+    "G_PREMATURE": "eligible_for_review khi chưa biết đang học / trình độ / hệ chính quy → đổi thành need_more_information",
     "G_EXTRACT": "JSON trích dữ kiện hỏng → safe_fallback",
     "G_JSON": "JSON quyết định hỏng → safe_fallback",
     "G_LABEL": "nhãn ngoài tập nhãn → safe_fallback",
@@ -92,7 +94,12 @@ GUARD_CODES = {
     "E_TIMEOUT": "quá thời gian → LOI:",
     "E_KB": "không đọc được kho → LOI:",
     "W_CONTEXT": "ngữ cảnh dài hơn MAX_CONTEXT_CHARS (chỉ cảnh báo)",
+    "W_CITE_DEFAULT": "câu học tập ra need_more_information không có căn cứ → thêm điểm luật tạm hoãn vì học tập",
 }
+
+# Câu học tập: điểm luật chi phối việc tạm hoãn vì học tập (điểm g khoản 1 Điều 41, có trong kho mvp).
+STUDY_CAN_CU = "vbhn133-d41-k1-g"
+_PHO_THONG = ("thpt", "pho thong", "gdtx", "giao duc thuong xuyen", "lop 10", "lop 11", "lop 12", "cap 3")
 
 REFUSE_CAN_CU = "vbhn133-d10"
 REFUSE_CAN_CU_KHAM = "nd218-d9"
@@ -431,6 +438,33 @@ def validate_decision(raw: str, qa_allowed=(), must_be_out_of_scope: bool = Fals
             "can_lam_gi": viec, "can_hoi_them": hoi_them}, None
 
 
+def key_study_facts_missing(facts: dict) -> bool:
+    """True khi CHƯA đủ dữ kiện then chốt để nói "có căn cứ đề nghị xem xét tạm hoãn vì học tập":
+    chưa rõ đang học / đã nhập học, chưa rõ trình độ, hoặc chưa rõ hệ chính quy (trừ khi đang học phổ thông)."""
+    if facts.get("dang_hoc") is not True and facts.get("nam_thu") is None:
+        return True
+    tr = kb.fold(facts.get("trinh_do") or "")
+    if not tr:
+        return True
+    return facts.get("he_chinh_quy") is not True and not any(w in tr for w in _PHO_THONG)
+
+
+def study_checks(decision: dict, facts: dict) -> dict:
+    """Bước 7 (câu học tập, sau validate_decision): (a) câu kể tình trạng RIÊNG (không phải hỏi quy định chung) mà
+    eligible_for_review khi thiếu dữ kiện then chốt → đổi thành
+    need_more_information, câu cố định + câu hỏi lại, giữ căn cứ (G_PREMATURE); (b) need_more_information không có căn cứ
+    → thêm điểm luật tạm hoãn vì học tập (W_CITE_DEFAULT). not_eligible KHÔNG bị đổi: người dùng có thể đã nêu
+    một dữ kiện tự nó loại trừ việc tạm hoãn (vd hết khóa vì nợ môn)."""
+    d = dict(decision)
+    if d["nhan"] == "eligible_for_review" and not facts.get("hoi_quy_dinh_chung") and key_study_facts_missing(facts):
+        note("G_PREMATURE: eligible_for_review khi chưa rõ đang học / trình độ / hệ chính quy → need_more_information")
+        d.update(nhan="need_more_information", ly_do=P.NEED_KEY_FACTS, can_lam_gi=[], can_hoi_them=list(P.STUDY_QUESTIONS))
+    if d["nhan"] == "need_more_information" and not d["can_cu"] and STUDY_CAN_CU in kb.legal_ids():
+        note("W_CITE_DEFAULT: need_more_information không có căn cứ → thêm " + STUDY_CAN_CU)
+        d["can_cu"] = [STUDY_CAN_CU]
+    return d
+
+
 # ================================================================ answer
 
 def answer(text: str) -> dict:
@@ -483,9 +517,9 @@ def answer(text: str) -> dict:
         return render("need_more_information", "Mình chưa rõ bạn đang hỏi về căn cứ tạm hoãn nào.", hoi_them=[P.TOPIC_QUESTION])
     if (chu_de == "hoc_tap" and not facts["hoi_quy_dinh_chung"] and facts["dang_hoc"] is not False
             and all(facts[k] is None for k in STUDY_DETAIL_FACTS)):
-        note("G_ASK_STUDY: thiếu dữ kiện học tập bắt buộc")
-        return render("need_more_information", "Chưa đủ dữ kiện về việc học của bạn để đối chiếu căn cứ tạm hoãn.",
-                      hoi_them=P.STUDY_QUESTIONS)
+        # Trước đây thoát sớm ở đây (need_more, CAN_CU trống). Nay vẫn tra cứu + quyết định để câu hỏi lại có căn cứ
+        # và trả lời đúng ý khi câu hỏi không chỉ thiếu dữ kiện (vd hỏi về giấy tờ, nợ môn). Bước 7 chặn kết luận sớm.
+        note("G_ASK_STUDY: chưa có dữ kiện học tập — vẫn tra cứu, để bước quyết định hỏi thêm kèm căn cứ")
 
     # 5. Tra cứu (công cụ): chunk luật mvp + 2 bài hỏi đáp gần nhất
     try:
@@ -518,6 +552,8 @@ def answer(text: str) -> dict:
         return error_answer("E_KB: kiểm đầu ra — " + type(e).__name__)
     if decision is None:
         return safe_answer(why)
+    if chu_de == "hoc_tap":
+        decision = study_checks(decision, facts)
 
     # 8. Định dạng đầu ra
     note("quyết định: " + decision["nhan"])
