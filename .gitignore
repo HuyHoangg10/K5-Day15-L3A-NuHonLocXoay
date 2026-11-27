@@ -35,3 +35,7 @@ evidence/**/raw-*
 # Nguyên file data BTC cấp (data/preclass, data/training-ops… của repo đề): để ở đây, không commit
 data-btc
 data-btc/
+# Kho kb-nvqs: KHÔNG commit bản PDF / text gốc và bài hỏi đáp dạng .md (giữ track README, DATA_CARD, SOURCES.csv, chunks/, benchmark/, qa/INDEX.csv)
+kb-nvqs/sources/pdf/
+kb-nvqs/sources/text/
+kb-nvqs/qa/*.md
