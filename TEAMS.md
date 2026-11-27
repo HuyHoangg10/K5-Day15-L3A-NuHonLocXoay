@@ -6,13 +6,13 @@
 
 - Tên nhóm: NuHonLocXoay
 - Lớp: L3A
-- Track: ____
+- Track: F
 - Link repo: https://github.com/HuyHoangg10/K5-Day15-L3A-NuHonLocXoay
 
 | STT | Họ và tên | Mã học viên | Vai trò | Phần việc chính |
 |---|---|---|---|---|
 | 1 | ____ | ____ | Đội trưởng | ____ |
-| 2 | ____ | ____ | Thành viên | ____ |
+| 2 | Đỗ Minh Hiếu | 2A202603402 | Thành viên | ____ |
 | 3 | ____ | ____ | Thành viên | ____ |
 
 **Quy tắc điền**
