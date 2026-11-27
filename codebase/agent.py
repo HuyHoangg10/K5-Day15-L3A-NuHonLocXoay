@@ -17,6 +17,13 @@ Câu an toàn khi kiểm đầu ra hỏng: nhãn RIÊNG safe_fallback (không tr
 Đầu ra: dòng 1 `NHAN: <nhan>`, dòng 2 `CAN_CU: <id,...>` (để chấm bằng code), rồi giải thích, việc cần làm, nguồn, miễn trừ.
 Sức khỏe KHÔNG phải quyết định của agent: chỉ nói "kết luận do Hội đồng khám sức khỏe đưa ra".
 note() chỉ ghi LÝ DO, không bao giờ ghi nội dung người dùng gõ (trace không được chứa dữ liệu cá nhân).
+
+Mã lý do (B10) — mỗi lần chặn / rẽ nhánh, note() ghi "<MÃ>: <mô tả ngắn>" (GUARD_CODES bên dưới là danh sách đủ):
+  đầu vào   G_EMPTY · G_LEN_IN · G_EVASION · G_INJECTION
+  rẽ nhánh  G_OFFTOPIC · G_HEALTH · G_ASK_TOPIC · G_ASK_STUDY
+  đầu ra    G_EXTRACT · G_JSON · G_LABEL · G_SCOPE · G_FIELD · G_CITE_QA · G_CITE_MVP · G_REF · G_NEED_CITE
+            G_ABSOLUTE · G_LEAK · G_ARTICLE · G_URL · G_NUMBER · G_LEN_OUT
+  lỗi       E_MODEL · E_TIMEOUT · E_KB      cảnh báo  W_CONTEXT
 """
 import json
 import re
@@ -56,6 +63,37 @@ ABSOLUTE_PHRASES = ["chắc chắn được", "chắc chắn sẽ được", "đ
 
 # Căn cứ cố định cho câu refuse do code chặn (có trong kho mvp): Điều 10 Luật NVQS — hành vi bị nghiêm cấm
 # (k3: gian dối trong đăng ký, sơ tuyển, khám sức khỏe); NĐ 218 Điều 9 — xử phạt vi phạm về khám sức khỏe.
+# B10: mã lý do cố định. G_* = guard (chặn / rẽ nhánh), E_* = lỗi (câu LOI:), W_* = cảnh báo chỉ ghi trace.
+GUARD_CODES = {
+    "G_EMPTY": "đầu vào rỗng / chỉ ký hiệu → need_more_information, không gọi model",
+    "G_LEN_IN": "đầu vào quá MAX_INPUT_CHARS → nhắc rút gọn, không gọi model",
+    "G_EVASION": "nhờ lách luật / gian dối (code chặn, hoặc model trích y_do=lach_luat) → refuse",
+    "G_INJECTION": "chèn lệnh / đổi vai / đòi lộ prompt ở đầu vào → refuse",
+    "G_OFFTOPIC": "không phải nghĩa vụ quân sự → out_of_scope",
+    "G_HEALTH": "chủ đề sức khỏe → out_of_scope, không gọi bước quyết định",
+    "G_ASK_TOPIC": "chưa rõ chủ đề → need_more_information",
+    "G_ASK_STUDY": "chưa có dữ kiện học tập nào → need_more_information",
+    "G_EXTRACT": "JSON trích dữ kiện hỏng → safe_fallback",
+    "G_JSON": "JSON quyết định hỏng → safe_fallback",
+    "G_LABEL": "nhãn ngoài tập nhãn → safe_fallback",
+    "G_SCOPE": "chủ đề ngoài lát cắt nhưng nhãn khác out_of_scope → safe_fallback",
+    "G_FIELD": "trường sai kiểu / thiếu ly_do → safe_fallback",
+    "G_CITE_QA": "mã hỏi đáp nằm trong can_cu → safe_fallback",
+    "G_CITE_MVP": "mã can_cu không có trong kho luật mvp → safe_fallback",
+    "G_REF": "tham_khao không phải bài hỏi đáp đã đưa vào ngữ cảnh → safe_fallback",
+    "G_NEED_CITE": "eligible_for_review / not_eligible mà không có căn cứ → safe_fallback",
+    "G_ABSOLUTE": "khẳng định tuyệt đối không bị phủ định → safe_fallback",
+    "G_LEAK": "rò rỉ prompt / cụm chèn lệnh / dòng NHAN:, CAN_CU: thừa ở đầu ra → safe_fallback",
+    "G_ARTICLE": "Điều / khoản / điểm không có trong ngữ cảnh → safe_fallback",
+    "G_URL": "URL không thuộc nguồn đã dùng → safe_fallback",
+    "G_NUMBER": "số tiền / mức tù / thời hạn ngày không có trong ngữ cảnh → safe_fallback",
+    "G_LEN_OUT": "trường model viết bị cắt; cả câu trả lời quá MAX_OUTPUT_CHARS → safe_fallback",
+    "E_MODEL": "lỗi gọi model → LOI:",
+    "E_TIMEOUT": "quá thời gian → LOI:",
+    "E_KB": "không đọc được kho → LOI:",
+    "W_CONTEXT": "ngữ cảnh dài hơn MAX_CONTEXT_CHARS (chỉ cảnh báo)",
+}
+
 REFUSE_CAN_CU = "vbhn133-d10"
 REFUSE_CAN_CU_KHAM = "nd218-d9"
 
@@ -277,13 +315,13 @@ def render(nhan: str, giai_thich: str, viec: str = "", passages=None, tham_khao=
 
 def safe_answer(reason: str) -> dict:
     """CÂU AN TOÀN cố định khi kiểm đầu ra hỏng (bước 7), nhãn RIÊNG safe_fallback. Ghi lý do vào trace."""
-    note("câu an toàn: " + reason)
+    note(reason + " → safe_fallback")
     return render(P.SAFE_LABEL, P.SAFE_SENTENCE)
 
 
 def error_answer(reason: str) -> dict:
     """Bước 9: lỗi model / quá thời gian. Không bịa, không có dòng NHAN."""
-    note("lỗi: " + reason)
+    note(reason + " → LOI")
     return {"output": "LOI: " + P.ERROR_MESSAGE}
 
 
@@ -336,31 +374,31 @@ def validate_decision(raw: str, qa_allowed=(), must_be_out_of_scope: bool = Fals
     (Điều N, URL, số liệu) phải có trong ngữ cảnh. passages=None (gọi lẻ trong test cũ) → bỏ qua các kiểm đó."""
     d = parse_json(raw)
     if d is None:
-        return None, "JSON không hợp lệ"
+        return None, "G_JSON: JSON không hợp lệ"
     nhan = d.get("nhan")
     if nhan not in LABELS:
-        return None, "nhãn ngoài tập nhãn"
+        return None, "G_LABEL: nhãn ngoài tập nhãn"
     if must_be_out_of_scope and nhan != "out_of_scope":
-        return None, "chủ đề ngoài lát cắt nhưng model chọn " + nhan
+        return None, "G_SCOPE: chủ đề ngoài lát cắt nhưng model chọn " + nhan
     can_cu, tham_khao, hoi_them = _str_list(d.get("can_cu")), _str_list(d.get("tham_khao")), _str_list(d.get("can_hoi_them"))
     if can_cu is None or tham_khao is None or hoi_them is None:
-        return None, "can_cu / tham_khao / can_hoi_them sai kiểu"
+        return None, "G_FIELD: can_cu / tham_khao / can_hoi_them sai kiểu"
     if any(kb.is_qa_id(c) for c in can_cu):
-        return None, "mã hỏi đáp nằm trong can_cu (hỏi đáp không phải văn bản quy phạm)"
+        return None, "G_CITE_QA: mã hỏi đáp nằm trong can_cu (hỏi đáp không phải văn bản quy phạm)"
     known = kb.legal_ids()
     if any(c not in known for c in can_cu):
-        return None, "mã trong can_cu không có trong kho luật mvp"
+        return None, "G_CITE_MVP: mã trong can_cu không có trong kho luật mvp"
     allowed = set(qa_allowed)
     if any((not kb.is_qa_id(q)) or q not in allowed for q in tham_khao):
-        return None, "tham_khao chứa id không phải bài hỏi đáp đã đưa vào ngữ cảnh"
+        return None, "G_REF: tham_khao chứa id không phải bài hỏi đáp đã đưa vào ngữ cảnh"
     if nhan in ("eligible_for_review", "not_eligible") and not can_cu:
-        return None, nhan + " nhưng không có căn cứ"
+        return None, "G_NEED_CITE: " + nhan + " nhưng không có căn cứ"
     ly_do = d.get("ly_do")
     if not isinstance(ly_do, str) or not ly_do.strip():
-        return None, "thiếu ly_do"
+        return None, "G_FIELD: thiếu ly_do"
     viec = _str_list(d.get("can_lam_gi"))
     if viec is None:
-        return None, "can_lam_gi sai kiểu"
+        return None, "G_FIELD: can_lam_gi sai kiểu"
     if len(viec) > MAX_STEPS or len(hoi_them) > MAX_QUESTIONS or len(ly_do) > MAX_LY_DO_CHARS:
         note("G_LEN_OUT: cắt trường model viết quá dài")
     ly_do = _cut(ly_do, MAX_LY_DO_CHARS)
@@ -368,7 +406,7 @@ def validate_decision(raw: str, qa_allowed=(), must_be_out_of_scope: bool = Fals
     hoi_them = [_cut(x, MAX_QUESTION_CHARS) for x in hoi_them[:MAX_QUESTIONS]]
     model_text = " ".join([ly_do] + viec + hoi_them)
     if has_absolute(model_text):
-        return None, "chứa cụm tuyệt đối"
+        return None, "G_ABSOLUTE: chứa cụm khẳng định tuyệt đối"
     leaked = guards.leak(model_text, (P.SYSTEM_TRICH, P.SYSTEM_QUYET_DINH),
                          " \n ".join((context or "", user_text or "") + P.ECHO_OK))
     if leaked:
@@ -397,13 +435,13 @@ def answer(text: str) -> dict:
     if masked:
         note("tiền xử lý: đã che " + ", ".join(masked))
     if not clean:
-        note("đầu vào rỗng")
+        note("G_EMPTY: đầu vào rỗng — không gọi model")
         return render("need_more_information", "Mình chưa nhận được nội dung nào.", hoi_them=[P.TOPIC_QUESTION])
 
     # 2. Chặn đầu vào (không gọi model). Chặn TRƯỚC khi xét độ dài: câu dài có chèn lệnh vẫn là refuse.
     hit = screen_input(clean)
     if hit:
-        note("chặn đầu vào: " + hit + " — không gọi model")
+        note(("G_EVASION" if hit == "lach_luat" else "G_INJECTION") + ": chặn đầu vào bằng code — không gọi model")
         if hit == "lach_luat":
             return refuse_answer(clean, P.REFUSE_EVASION)
         return refuse_answer(clean, P.REFUSE_INJECTION, cite=False)
@@ -417,29 +455,29 @@ def answer(text: str) -> dict:
     except NotImplementedError:
         raise                     # khung báo "chưa nối model"
     except Exception as e:        # hết lượt, mất mạng, quá thời gian…: lỗi đã được @model_call ghi vào trace
-        return error_answer("trích dữ kiện — " + type(e).__name__)
+        return error_answer("E_MODEL: trích dữ kiện — " + type(e).__name__)
     parsed = parse_json(res.get("text"))
     facts = clean_facts(parsed) if parsed is not None else None
     if facts is None:
-        return safe_answer("trích dữ kiện: JSON hỏng hoặc chu_de / y_do không hợp lệ")
+        return safe_answer("G_EXTRACT: trích dữ kiện — JSON hỏng hoặc chu_de / y_do không hợp lệ")
     if facts["y_do"] == "lach_luat":
-        note("model đánh dấu y_do=lach_luat — không tra căn cứ")
+        note("G_EVASION: model đánh dấu y_do=lach_luat — không tra căn cứ")
         return refuse_answer(clean, P.REFUSE_EVASION)
     if facts["y_do"] == "ngoai_pham_vi":
-        note("model đánh dấu y_do=ngoai_pham_vi — không tra căn cứ")
+        note("G_OFFTOPIC: model đánh dấu y_do=ngoai_pham_vi — không tra căn cứ")
         return render("out_of_scope", P.OUT_OF_SCOPE, P.REDIRECT_OTHER)
 
     # 4. Ngoài lát cắt / thiếu dữ kiện bắt buộc (code)
     chu_de = facts["chu_de"]
     if chu_de == "suc_khoe":
-        note("chủ đề sức khỏe — ngoài lát cắt, không gọi bước quyết định")
+        note("G_HEALTH: chủ đề sức khỏe — ngoài lát cắt, không gọi bước quyết định")
         return render("out_of_scope", P.OUT_OF_SCOPE, P.REDIRECT_HEALTH)
     if chu_de == "khac":
-        note("thiếu dữ kiện: chưa rõ chủ đề")
+        note("G_ASK_TOPIC: thiếu dữ kiện — chưa rõ chủ đề")
         return render("need_more_information", "Mình chưa rõ bạn đang hỏi về căn cứ tạm hoãn nào.", hoi_them=[P.TOPIC_QUESTION])
     if (chu_de == "hoc_tap" and not facts["hoi_quy_dinh_chung"] and facts["dang_hoc"] is not False
             and all(facts[k] is None for k in STUDY_DETAIL_FACTS)):
-        note("thiếu dữ kiện học tập bắt buộc")
+        note("G_ASK_STUDY: thiếu dữ kiện học tập bắt buộc")
         return render("need_more_information", "Chưa đủ dữ kiện về việc học của bạn để đối chiếu căn cứ tạm hoãn.",
                       hoi_them=P.STUDY_QUESTIONS)
 
@@ -447,16 +485,16 @@ def answer(text: str) -> dict:
     try:
         found = tra_cuu_can_cu(clean)
     except Exception as e:        # thiếu / hỏng kho
-        return error_answer("tra cứu — " + type(e).__name__)
+        return error_answer("E_KB: tra cứu — " + type(e).__name__)
     passages, refs = found["luat"], found["tham_khao"]
     context = P.build_context(passages, refs)
     note("tra cứu: %d chunk luật, %d bài hỏi đáp, ngữ cảnh %d ký tự" % (len(passages), len(refs), len(context)))
     if len(context) > MAX_CONTEXT_CHARS:
-        note("CẢNH BÁO: ngữ cảnh %d ký tự > %d — cân nhắc truy xuất luật thay vì nạp thẳng" % (len(context), MAX_CONTEXT_CHARS))
+        note("W_CONTEXT: ngữ cảnh %d ký tự > %d — cân nhắc truy xuất luật thay vì nạp thẳng" % (len(context), MAX_CONTEXT_CHARS))
 
     # 6. Quyết định (model → JSON)
     if time.monotonic() - t0 > DEADLINE_S:
-        return error_answer("quá thời gian trước bước quyết định")
+        return error_answer("E_TIMEOUT: quá thời gian trước bước quyết định")
     out_of_slice = chu_de in P.OUT_OF_SLICE_TOPICS
     try:
         with ai.max_tokens_at_least(DECISION_MAX_TOKENS):
@@ -464,14 +502,14 @@ def answer(text: str) -> dict:
     except NotImplementedError:
         raise
     except Exception as e:
-        return error_answer("quyết định — " + type(e).__name__)
+        return error_answer("E_MODEL: quyết định — " + type(e).__name__)
 
     # 7. Kiểm đầu ra (code)
     try:
         decision, why = validate_decision(res.get("text"), [q["id"] for q in refs], must_be_out_of_scope=out_of_slice,
                                           passages=passages, refs=refs, context=context, user_text=clean)
     except Exception as e:        # không đọc được kho để kiểm mã → không dám tin đầu ra
-        return error_answer("kiểm đầu ra — " + type(e).__name__)
+        return error_answer("E_KB: kiểm đầu ra — " + type(e).__name__)
     if decision is None:
         return safe_answer(why)
 
