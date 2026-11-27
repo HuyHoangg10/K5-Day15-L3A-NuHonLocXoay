@@ -151,3 +151,29 @@ class UrlTests(unittest.TestCase):
         ref = kb.get_chunk("qa-q01")
         d, why = check(decision(ly_do="Xem " + ref["url"]), refs=[])     # bài này KHÔNG được đưa vào ngữ cảnh
         self.assertIsNone(d)
+
+
+class NumberTests(unittest.TestCase):
+    """B5: số tiền, mức tù, thời hạn ngày trong lời văn phải có trong ngữ cảnh (hoặc câu người dùng)."""
+    OK = ["Theo Nghị định 218 Điều 9, mức phạt có thể từ 30 đến 40 triệu đồng.",
+          "Mức phạt từ 3.000.000 đồng đến 5.000.000 đồng nếu không có mặt sơ tuyển.",
+          "Danh sách tạm hoãn được niêm yết công khai trong 20 ngày.", "Khóa học 4 năm của bạn tính từ ngày nhập học.",
+          "Bạn đang học năm thứ 2."]
+    BAD = ["Bạn có thể bị phạt 100 triệu đồng.", "Mức phạt khoảng 25 triệu đồng.", "Hành vi này bị phạt tù 2 năm.",
+           "Bạn phải nộp hồ sơ trong 10 ngày.", "phạt 7.000.000 đồng"]
+
+    def test_numbers_in_context_pass(self):
+        for t in self.OK:
+            with self.subTest(text=t):
+                d, why = check(decision(ly_do=t), user_text="Em học khóa 4 năm, đang năm 2")
+                self.assertIsNotNone(d, why)
+
+    def test_invented_numbers_fall_to_safe(self):
+        for t in self.BAD:
+            with self.subTest(text=t):
+                d, why = check(decision(ly_do=t))
+                self.assertIsNone(d)
+                self.assertTrue(why.startswith("G_NUMBER"), why)
+
+    def test_number_from_user_question_is_allowed(self):
+        self.assertIsNotNone(check(decision(ly_do="Bạn nói còn 10 ngày nữa là khám."), user_text="còn 10 ngày nữa em đi khám")[0])
