@@ -24,6 +24,7 @@ import time
 import unicodedata
 
 import ai
+import guards
 import kb
 import prompts as P
 import text_norm
@@ -42,7 +43,8 @@ BOOL_FACTS = ("dang_hoc", "he_chinh_quy", "qua_han", "bao_luu", "du_hoc", "da_to
 STUDY_DETAIL_FACTS = ("trinh_do", "he_chinh_quy", "nam_thu", "qua_han", "bao_luu", "du_hoc", "da_tot_nghiep",
                       "da_tam_hoan_truoc")
 
-# Cụm khẳng định tuyệt đối: model viết ra là bị chặn ở bước 7 (so cả bản bỏ dấu)
+# Cụm khẳng định tuyệt đối (danh sách dùng trong metric trich_dan_hop_le). Bước 7 chặn bằng guards.has_absolute:
+# so trên bản bỏ dấu, thêm "cam kết", "đảm bảo <ai> được hoãn", và BỎ QUA khi bị phủ định ngay trước ("không thể nói 100%").
 ABSOLUTE_PHRASES = ["chắc chắn được", "chắc chắn sẽ được", "đảm bảo được hoãn", "100%", "giấy hợp lệ"]
 
 # Căn cứ cố định cho câu refuse do code chặn (có trong kho mvp): Điều 10 Luật NVQS — hành vi bị nghiêm cấm
@@ -276,10 +278,8 @@ def refuse_answer(text: str, message: str, cite: bool = True) -> dict:
 # ================================================================ bước 7: kiểm đầu ra
 
 def has_absolute(text: str) -> bool:
-    """Cụm khẳng định tuyệt đối, so cả bản có dấu và bản bỏ dấu."""
-    low = unicodedata.normalize("NFC", unicodedata.normalize("NFKC", text or "")).lower()
-    folded = kb.fold(text)
-    return any(p in low for p in ABSOLUTE_PHRASES) or any(kb.fold(p) in folded for p in ABSOLUTE_PHRASES)
+    """Cụm khẳng định tuyệt đối không bị phủ định (xem guards.has_absolute)."""
+    return guards.has_absolute(text)
 
 
 def _str_list(v):
