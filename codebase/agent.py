@@ -24,7 +24,7 @@ Mã lý do (B10) — mỗi lần chặn / rẽ nhánh, note() ghi "<MÃ>: <mô t
   rẽ nhánh  G_OFFTOPIC · G_HEALTH · G_ASK_TOPIC · G_ASK_STUDY
   đầu ra    G_EXTRACT · G_JSON · G_LABEL · G_SCOPE · G_FIELD · G_CITE_QA · G_CITE_MVP · G_REF · G_NEED_CITE
             G_ABSOLUTE · G_LEAK · G_ARTICLE · G_URL · G_NUMBER · G_LEN_OUT
-  lỗi       E_MODEL · E_TIMEOUT · E_KB      cảnh báo  W_CONTEXT
+  lỗi       E_MODEL · E_TIMEOUT · E_KB      cảnh báo  W_CONTEXT · W_ONTOPIC (chỉ bản demo có phiên)
 """
 import json
 import re
@@ -104,6 +104,7 @@ GUARD_CODES = {
     "E_TIMEOUT": "quá thời gian → LOI:",
     "E_KB": "không đọc được kho → LOI:",
     "W_CONTEXT": "ngữ cảnh dài hơn MAX_CONTEXT_CHARS (chỉ cảnh báo)",
+    "W_ONTOPIC": "bản demo có phiên: câu có từ khóa nghĩa vụ quân sự mà bước trích gắn ngoai_pham_vi → hỏi lại, không kết luận ngoài phạm vi",
 }
 
 REFUSE_CAN_CU = "vbhn133-d10"
@@ -230,6 +231,24 @@ def _match(compiled, low: str) -> bool:
     if folded_text == low:
         return any(rx.search(low) for rx in folded)
     return any(rx.search(low) for rx in accented) or any(rx.search(folded_text) for rx in safe_folded)
+
+
+# Từ khóa cho biết câu thuộc chủ đề nghĩa vụ quân sự / tạm hoãn vì học (chỉ dùng ở bản demo có phiên, xem W_ONTOPIC).
+# Viết có dấu; câu gõ không dấu so với bản bỏ dấu. Cố ý không có "học" / "du học" ("xin visa du học" là ngoài chủ đề).
+_ONTOPIC = [r"hoãn", r"nghĩa\s+vụ", r"nvqs", r"nhập\s+ngũ", r"quân\s+sự", r"bộ\s+đội", r"đi\s+lính", r"tại\s+ngũ",
+            r"lệnh\s+gọi", r"khám\s+tuyển", r"xã\s+đội", r"sinh\s+viên", r"học\s+sinh", r"sv"]
+_RX_ONTOPIC = _compile(_ONTOPIC)
+
+
+def mentions_nvqs(text: str) -> bool:
+    """Câu có nhắc tới chủ đề nghĩa vụ quân sự / tạm hoãn / sinh viên (khớp nguyên từ, chịu được câu không dấu)."""
+    accented, folded, _ = _RX_ONTOPIC
+    for low in {(text or "").lower(), text_norm.for_matching(text or "")}:
+        # câu có dấu chỉ so mẫu có dấu ("hoàn thành" không được khớp "hoãn"); câu gõ không dấu so mẫu bỏ dấu
+        rxs = folded if _fold(low) == low else accented
+        if any(rx.search(low) for rx in rxs):
+            return True
+    return False
 
 
 def screen_input(text: str):
@@ -515,6 +534,11 @@ def _answer(text: str, session) -> dict:
     if facts["y_do"] == "lach_luat":
         note("G_EVASION: model đánh dấu y_do=lach_luat — không tra căn cứ")
         return refuse_answer(clean, P.REFUSE_EVASION)
+    if facts["y_do"] == "ngoai_pham_vi" and session is not None and mentions_nvqs(clean):
+        # Bản demo: câu rất ngắn ("hoãn?", "em là sinh viên") hay bị bước trích coi là ngoài chủ đề. Câu có từ khóa của
+        # chủ đề thì không kết luận out_of_scope mà đi tiếp (thường là nhánh hỏi lại ở bước 4). Đường đo không đổi.
+        note("W_ONTOPIC: câu có từ khóa nghĩa vụ quân sự — không coi là ngoài chủ đề")
+        facts = dict(facts, y_do="hop_phap")
     if facts["y_do"] == "ngoai_pham_vi":
         note("G_OFFTOPIC: model đánh dấu y_do=ngoai_pham_vi — không tra căn cứ")
         return render("out_of_scope", P.OUT_OF_SCOPE, P.REDIRECT_OTHER)

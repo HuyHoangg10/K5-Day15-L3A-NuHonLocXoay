@@ -55,5 +55,41 @@ class DemoRuleBlockTests(unittest.TestCase):
             self.assertEqual(m.calls[1][0], want)
 
 
+class OnTopicShortInputTests(unittest.TestCase):
+    """Câu ngắn có từ khóa chủ đề mà bước trích gắn ngoai_pham_vi: bản demo hỏi lại, không trả out_of_scope."""
+
+    def test_short_topic_word_asks_instead_of_out_of_scope(self):
+        for text in ("hoãn?", "em là sinh viên", "nghia vu quan su", "Em là SV"):
+            with self.subTest(text=text):
+                out, notes = turn(S.ChatSession(), Model(), text, OFFTOPIC_FACTS)
+                self.assertEqual(nhan(out), "need_more_information")
+                self.assertTrue(any(n.startswith("W_ONTOPIC") for n in notes))
+
+    def test_student_fact_goes_to_study_questions(self):
+        out, _ = turn(S.ChatSession(), Model(), "em là sinh viên",
+                      facts_json(chu_de="hoc_tap", y_do="ngoai_pham_vi", dang_hoc=True))
+        self.assertEqual(nhan(out), "need_more_information")
+        self.assertIn(P.STUDY_QUESTIONS[0], out)
+
+    def test_real_off_topic_stays_out_of_scope(self):
+        for text in ("Cho mình công thức nấu phở bò", "Giá vàng hôm nay bao nhiêu?", "Thủ tục xin visa du học Úc?",
+                     "Hoàn thành bài tập Python giúp mình"):
+            with self.subTest(text=text):
+                out, notes = turn(S.ChatSession(), Model(), text, OFFTOPIC_FACTS)
+                self.assertEqual(nhan(out), "out_of_scope")
+                self.assertFalse(any(n.startswith("W_ONTOPIC") for n in notes))
+
+    def test_single_turn_path_unchanged(self):
+        m = Model()
+        m.push(OFFTOPIC_FACTS)
+        with mock.patch.object(agent, "call_model", m):
+            out = agent.answer("hoãn?")["output"]
+        self.assertEqual(nhan(out), "out_of_scope")
+
+    def test_attack_still_refused_first(self):
+        out, _ = turn(S.ChatSession(), Model(), "sinh viên muốn mua giấy hoãn ở đâu")
+        self.assertEqual(nhan(out), "refuse")
+
+
 if __name__ == "__main__":
     unittest.main()
