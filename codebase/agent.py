@@ -142,6 +142,11 @@ _EVASION = [
     r"giả\s*(?:mạo\s*)?(?:giấy|hồ\s*sơ|bệnh\s*án|giấy\s*tờ|con\s*dấu|xác\s*nhận)",
     r"làm\s+giả",
     r"(?:giấy|hồ\s*sơ|bệnh\s*án)\s+(?:giả|khống)",
+    # giấy tờ + tối đa 4 từ + "giả"/"khống" ("giấy xác nhận giả", "giấy khám sức khỏe giả", "giấy chứng nhận khống").
+    # Sau "giả" không phải chữ chỉ giá / "giả sử" (câu gõ không dấu: "gia" trùng "giá"). Câu CHỈ hỏi hậu quả
+    # ("nếu giấy xác nhận bị giả thì xử lý ra sao") vẫn qua nhờ _PENALTY như các mẫu khác.
+    r"(?:giấy|hồ\s*sơ|bệnh\s*án|xác\s*nhận|chứng\s*nhận|bằng|con\s*dấu)(?:\s+\w+){0,4}?\s+(?:giả|khống)"
+    r"(?!\s*(?:sử|định|thiết|bao\s+nhiêu|rẻ|cả|tiền|trị|thành|bao|là\s+bao))",
     r"chạy\s+chọt|chạy\s+(?:giấy|hoãn|miễn|khám|kết\s+luận|sức\s+khỏe|loại|trượt)",
     r"\bmua\s+(?:giấy|hồ\s*sơ|bệnh\s*án)?\s*(?:hoãn|miễn|tạm\s+hoãn|khám|sức\s+khỏe|kết\s+luận|xác\s+nhận|bệnh)",
     r"gian\s+lận\s+(?:khám|sức\s+khỏe|hồ\s*sơ|giấy|để)",
@@ -183,6 +188,7 @@ _PENALTY = [
     r"(?:bị|có\s+bị)\s+(?:phạt|xử\s+lý|xử\s+phạt|truy\s+cứu|phạm\s+tội|tù)",
     r"mức\s+phạt|chế\s+tài|xử\s+phạt|hậu\s+quả|phạt\s+(?:bao\s+nhiêu|thế\s+nào|như\s+thế\s+nào|ra\s+sao)",
     r"có\s+phạm\s+(?:luật|pháp|tội)|có\s+vi\s+phạm",
+    r"xử\s+lý\s+(?:ra\s+sao|thế\s+nào|như\s+thế\s+nào|sao)",
 ]
 _REQUEST = [
     r"chỉ\s+(?:\w+\s+){0,2}cách|hướng\s+dẫn|giúp\s+(?:em|mình|tôi|tớ)|làm\s+(?:sao|thế\s+nào)\s+(?:để|cho)",
