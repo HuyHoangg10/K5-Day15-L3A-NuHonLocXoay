@@ -66,6 +66,8 @@ LABEL_TEXT = {
     "safe_fallback": "⚠ Mình chưa thể nhận định trường hợp này",
 }
 SHORT_DISCLAIMER = "(Thông tin tham khảo; quyết định thuộc cơ quan có thẩm quyền.)"
+OFFTOPIC_HINT = ("Bạn có thể hỏi mình về việc tạm hoãn gọi nhập ngũ vì đang đi học, ví dụ: "
+                 "\"Em học cao đẳng chính quy năm nhất, chưa hoãn lần nào thì sao?\"")
 # từ nội bộ của prompt lọt vào lời model viết → cách nói người dùng hiểu
 _JARGON = [("văn bản trong kho", "văn bản luật mình có"), ("Ngữ cảnh", "Văn bản mình có"), ("ngữ cảnh", "văn bản mình có")]
 
@@ -100,6 +102,7 @@ def _sections(lines):
 def pretty(output: str, show_full_disclaimer: bool = True) -> str:
     """Đầu ra đã định dạng (NHAN / CAN_CU / Giải thích / …) → bản dễ đọc cho người xem. "LOI:" và chuỗi lạ: giữ nguyên."""
     import kb   # nạp trễ: demo_ui dùng được cả khi chưa nạp kho (friendly_error)
+    import prompts as P
     lines = (output or "").splitlines()
     if len(lines) < 2 or not lines[0].startswith("NHAN:") or not lines[1].startswith("CAN_CU:"):
         return output
@@ -116,6 +119,13 @@ def pretty(output: str, show_full_disclaimer: bool = True) -> str:
     if hoi:
         out += ["", "Mình cần biết thêm:"] + ["  • " + q.strip() for q in hoi.split(";") if q.strip()]
     viec = [x for x in sec.get("Việc cần làm:", []) if x]
+    offtopic = nhan == "out_of_scope" and not ids and expl == P.OUT_OF_SCOPE and viec == [P.REDIRECT_OTHER]
+    if offtopic:
+        # Câu không liên quan nghĩa vụ quân sự (nấu ăn, bóng đá…): không bảo người dùng hỏi Ban Chỉ huy quân sự, không
+        # kèm lưu ý về Hội đồng nghĩa vụ quân sự — chỉ nói mình giúp được gì. Bản gốc (/goc, đường eval) không đổi.
+        viec = []
+        sec.pop("Lưu ý:", None)
+        out += ["", OFFTOPIC_HINT]
     if viec:
         out += ["", "Việc bạn nên làm:"] + ["  " + (x if x[:1].isdigit() else "• " + x) for x in viec]
     names = []

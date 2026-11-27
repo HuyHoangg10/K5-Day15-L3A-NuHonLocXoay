@@ -91,5 +91,35 @@ class OnTopicShortInputTests(unittest.TestCase):
         self.assertEqual(nhan(out), "refuse")
 
 
+class OffTopicDisplayTests(unittest.TestCase):
+    """Hiển thị: câu ngoài chủ đề hẳn không kèm bước "hỏi Ban Chỉ huy quân sự" và lưu ý về Hội đồng NVQS."""
+
+    def _offtopic_output(self):
+        m = Model()
+        m.push(OFFTOPIC_FACTS)
+        with mock.patch.object(agent, "call_model", m):
+            return agent.answer("Cho mình công thức nấu phở bò")["output"]
+
+    def test_offtopic_pretty_has_no_military_redirect(self):
+        raw = self._offtopic_output()
+        self.assertIn(P.REDIRECT_OTHER, raw)               # bản gốc (/goc, eval) giữ nguyên
+        nice = demo_ui.pretty(raw)
+        self.assertNotIn("Ban Chỉ huy", nice)
+        self.assertNotIn("Lưu ý", nice)
+        self.assertIn(demo_ui.OFFTOPIC_HINT, nice)
+        self.assertTrue(nice.startswith(demo_ui.LABEL_TEXT["out_of_scope"]))
+
+    def test_health_out_of_scope_keeps_redirect(self):
+        raw = agent.render("out_of_scope", P.OUT_OF_SCOPE, P.REDIRECT_HEALTH)["output"]
+        nice = demo_ui.pretty(raw)
+        self.assertIn("Hội đồng khám sức khỏe", nice)
+        self.assertNotIn(demo_ui.OFFTOPIC_HINT, nice)
+
+    def test_model_out_of_scope_with_steps_keeps_them(self):
+        raw = agent.render("out_of_scope", "Câu này về xử phạt, ngoài phạm vi.",
+                           ["Đọc Điều 10.", P.REDIRECT_OTHER])["output"]
+        self.assertIn("Ban Chỉ huy", demo_ui.pretty(raw))
+
+
 if __name__ == "__main__":
     unittest.main()
