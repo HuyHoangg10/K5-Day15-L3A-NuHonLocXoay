@@ -71,6 +71,14 @@ DOMAIN_RULES = """4. Tạm hoãn vì học tập chỉ áp dụng trong MỘT kh
 6. Không đủ căn cứ hoặc dữ kiện then chốt còn mơ hồ thì chọn "need_more_information". Không đoán, không tự thêm dữ kiện
    người dùng chưa nói (vd không tự cho là hệ chính quy). eligible_for_review chỉ khi đã biết trình độ và hệ chính quy
    (hoặc đang học phổ thông); thiếu thì need_more_information.
+6a. "not_eligible" chỉ khi chính người dùng ĐÃ NÓI dữ kiện làm họ không thuộc diện (vd đã được tạm hoãn ở khóa trước,
+   khóa học kéo dài vì nợ môn, đã thôi học) hoặc hiểu sai quy định. Nếu kết luận "không" phải dựa vào dữ kiện người dùng
+   CHƯA nói (đã từng được tạm hoãn ở khóa trước chưa, đã làm xong thủ tục nhập học chưa) hoặc ngữ cảnh không có quy định
+   riêng cho tình huống đó (vd bảo lưu, tạm nghỉ học) thì chọn "need_more_information": nêu nguyên tắc trong ly_do,
+   hỏi đúng dữ kiện còn thiếu trong can_hoi_them, và vẫn ghi điểm luật về tạm hoãn vì học tập vào can_cu.
+   Mục 6a chỉ dùng để tránh kết luận "không"; KHÔNG dùng để hoãn kết luận "có": người dùng đang học, đã nói trình độ và
+   hệ chính quy / tập trung (hoặc đang học phổ thông) và không nhắc tới khóa, trình độ hay lần tạm hoãn trước thì chọn
+   "eligible_for_review", không hỏi thêm về quá trình học trước đó.
 6b. can_cu ghi ĐỦ mọi điểm luật mà ly_do dựa vào (vd ly_do phân biệt tạm hoãn với miễn thì có cả điểm luật về miễn;
    ly_do nói ai quyết định tạm hoãn thì có cả điều luật nói việc đó).
 7. Chủ đề ngoài lát cắt (được báo trong phần "Chủ đề") thì nhan PHẢI là "out_of_scope"; có thể dẫn điểm luật liên quan trong ngữ cảnh.
