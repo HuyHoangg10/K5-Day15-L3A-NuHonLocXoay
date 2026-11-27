@@ -82,7 +82,7 @@ class RequestAndUsageTests(ProviderTestCase):
         self.assertEqual(req.get_header("Authorization"), "Bearer " + FAKE_KEY)
         self.assertEqual(timeout, 30)
         self.assertEqual(body["model"], "deepseek-flash")
-        self.assertEqual(body["temperature"], 0)
+        self.assertNotIn("temperature", body)  # run-1: model gpt-6.1-terra rejects temperature, so it is omitted
         self.assertEqual(body["max_tokens"], 700)
         self.assertEqual(body["thinking"], {"type": "disabled"})
         self.assertNotIn("response_format", body)
@@ -157,7 +157,7 @@ class OpenAITests(ProviderTestCase):
         self.assertEqual(body["max_completion_tokens"], 700)
         self.assertNotIn("max_tokens", body)
         self.assertNotIn("thinking", body)
-        self.assertEqual(body["temperature"], 0)
+        self.assertNotIn("temperature", body)  # run-1: model gpt-6.1-terra rejects temperature, so it is omitted
         self.assertEqual(out["model"], "gpt-4o-mini")   # bản chốt 2024-07-18 → giữ tên để tra giá
 
 
