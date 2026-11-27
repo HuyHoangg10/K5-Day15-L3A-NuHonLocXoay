@@ -123,8 +123,11 @@ def user_quyet_dinh(text: str, facts: dict, context: str) -> str:
 # ---------------------------------------------------------------- câu cố định (code dùng, không qua model)
 CHECKED_DATE = "27/11/2026"   # ngày nhóm kiểm tra kho kb-nvqs (kb-nvqs/README.md)
 
-DISCLAIMER = ("Đây là thông tin tham khảo, không phải tư vấn pháp lý hay quyết định chính thức: việc tạm hoãn do Chủ tịch "
-              "Ủy ban nhân dân cấp tỉnh quyết định theo hồ sơ thật của bạn, và kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.")
+# B8: code nối câu này vào MỌI câu trả lời trừ refuse và lỗi. Cơ quan nêu ở đây đều có trong kho: Ban Chỉ huy quân sự cấp xã,
+# Hội đồng nghĩa vụ quân sự cấp xã (hỏi đáp Bộ Quốc phòng); Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn (Điều 42 Luật NVQS).
+DISCLAIMER = ("Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: "
+              "Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân "
+              "cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.")
 
 SAFE_SENTENCE = ("Mình chưa đủ căn cứ để nhận định tình huống này nên không đưa ra kết luận. "
                  "Bạn nên hỏi trực tiếp Ban Chỉ huy quân sự cấp xã nơi cư trú, và mang theo giấy tờ liên quan. "

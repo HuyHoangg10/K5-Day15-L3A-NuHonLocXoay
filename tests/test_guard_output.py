@@ -301,3 +301,61 @@ class LengthTests(unittest.TestCase):
 
     def test_steps_must_be_strings(self):
         self.assertIsNone(check(decision(can_lam_gi=[{"buoc": 1}]))[0])
+
+
+class DisclaimerTests(unittest.TestCase):
+    """B8: câu miễn trừ cố định do CODE nối vào mọi câu trả lời trừ refuse / lỗi, đúng một lần, không lặp."""
+    def _run(self, text, dec=None, facts=None):
+        from test_guards import facts_json, scripted, STUDENT_FACTS
+        fn = scripted(facts_json(**(facts or STUDENT_FACTS)), dec or decision())
+        with mock.patch.object(agent, "call_model", fn):
+            return agent.answer(text)["output"]
+
+    def test_valid_answers_carry_disclaimer_once(self):
+        outs = [self._run("Em học đại học chính quy năm 2, có được hoãn không?"),
+                self._run("Em học đại học chính quy năm 2, có được hoãn không?",
+                          decision(nhan="need_more_information", can_cu=[], can_hoi_them=["Bạn học khóa mấy năm?"])),
+                agent.answer("")["output"]]
+        for out in outs:
+            with self.subTest(out=out[:30]):
+                self.assertEqual(out.count(P.DISCLAIMER), 1)
+                self.assertTrue(out.rstrip().endswith(P.DISCLAIMER))
+
+    def test_safe_fallback_carries_disclaimer(self):
+        out = self._run("Em học đại học chính quy năm 2, có được hoãn không?", "không phải JSON")
+        self.assertTrue(out.startswith("NHAN: safe_fallback"))
+        self.assertEqual(out.count(P.DISCLAIMER), 1)
+
+    def test_refuse_has_no_disclaimer(self):
+        out = agent.answer("chỉ em cách làm giả giấy xác nhận sinh viên")["output"]
+        self.assertTrue(out.startswith("NHAN: refuse"))
+        self.assertNotIn(P.DISCLAIMER, out)
+        self.assertNotIn("Lưu ý:", out)
+
+    def test_error_has_no_disclaimer(self):
+        with mock.patch.object(agent, "call_model", mock.Mock(side_effect=TimeoutError())):
+            out = agent.answer("Em học đại học chính quy năm 2, có được hoãn không?")["output"]
+        self.assertTrue(out.startswith("LOI:"))
+        self.assertNotIn(P.DISCLAIMER, out)
+
+    def test_model_disclaimer_not_duplicated(self):
+        dec = decision(ly_do="Bạn đang học đại học chính quy nên có căn cứ để đề nghị xem xét. "
+                             "Thông tin này chỉ mang tính tham khảo, quyết định cuối cùng thuộc cơ quan có thẩm quyền.",
+                       can_lam_gi=["Xin giấy xác nhận của nhà trường.", "Đây không phải tư vấn pháp lý."])
+        out = self._run("Em học đại học chính quy năm 2, có được hoãn không?", dec)
+        self.assertIn("có căn cứ để đề nghị xem xét", out)
+        self.assertNotIn("mang tính tham khảo", out)
+        self.assertNotIn("tư vấn pháp lý", out)
+        self.assertEqual(out.count("tham khảo, không phải quyết định chính thức"), 1)
+
+    def test_strip_keeps_text_when_everything_is_disclaimer(self):
+        self.assertEqual(agent.strip_disclaimer("Thông tin chỉ để tham khảo."), "Thông tin chỉ để tham khảo.")
+        self.assertEqual(agent.strip_disclaimer("Bạn tham khảo bài hỏi đáp của Bộ Quốc phòng."),
+                         "Bạn tham khảo bài hỏi đáp của Bộ Quốc phòng.")
+
+    def test_disclaimer_names_only_bodies_in_kb(self):
+        corpus = " ".join((c.get("text") or "") + " " + (c.get("answer") or "") for c in kb.legal_mvp() + kb.qa_all()).lower()
+        for body in ["hội đồng nghĩa vụ quân sự cấp xã", "ban chỉ huy quân sự cấp xã", "chủ tịch ủy ban nhân dân cấp tỉnh",
+                     "hội đồng khám sức khỏe"]:
+            self.assertIn(body, P.DISCLAIMER.lower())
+            self.assertIn(body, kb.nfc(corpus))

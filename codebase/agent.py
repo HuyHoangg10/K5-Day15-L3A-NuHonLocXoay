@@ -236,8 +236,23 @@ def _date_vn(iso: str) -> str:
     return "%s/%s/%s" % (m.group(3), m.group(2), m.group(1)) if m else P.CHECKED_DATE
 
 
-def render(nhan: str, giai_thich: str, viec: str = "", passages=None, tham_khao=None, hoi_them=None) -> dict:
-    """Bước 8. Dòng 1 LUÔN là `NHAN: <nhan>`, dòng 2 LUÔN là `CAN_CU: <id,...>` (trống nếu không có) để chấm bằng code."""
+# B8: câu model tự viết kiểu miễn trừ ("chỉ để tham khảo", "quyết định cuối cùng thuộc…") bị bỏ, vì code đã nối DISCLAIMER.
+_DISCLAIMER_LIKE = re.compile(r"(?:chi\s+(?:mang\s+tinh\s+|de\s+|co\s+tinh\s+)?tham\s+khao|thong\s+tin\s+tham\s+khao"
+                              r"|khong\s+phai\s+(?:la\s+)?(?:tu\s+van\s+phap\s+ly|quyet\s+dinh\s+chinh\s+thuc)"
+                              r"|quyet\s+dinh\s+cuoi\s+cung\s+thuoc)")
+
+
+def strip_disclaimer(text: str) -> str:
+    """Bỏ các câu lặp ý miễn trừ trong chữ model viết. Bỏ hết thì giữ nguyên (không để trống phần giải thích)."""
+    parts = re.split(r"(?<=[.!?])\s+", text or "")
+    kept = [x for x in parts if not _DISCLAIMER_LIKE.search(kb.fold(x))]
+    return " ".join(kept).strip() or (text or "")
+
+
+def render(nhan: str, giai_thich: str, viec: str = "", passages=None, tham_khao=None, hoi_them=None,
+           disclaimer: bool = True) -> dict:
+    """Bước 8. Dòng 1 LUÔN là `NHAN: <nhan>`, dòng 2 LUÔN là `CAN_CU: <id,...>` (trống nếu không có) để chấm bằng code.
+    disclaimer: nối câu miễn trừ cố định (B8) vào mọi câu trả lời trừ refuse; câu lỗi (LOI:) không qua render."""
     passages = [p for p in (passages or []) if p]
     lines = ["NHAN: " + nhan, "CAN_CU: " + ",".join(p["id"] for p in passages), "", "Giải thích: " + giai_thich]
     if hoi_them:
@@ -255,7 +270,8 @@ def render(nhan: str, giai_thich: str, viec: str = "", passages=None, tham_khao=
         lines.append("Tham khảo (hỏi đáp chính thức, không phải căn cứ pháp lý):")
         for q in tham_khao:
             lines.append("- %s — %s; %s; kiểm tra ngày %s" % (q["id"], q.get("title", ""), q.get("url", ""), _date_vn(q.get("ngay_kiem_tra"))))
-    lines.append("Lưu ý: " + P.DISCLAIMER)
+    if disclaimer:
+        lines.append("Lưu ý: " + P.DISCLAIMER)
     return {"output": "\n".join(lines)}
 
 
@@ -280,7 +296,7 @@ def refuse_answer(text: str, message: str, cite: bool = True) -> dict:
         if any(w in kb.fold(text) for w in ("kham", "suc khoe")):
             ids.append(REFUSE_CAN_CU_KHAM)
     ids = [i for i in ids if i in kb.legal_ids()]
-    return render("refuse", message, passages=[kb.get_chunk(i) for i in ids])
+    return render("refuse", message, passages=[kb.get_chunk(i) for i in ids], disclaimer=False)
 
 
 # ================================================================ bước 7: kiểm đầu ra
@@ -461,10 +477,11 @@ def answer(text: str) -> dict:
 
     # 8. Định dạng đầu ra
     note("quyết định: " + decision["nhan"])
-    viec = "; ".join(decision["can_lam_gi"])
+    steps = [strip_disclaimer(x) for x in decision["can_lam_gi"]]
+    viec = "; ".join(x for x in steps if not _DISCLAIMER_LIKE.search(kb.fold(x)))
     if decision["nhan"] == "out_of_scope":
         viec = (viec + " " if viec else "") + P.REDIRECT_OTHER
-    out = render(decision["nhan"], decision["ly_do"], viec,
+    out = render(decision["nhan"], strip_disclaimer(decision["ly_do"]), viec,
                  [kb.get_chunk(c) for c in decision["can_cu"]],
                  [kb.get_chunk(q) for q in decision["tham_khao"]], decision["can_hoi_them"])
     if len(out["output"]) > MAX_OUTPUT_CHARS:
