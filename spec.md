@@ -35,13 +35,36 @@ Data BTC cấp đã dùng (nếu có — không commit nguyên file): __
 ## §4. Thiết kế *(guide 2.2, 3.2)*
 - **Lát cắt MỘT CÂU** (1 người dùng · 1 việc · 1 quyết định AI · 1 kết quả):
 - Không làm (≥3 điều):
-- **Sơ đồ** (ảnh / Mermaid / draw.io): [chèn ở đây]
-- **Hình dạng:** [ ] workflow cố định · [ ] một agent · [ ] nhiều agent — 2 dòng lý do, và vì sao **không** chọn hình dạng phức tạp hơn:
+- **Sơ đồ** (Mermaid):
+
+  ```mermaid
+  flowchart LR
+    A["Đầu vào<br/>1 câu, 1 lượt"] --> B["Tiền xử lý<br/>NFKC · che CCCD, SĐT, email"]
+    B --> C{"Chặn đầu vào<br/>lách luật / chèn lệnh"}
+    C -- "chặn" --> R1["NHAN: tu_choi<br/>không gọi model"]
+    C -- "qua" --> D["Trích dữ kiện<br/>model → JSON"]
+    D -- "y_do lách luật / ngoài phạm vi" --> R2["tu_choi / ngoai_pham_vi"]
+    D --> E{"Đủ dữ kiện<br/>bắt buộc?"}
+    E -- "thiếu" --> R3["NHAN: can_hoi_them<br/>nêu cần thêm gì"]
+    E -- "đủ" --> F["Tra cứu<br/>tra_dieu_luat → data/kb"]
+    F --> G["Quyết định<br/>model → JSON"]
+    G --> H{"Kiểm đầu ra<br/>JSON · nhãn · mã trong kho · cụm tuyệt đối"}
+    H -- "hỏng" --> S["Câu an toàn cố định"]
+    H -- "đạt" --> O["Đầu ra<br/>NHAN + giải thích + việc cần làm + nguồn + miễn trừ"]
+    R1 --> O
+    R2 --> O
+    R3 --> O
+    S --> O
+  ```
+
+  Lỗi model / quá thời gian ở bất kỳ lần gọi nào: trả thông báo lỗi lịch sự (`LOI: …`), không bịa. Mã: `codebase/agent.py`; chữ cố định và prompt: `codebase/prompts.py`.
+- **Hình dạng:** [x] workflow cố định · [ ] một agent · [ ] nhiều agent — luồng 9 bước cố định vì mỗi câu thử là MỘT lượt và mỗi bước có đầu ra kiểm được bằng code (nhãn, mã trong kho), nên mọi chỗ chặn nằm ở chỗ biết trước, không để model tự chọn bước.
+  Không chọn một agent / nhiều agent vì cho model tự chọn công cụ thêm đường đi khó kiểm và tốn token, trong khi lát cắt chỉ cần một lần tra căn cứ rồi một quyết định.
 - **AI dựa vào đâu** — mỗi công cụ (khớp `codebase/tools.py`):
 
   | Công cụ | Input | Output | Tác động ra ngoài? |
   |---|---|---|---|
-  |  |  |  |  |
+  | `tra_dieu_luat(chu_de)` | `chu_de`: `hoc_tap`, `suc_khoe` hoặc rỗng (mọi đoạn) | danh sách đoạn `{code, van_ban, hieu_luc, ngay_tai, url, text}` từ `data/kb/dieu41.json` | không (chỉ đọc kho; kho hiện là GIẢ) |
 
 - **Mức tự động:** [ ] AI gợi ý, người quyết · [ ] AI tự làm khi chắc, chuyển người khi không · [ ] AI tự làm — lý do (sai thì ai chịu gì, sửa đắt hay rẻ):
 - **Chỗ chặn rủi ro** (rủi ro lớn nhất của lát cắt bị chặn ở đâu, bằng gì):
