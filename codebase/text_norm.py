@@ -72,14 +72,21 @@ _HOMOGLYPH = str.maketrans({
 })
 # Leetspeak: chỉ đổi số / ký hiệu NẰM TRONG một từ có cả chữ ("g1ả", "tr0n", "syst3m"); "2024", "lớp 12" giữ nguyên.
 _LEET = str.maketrans({"0": "o", "1": "i", "3": "e", "4": "a", "5": "s", "7": "t", "8": "b", "9": "g", "@": "a", "$": "s"})
-_LEET_WORD = re.compile(r"(?=[\w@$]*[^\W\d_])(?=[\w@$]*[\d@$])[\w@$]+")
+_WORDISH = re.compile(r"[\w@$]+")          # tách từ một lượt (tuyến tính); kiểm "có cả chữ và số" bằng Python
+
+
+def _leet_word(m) -> str:
+    w = m.group(0)
+    if any(c.isalpha() for c in w) and any(c.isdigit() or c in "@$" for c in w):
+        return w.translate(_LEET)
+    return w
 
 
 def deobfuscate(text: str) -> str:
     """Ký tự vô hình → dấu cách (để "bỏ qua\\u200bhướng dẫn" không dính thành một từ), chữ giống Latin → Latin, leetspeak."""
     t = unicodedata.normalize("NFKC", text or "")
     t = _INVISIBLE.sub(" ", t).translate(_HOMOGLYPH)
-    return _LEET_WORD.sub(lambda m: m.group(0).translate(_LEET), t)
+    return _WORDISH.sub(_leet_word, t)
 
 
 def for_screening(text: str) -> str:

@@ -58,6 +58,7 @@ MAX_CONTEXT_CHARS = 40000     # ngữ cảnh dài hơn thì ghi cảnh báo vào
 # B7: giới hạn độ dài. Đầu vào dài hơn MAX_INPUT_CHARS (sau làm sạch) → nhắc rút gọn, không gọi model.
 # Đầu ra: cắt từng trường model viết, rồi cả câu trả lời không quá MAX_OUTPUT_CHARS (quá → safe_fallback).
 MAX_INPUT_CHARS = 4000
+HUGE_INPUT_FACTOR = 5         # bản demo: > 5 × MAX_INPUT_CHARS thì nhắc rút gọn ngay, không chạy bước chặn
 MAX_OUTPUT_CHARS = 4000
 MAX_LY_DO_CHARS = 800
 MAX_STEPS, MAX_STEP_CHARS = 4, 300
@@ -113,7 +114,9 @@ REFUSE_CAN_CU_KHAM = "nd218-d9"
 
 # ================================================================ bước 1: tiền xử lý
 
-_RE_EMAIL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+# (?<![\w.+-]): chỉ thử khớp ở ĐẦU một cụm ký tự — kết quả che như cũ, nhưng tuyến tính (không có nó, một "từ" dán dài
+# 100 000 ký tự không có @ tốn ~95 giây vì regex quét lại cả cụm ở mọi vị trí bắt đầu).
+_RE_EMAIL = re.compile(r"(?<![\w.+-])[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
 # CCCD 12 số: liền, hoặc nhóm 3-3-3-3 / 4-4-4 cách nhau dấu cách, chấm, gạch ("001 203 004 567", "079.203.012.345")
 _RE_CCCD = re.compile(r"(?<!\d)(?:\d{12}|\d{3}(?:[\s.\-]\d{3}){3}|\d{4}(?:[\s.\-]\d{4}){2})(?!\d)")
 # SĐT VN: 0 / 84 / +84 / (+84) + 9 số, giữa các số được có dấu cách, chấm, gạch ("0912.345.678", "(+84) 912-345-678")
@@ -536,6 +539,13 @@ def _answer(text: str, session) -> dict:
     if not clean:
         note("G_EMPTY: đầu vào rỗng — không gọi model")
         return render("need_more_information", "Mình chưa nhận được nội dung nào.", hoi_them=[P.TOPIC_QUESTION])
+
+    # Bản demo (có phiên): văn bản dán quá dài (> HUGE_INPUT_FACTOR lần giới hạn) → nhắc rút gọn ngay, không chạy bước chặn
+    # trên hàng chục nghìn ký tự (tránh đứng hình). Không gọi model nên không có gì để lọt. Đường đo không đổi.
+    if session is not None and len(clean) > HUGE_INPUT_FACTOR * MAX_INPUT_CHARS:
+        note("G_LEN_IN: đầu vào %d ký tự > %d (bản demo, không chạy bước chặn) — không gọi model"
+             % (len(clean), HUGE_INPUT_FACTOR * MAX_INPUT_CHARS))
+        return render("need_more_information", P.TOO_LONG % MAX_INPUT_CHARS, hoi_them=P.STUDY_QUESTIONS)
 
     # 2. Chặn đầu vào (không gọi model). Chặn TRƯỚC khi xét độ dài: câu dài có chèn lệnh vẫn là refuse.
     hit = screen_input(clean)
