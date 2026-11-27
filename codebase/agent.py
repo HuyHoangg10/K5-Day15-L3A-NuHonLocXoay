@@ -228,6 +228,9 @@ _EVASION = [
     r"không\s+cần\s+(?:bị\s+)?(?:bệnh|ốm)\s+thật",
     r"(?:hoãn|miễn|giấy|khám|lính)[^.?!\n]{0,40}trọn\s+gói|trọn\s+gói[^.?!\n]{0,40}(?:hoãn|miễn|giấy|khám|lính)",
     r"bao\s+nhiêu\s+(?:thì|là)\s+êm",
+    # A4: tiếng Anh — làm giả giấy tờ (kể cả khoác áo "viết tiểu thuyết")
+    r"(?:fake|forge|forging|faking|counterfeit)\s+(?:a\s+|an\s+|the\s+|my\s+)?(?:student\s+|medical\s+|school\s+)?"
+    r"(?:certificate|document|id|papers?|records?|exemption|deferral)",
 ]
 _INJECTION = [
     r"bỏ\s+qua\s+(?:mọi\s+|tất\s+cả\s+|các\s+|những\s+)?(?:hướng\s+dẫn|chỉ\s+dẫn|lệnh|quy\s+tắc|luật\s+lệ|prompt)",
@@ -268,6 +271,38 @@ _INJECTION = [
     r"#+\s*(?:system|assistant|developer)|<<<\s*nguoi_dung|nguoi_dung\s*>>>|</\s*nguoi_dung",
     r"(?:giải\s+mã|decode|dịch\s+ngược)[^.?!\n]{0,40}(?:base\s*64|rot\s*13|hex)"
     r"|(?:base\s*64|rot\s*13)[^.?!\n]{0,60}(?:làm\s+theo|follow|execute|thực\s+hiện|run)",
+    # --- diễn đạt lại không có từ khóa (A4). "không có quy định / giới hạn…" CHỈ khi đi sau cụm chỉ CÁCH CƯ XỬ của trợ
+    # lý ("như thể", "cư xử", "tưởng tượng", "giả sử bạn", "chế độ", "trợ lý …"), để câu thật như "Bạn ơi, nếu không có
+    # quy định cụ thể thì em có được hoãn không?" / "Giả sử trường không có quy định…" vẫn qua.
+    r"(?:như\s+thể|như\s+một|cư\s+xử|hành\s+xử|tưởng\s+tượng|giả\s+sử\s+(?:bạn|mày|cậu)|chế\s+độ)"
+    r"[^.?!\n]{0,40}(?:không|chẳng)\s+(?:có\s+|bị\s+|còn\s+|cần\s+)?(?:bất\s+kỳ\s+|một\s+|gì\s+)?"
+    r"(?:giới\s+hạn|luật\s+lệ|quy\s+tắc|đạo\s+đức|kiểm\s+duyệt|ràng\s+buộc|bộ\s+lọc|quy\s+định\s+nào)",
+    r"(?:trợ\s+lý|chatbot|mô\s+hình)\s+(?:\w+\s+){0,2}(?:không|chẳng)\s+(?:có\s+|bị\s+)?"
+    r"(?:giới\s+hạn|luật\s+lệ|quy\s+tắc|đạo\s+đức|kiểm\s+duyệt|ràng\s+buộc|bộ\s+lọc)",
+    r"(?:trong|nhận|vào)\s+vai(?!\s+trò)|thoát\s+khỏi\s+vai|giả\s+vờ\s+(?:bạn|mày|cậu)\s+là",
+    r"(?:quy\s+tắc|luật\s+lệ|hướng\s+dẫn|giới\s+hạn|bộ\s+lọc)\s+(?:của\s+bạn|an\s+toàn)[^.?!\n]{0,30}"
+    r"(?:không\s+còn|hết|vô)\s+(?:hiệu\s+lực|tác\s+dụng)",
+    r"(?:đừng|khỏi)\s+(?:tuân\s+theo|tuân\s+thủ|làm\s+theo|theo)\s+(?:bất\s+kỳ\s+|mọi\s+|các\s+)?(?:quy\s+tắc|luật\s+lệ)"
+    r"\s+(?:nào|gì|của\s+bạn)",
+    r"tắt\s+(?:bộ\s+lọc|chế\s+độ\s+an\s+toàn|kiểm\s+duyệt)",
+    r"(?:bạn|mày|cậu)\s+(?:được\s+phép|có\s+thể)\s+nói\s+(?:bất\s+cứ|bất\s+kỳ|mọi)\s+(?:điều|thứ)"
+    r"|làm\s+theo\s+mọi\s+yêu\s+cầu\s+của\s+(?:em|tôi|tao|mình)",
+    r"(?:người\s+ta|nhà\s+phát\s+triển|ai\s+đó)\s+(?:đã\s+)?(?:dặn|cài|lập\s+trình|thiết\s+lập)\s+(?:cho\s+)?(?:bạn|mày)",
+    r"(?:đoạn|phần|lời)\s+(?:mở\s+đầu|đầu\s+tiên)\s+(?:của\s+)?(?:cuộc\s+trò\s+chuyện|mà\s+bạn|bạn\s+nhận)",
+    r"(?:behave|act|respond|answer|reply|speak|talk)\s+(?:as\s+if|like)[^.?!\n]{0,40}(?:no|without)\s+(?:any\s+)?"
+    r"(?:rules|limits|restrictions|ethics|guidelines|filters?|censorship|morals)",
+    r"(?:suppose|imagine|pretend|hypothetically|let'?s\s+play)[^.?!\n]{0,30}you[^.?!\n]{0,30}"
+    r"(?:(?:no|without)\s+(?:any\s+)?(?:rules|limits|restrictions|guidelines|filters?|censorship|ethics)"
+    r"|unfiltered|unrestricted|uncensored)",
+    r"rules\s+(?:don'?t|do\s+not)\s+apply\s+(?:to\s+)?(?:you|this\s+(?:conversation|chat))",
+    r"(?:you\s+are|you're)\s+(?:now\s+)?free\s+(?:from|of)\s+(?:all\s+|any\s+)?(?:rules|policies|restrictions|guidelines)",
+    r"(?:disable|turn\s+off|bypass)\s+(?:your|all\s+your)\s+(?:safety\s+|content\s+|moderation\s+)?"
+    r"(?:filters?|guardrails|restrictions|censorship|rules)|(?:disable|turn\s+off)\s+(?:the\s+)?safety\s+filters?",
+    r"(?:without|no)\s+(?:any\s+)?censorship|uncensored|unfiltered",
+    r"what\s+(?:were|was)\s+you\s+(?:told|given|instructed)|(?:instructions?|rules)\s+you\s+(?:were|have\s+been)\s+given"
+    r"|(?:summari[sz]e|paraphrase|translate|output|print|show|reveal)\s+(?:all\s+)?(?:of\s+)?your\s+(?:\w+\s+)?"
+    r"(?:instructions?|configuration|config|setup|system\s+message)",
+    r"(?:speak|act|respond)\s+as\s+(?:dan|stan|aim|dude)",
 ]
 # Từ khóa chèn lệnh so trên bản "ép liền" (text_norm.squash: chỉ còn a–z) — bắt chữ cách quãng, chèn ký tự ("b*ỏ q*ua",
 # "s y s t e m p r o m p t", "ig-nore"). Mất ranh giới từ nên chỉ dùng cụm dài, rất đặc trưng, không gặp trong câu hỏi thường.
