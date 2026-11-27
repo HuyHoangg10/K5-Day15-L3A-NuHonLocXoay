@@ -521,6 +521,7 @@ def answer(text: str, session=None) -> dict:
     if session is None:
         return _answer(text, None)
     session._turn_text = ""
+    session._pending = None       # dữ kiện của một lượt trước bị lỗi giữa chừng không được gộp vào lượt này
     out = _answer(text, session)
     session.record(session._turn_text, out.get("output", ""))
     return out
