@@ -144,8 +144,37 @@ def _sections(lines):
     return sec
 
 
-def pretty(output: str, show_full_disclaimer: bool = True) -> str:
-    """Đầu ra đã định dạng (NHAN / CAN_CU / Giải thích / …) → bản dễ đọc cho người xem. "LOI:" và chuỗi lạ: giữ nguyên."""
+def _fold(s: str) -> str:
+    import unicodedata
+    s = unicodedata.normalize("NFD", (s or "").lower()).replace("đ", "d")
+    return " ".join("".join(c for c in s if unicodedata.category(c) != "Mn").split())
+
+
+# A1: dấu hiệu câu đòi đổi vai / lộ prompt / bỏ quy định (so trên bản bỏ dấu) và dấu hiệu gian lận giấy tờ / trốn tránh.
+# Chỉ dùng để CHỌN CÂU TỪ CHỐI hiển thị cho đúng loại; nhãn (refuse) và bản gốc không đổi.
+_INJECTION_HINTS = ("prompt", "prompts", "instruction", "instructions", "system", "chi dan", "huong dan cua ban", "huong dan he thong",
+                    "huong dan dau tien", "huong dan goc", "cau hinh", "nhap vai", "dong vai", "gia vo", "pretend",
+                    "roleplay", "role play", "act as", "jailbreak", "bo qua", "ignore", "khong bi gioi han",
+                    "khong co gioi han", "khong co quy dinh", "khong can theo quy dinh", "khong co dao duc",
+                    "unrestricted", "no rules", "without rules", "no restrictions", "developer mode", "che do",
+                    "tu gio ban la", "ban la mot", "you are now", "from now on")
+_EVASION_HINTS = ("gia giay", "lam gia", "giay gia", "mua giay", "mua hoan", "kham thay", "kham ho", "chay hoan",
+                  "chay chot", "hoi lo", "dut lot", "tron", "lach luat", "fake", "gian lan", "khai man", "khai gian")
+
+
+def refusal_is_injection(user_text: str) -> bool:
+    """Câu bị từ chối là chèn lệnh / đòi lộ prompt (không phải nhờ gian lận giấy tờ)?"""
+    import re
+    t = _fold(user_text)
+
+    def has(hints):
+        return re.search(r"(?<!\w)(?:%s)(?!\w)" % "|".join(re.escape(h) for h in hints), t) is not None
+    return has(_INJECTION_HINTS) and not has(_EVASION_HINTS)
+
+
+def pretty(output: str, show_full_disclaimer: bool = True, user_text: str = None) -> str:
+    """Đầu ra đã định dạng (NHAN / CAN_CU / Giải thích / …) → bản dễ đọc cho người xem. "LOI:" và chuỗi lạ: giữ nguyên.
+    user_text (tùy chọn, chỉ app truyền): câu người dùng vừa gõ — để chọn câu từ chối đúng loại (A1)."""
     import kb   # nạp trễ: demo_ui dùng được cả khi chưa nạp kho (friendly_error)
     import prompts as P
     lines = (output or "").splitlines()
@@ -158,6 +187,9 @@ def pretty(output: str, show_full_disclaimer: bool = True) -> str:
     expl = " ".join(sec.get("Giải thích:", [])).strip()
     for a, b in _JARGON:
         expl = expl.replace(a, b)
+    if nhan == "refuse" and expl == P.REFUSE_EVASION and user_text and refusal_is_injection(user_text):
+        # Model gắn y_do=lach_luat cho câu đòi đổi vai / lộ prompt → câu từ chối về chèn lệnh, không dẫn Điều 10 (làm giả)
+        expl, ids = P.REFUSE_INJECTION, []
     if expl:
         out.append(expl)
     hoi = " ".join(sec.get("Cần biết thêm:", [])).strip()

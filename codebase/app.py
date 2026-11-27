@@ -176,7 +176,8 @@ def main() -> int:
         last_raw = output
         nice = demo_ui.friendly_error(output, events)
         # câu báo lỗi thân thiện ngắn, in nguyên; câu trả lời dài thì ngắt dòng theo độ rộng cửa sổ
-        print(nice if nice else demo_ui.wrap(demo_ui.pretty(output, show_full_disclaimer=not shown_disclaimer)))
+        print(nice if nice else demo_ui.wrap(demo_ui.pretty(output, show_full_disclaimer=not shown_disclaimer,
+                                                            user_text=text)))
         shown_disclaimer = shown_disclaimer or "Lưu ý:" in output
         t = demo_ui.step_timings(events, time.perf_counter() - t0)
         print("   (model: %s · gọi model %d lần · công cụ %d lần · token vào %d / ra %d · %.1f s: trích %.1f, tra cứu %.1f, "
