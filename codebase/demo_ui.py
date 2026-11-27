@@ -54,6 +54,87 @@ def friendly_error(output: str = "", events=None, exc: BaseException = None):
     return FRIENDLY[classify(" | ".join(clues))]
 
 
+# ---------------------------------------------------------------- hiển thị đẹp cho người xem demo
+# Chỉ đổi CÁCH TRÌNH BÀY đầu ra đã kiểm (không đổi nhãn, căn cứ, nội dung). Lệnh /goc trong app.py in bản gốc
+# (dòng NHAN / CAN_CU để chấm bằng code).
+LABEL_TEXT = {
+    "eligible_for_review": "✅ Có căn cứ để đề nghị xem xét tạm hoãn",
+    "not_eligible": "⛔ Thường không thuộc diện tạm hoãn vì học tập",
+    "need_more_information": "❓ Mình cần thêm thông tin",
+    "refuse": "🚫 Mình không hỗ trợ yêu cầu này",
+    "out_of_scope": "↪ Ngoài phạm vi mình hỗ trợ",
+    "safe_fallback": "⚠ Mình chưa thể nhận định trường hợp này",
+}
+SHORT_DISCLAIMER = "(Thông tin tham khảo; quyết định thuộc cơ quan có thẩm quyền.)"
+# từ nội bộ của prompt lọt vào lời model viết → cách nói người dùng hiểu
+_JARGON = [("văn bản trong kho", "văn bản luật mình có"), ("Ngữ cảnh", "Văn bản mình có"), ("ngữ cảnh", "văn bản mình có")]
+
+
+def law_name(chunk: dict) -> str:
+    """'Điểm g khoản 1 Điều 41 Luật Nghĩa vụ quân sự (133/2026/VBHN-LQ-VPQH)' từ siêu dữ liệu chunk."""
+    parts = []
+    if chunk.get("diem"):
+        parts.append("điểm %s" % chunk["diem"])
+    if chunk.get("khoan"):
+        parts.append("khoản %s" % str(chunk["khoan"]).replace("-", "–"))
+    parts.append("Điều %s" % chunk.get("dieu", "?"))
+    name = " ".join(parts)
+    doc = (chunk.get("ten_van_ban") or "").split(" (")[0]
+    return "%s%s %s (%s)" % (name[0].upper(), name[1:], doc, chunk.get("so_hieu", ""))
+
+
+def _sections(lines):
+    sec, cur = {}, None
+    for ln in lines:
+        for key in ("Giải thích:", "Cần biết thêm:", "Việc cần làm:", "Nguồn:", "Tham khảo", "Lưu ý:"):
+            if ln.startswith(key):
+                cur = key
+                sec[cur] = [ln[len(key):].strip()] if key != "Tham khảo" else []
+                break
+        else:
+            if cur and ln.strip():
+                sec[cur].append(ln.strip())
+    return sec
+
+
+def pretty(output: str, show_full_disclaimer: bool = True) -> str:
+    """Đầu ra đã định dạng (NHAN / CAN_CU / Giải thích / …) → bản dễ đọc cho người xem. "LOI:" và chuỗi lạ: giữ nguyên."""
+    import kb   # nạp trễ: demo_ui dùng được cả khi chưa nạp kho (friendly_error)
+    lines = (output or "").splitlines()
+    if len(lines) < 2 or not lines[0].startswith("NHAN:") or not lines[1].startswith("CAN_CU:"):
+        return output
+    nhan = lines[0][5:].strip()
+    ids = [c for c in lines[1][7:].strip().split(",") if c]
+    sec = _sections(lines[2:])
+    out = [LABEL_TEXT.get(nhan, nhan), ""]
+    expl = " ".join(sec.get("Giải thích:", [])).strip()
+    for a, b in _JARGON:
+        expl = expl.replace(a, b)
+    if expl:
+        out.append(expl)
+    hoi = " ".join(sec.get("Cần biết thêm:", [])).strip()
+    if hoi:
+        out += ["", "Mình cần biết thêm:"] + ["  • " + q.strip() for q in hoi.split(";") if q.strip()]
+    viec = [x for x in sec.get("Việc cần làm:", []) if x]
+    if viec:
+        out += ["", "Việc bạn nên làm:"] + ["  " + (x if x[:1].isdigit() else "• " + x) for x in viec]
+    names = []
+    for c in ids:
+        ch = kb.get_chunk(c)
+        if ch:
+            names.append(law_name(ch))
+    if names:
+        out += ["", "Căn cứ:"] + ["  • " + n for n in names]
+    refs = [x[2:].split(" — ", 1) for x in sec.get("Tham khảo", []) if x.startswith("- ")]
+    titles = [r[1].split(";")[0].strip() for r in refs if len(r) > 1]
+    if titles:
+        out += ["", "Tham khảo (hỏi đáp chính thức của Bộ Quốc phòng, không phải văn bản luật):"] + \
+               ["  • " + t for t in titles]
+    if sec.get("Lưu ý:"):
+        out += ["", ("Lưu ý: " + " ".join(sec["Lưu ý:"])) if show_full_disclaimer else SHORT_DISCLAIMER]
+    return "\n".join(out)
+
+
 def step_timings(events, total_s: float) -> dict:
     """Thời gian (giây) theo bước từ trace: lần gọi model đầu = trích dữ kiện, công cụ = tra cứu, lần gọi sau = quyết định."""
     models = [e for e in events or [] if e.get("kind") == "model"]

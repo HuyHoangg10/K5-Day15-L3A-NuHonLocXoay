@@ -45,6 +45,8 @@ def main() -> int:
     session = ChatSession()
     print("(%s Gõ /moi để bắt đầu lại.)" % session.status())
     agent.on_step = lambda name: print("   " + demo_ui.STEP_TEXT.get(name, "…"), flush=True)
+    print("(Lệnh: /moi bắt đầu lại · /goc xem bản gốc của câu trả lời vừa rồi, có dòng NHAN / CAN_CU.)")
+    shown_disclaimer, last_raw = False, ""
     blank = 0
     while True:
         try:
@@ -60,7 +62,11 @@ def main() -> int:
         blank = 0
         if text.lower() in ("/moi", "/mới", "/reset"):
             session.reset()
+            shown_disclaimer, last_raw = False, ""
             print("(Đã xóa cuộc trò chuyện. %s)" % session.status())
+            continue
+        if text.lower() in ("/goc", "/gốc"):
+            print(last_raw or "(Chưa có câu trả lời nào.)")
             continue
         tracing.begin("app")
         t0 = time.perf_counter()
@@ -81,8 +87,10 @@ def main() -> int:
             continue
         s, events = tracing.end()
         output = result.get("output", "") if isinstance(result, dict) else str(result)
+        last_raw = output
         nice = demo_ui.friendly_error(output, events)
-        print(nice if nice else output)
+        print(nice if nice else demo_ui.pretty(output, show_full_disclaimer=not shown_disclaimer))
+        shown_disclaimer = shown_disclaimer or "Lưu ý:" in output
         t = demo_ui.step_timings(events, time.perf_counter() - t0)
         print("   (model: %s · gọi model %d lần · công cụ %d lần · token vào %d / ra %d · %.1f s: trích %.1f, tra cứu %.1f, "
               "quyết định %.1f)" % (", ".join(s["models"]) or "—", s["model_calls"], s["tool_calls"], s["tokens_in"],
