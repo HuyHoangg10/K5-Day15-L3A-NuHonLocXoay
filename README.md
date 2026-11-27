@@ -1,4 +1,4 @@
-# Nữ Hôn Lốc Xoáy — Trợ lý đối chiếu tạm hoãn gọi nhập ngũ cho sinh viên
+# Nụ Hôn Lốc Xoáy — Trợ lý đối chiếu tạm hoãn gọi nhập ngũ cho sinh viên
 
 **Track F · LegalTech / CivicTech.** Sinh viên trong độ tuổi gọi nhập ngũ khó đối chiếu quy định tạm hoãn với tình trạng học tập của mình vì thông tin tra cứu phân tán, nên mất thời gian xác định bước tiếp theo. Xem lát cắt và kế hoạch kiểm chứng trong [canvas.md](canvas.md).
 
