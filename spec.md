@@ -1,4 +1,4 @@
-# AI SPEC — Trợ lý đối chiếu tạm hoãn gọi nhập ngũ cho sinh viên · NuHonLocXoay · Phòng __ · Zone __
+# AI SPEC — Trợ lý đối chiếu tạm hoãn gọi nhập ngũ cho sinh viên · NuHonLocXoay · Phòng H209 · Zone 2
 
 Track F · LegalTech / CivicTech. Nguồn kho: `kb-nvqs/README.md`, `kb-nvqs/SOURCES.csv`.
 
