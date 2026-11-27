@@ -1,0 +1,181 @@
+id,ngay,bi_cat,vuong_dia_phuong,tinh_huong_bien,hoi_thoi_han_thu_tuc,da_gap_nguon_khac,nguon,tu_khoa
+0363d4b091,2025-09-14,0,0,0,0,0,,cao đẳng tạm hoãn
+015a5ce89d,2025-09-22,0,0,0,1,0,,giấy xác nhận sinh viên|xã không nhận giấy
+7ff558a0b0,2025-09-30,0,0,0,1,0,,giấy xác nhận sinh viên
+22f89272e3,2025-10-03,0,0,1,0,0,,nợ môn
+9486b1a0b9,2025-10-04,0,0,1,0,0,,nợ môn
+e66e08dee4,2025-10-06,0,0,0,0,0,,tạm hoãn sinh viên|xã không nhận giấy|chưa tốt nghiệp|có được hoãn không đang học
+9d209f47c4,2025-10-13,0,0,1,0,1,dia_phuong,chưa tốt nghiệp
+29cedbdac2,2025-10-18,0,0,1,0,0,,cao đẳng tạm hoãn
+c3bb910a83,2025-10-18,0,0,1,0,0,,có được hoãn không đang học
+ac52c82d9b,2025-10-18,0,0,1,0,0,,có được hoãn không đang học
+ce17d91a16,2025-10-20,0,0,1,0,1,nguoi_quen_mang,tạm hoãn sinh viên|cao đẳng tạm hoãn
+9073e4c477,2025-10-20,0,0,1,0,0,,nợ môn
+a98c5d1ea2,2025-10-22,1,1,1,0,0,,giấy xác nhận sinh viên|chưa tốt nghiệp
+8f4936df27,2025-10-24,0,0,1,0,0,,nợ môn
+b3f34f4b38,2025-10-24,1,1,1,0,0,,cao đẳng tạm hoãn
+d7df626e93,2025-10-28,0,1,1,0,1,dia_phuong+truong,nợ môn
+19c233fc45,2025-10-28,0,0,1,0,0,,nợ môn|chưa tốt nghiệp
+6e3a239899,2025-10-29,0,0,1,0,0,,nợ môn
+223eb89243,2025-10-29,0,0,1,0,0,,du học
+a48613a5f2,2025-10-30,0,0,1,0,0,,giấy xác nhận sinh viên|nợ môn|liên thông|xã không nhận giấy|du học|văn bằng 2
+852db6db86,2025-12-16,1,0,1,0,0,,giấy xác nhận sinh viên
+d158a5635a,2025-12-16,0,0,0,0,0,,nợ môn|tạm hoãn sinh viên|cao đẳng tạm hoãn
+1063a434bf,2025-12-26,1,0,1,0,0,,nợ môn|bảo lưu
+be74af5028,2026-01-08,0,0,1,0,0,,nợ môn
+46ad0764b3,2026-01-18,0,0,1,0,0,,du học
+204f013c84,2026-02-27,0,0,1,0,0,,bảo lưu
+ef5773e3ce,2026-04-12,0,0,1,0,0,,giấy xác nhận sinh viên|chưa tốt nghiệp
+37cdead3b2,2026-06-21,0,0,1,0,1,van_ban,chưa tốt nghiệp|cao đẳng tạm hoãn
+c57a101070,2026-06-29,0,0,1,0,0,,tạm hoãn sinh viên
+ce6494752f,2026-07-08,0,0,1,0,0,,bảo lưu
+71c4a065e1,2026-07-13,1,0,1,0,1,van_ban,cao đẳng tạm hoãn
+b93922219c,2026-07-18,0,0,1,0,0,,nợ môn
+497d1ef963,2026-07-24,0,0,0,0,0,,cao đẳng tạm hoãn
+30c04604f4,2026-07-27,1,0,1,1,1,nguoi_quen_mang,du học
+35272f9724,2026-08-06,0,0,1,1,0,,du học
+96b2ad0d02,2026-08-13,1,0,1,0,1,van_ban,có được hoãn không đang học
+96cb223013,2026-08-23,0,0,0,0,0,,tạm hoãn sinh viên
+a0b6db1382,2026-08-25,0,1,1,0,0,,xã không nhận giấy
+5963914c31,2026-08-26,0,0,0,0,0,,cao đẳng tạm hoãn
+dbeb6217d1,2026-08-26,0,0,1,0,0,,bảo lưu
+995d217bad,2026-08-30,1,0,1,0,0,,cao đẳng tạm hoãn
+0b2aec8390,2026-08-31,0,0,0,0,0,,cao đẳng tạm hoãn
+39b388f67a,2026-09-01,0,0,1,0,1,van_ban,giấy xác nhận sinh viên|tạm hoãn sinh viên|du học|cao đẳng tạm hoãn|có được hoãn không đang học
+13c827b5a2,2026-09-02,0,0,1,0,0,,tạm hoãn sinh viên
+a641009df2,2026-09-03,1,1,0,0,0,,chưa tốt nghiệp
+3db3a66922,2026-09-03,0,1,1,0,1,van_ban,tạm hoãn sinh viên|cao đẳng tạm hoãn|có được hoãn không đang học
+87ad3a8420,2026-09-03,0,0,1,0,0,,bảo lưu
+58c4f0ea75,2026-09-04,0,0,1,0,0,,du học
+af1f54b873,2026-09-05,0,0,1,0,0,,có được hoãn không đang học
+5e9cc3ab8f,2026-09-05,0,0,0,1,0,,cao đẳng tạm hoãn
+9b0693156e,2026-09-06,1,0,0,0,1,dia_phuong+nguoi_quen_mang,tạm hoãn sinh viên
+1c653cea33,2026-09-07,0,0,0,0,1,truong,giấy xác nhận sinh viên|tạm hoãn sinh viên|xã không nhận giấy
+e14e6e5715,2026-09-08,0,0,1,0,0,,xã không nhận giấy|du học|cao đẳng tạm hoãn|có được hoãn không đang học
+40545ac9aa,2026-09-08,0,0,1,0,0,,bảo lưu
+9ce01b130c,2026-09-11,1,0,1,0,0,,giấy xác nhận sinh viên|tạm hoãn sinh viên|liên thông|xã không nhận giấy|du học|cao đẳng tạm hoãn|có được hoãn không đang học
+3ee04bee98,2026-09-14,0,1,1,0,0,,liên thông|cao đẳng tạm hoãn
+79f9a8e68d,2026-09-15,0,0,1,0,0,,tạm hoãn sinh viên
+8aa916a317,2026-09-16,0,0,1,0,0,,cao đẳng tạm hoãn
+6137c161d4,2026-09-16,0,0,0,0,0,,tạm hoãn sinh viên
+a9d5aee057,2026-09-17,0,0,0,1,0,,cao đẳng tạm hoãn
+fa52364353,2026-09-17,0,0,1,1,0,,du học|có được hoãn không đang học
+13c587ec72,2026-09-18,0,0,1,0,0,,nợ môn
+7ce084061f,2026-09-21,0,0,1,0,0,,liên thông|chưa tốt nghiệp|cao đẳng tạm hoãn|có được hoãn không đang học
+b2f887a936,2026-09-25,0,0,1,0,0,,bảo lưu
+11dad5fe6a,2026-09-25,1,0,1,0,1,van_ban,tạm hoãn sinh viên|có được hoãn không đang học
+b29f217d6c,2026-09-26,0,1,1,0,0,,bảo lưu
+8a8b7a9457,2026-09-26,0,1,1,0,1,dia_phuong,có được hoãn không đang học
+e486aeb569,2026-09-26,0,0,0,0,1,dia_phuong,tạm hoãn sinh viên
+7796efd1b8,2026-09-27,0,0,0,0,0,,nợ môn
+b13abe5b4f,2026-09-27,0,1,0,0,0,,giấy xác nhận sinh viên
+292d32e0a2,2026-09-27,0,0,0,0,0,,giấy xác nhận sinh viên|tạm hoãn sinh viên
+cd53caf853,2026-09-28,0,0,1,0,0,,liên thông|bảo lưu|cao đẳng tạm hoãn
+585f4eeaff,2026-09-28,0,0,0,1,0,,giấy xác nhận sinh viên
+37d2bb151f,2026-09-28,0,0,1,0,0,,du học
+bb46b1dd38,2026-09-29,0,0,1,0,0,,có được hoãn không đang học
+b0fd1ace46,2026-09-30,0,1,1,1,1,dia_phuong+truong,chưa tốt nghiệp
+025d6a2154,2026-10-03,0,1,1,0,0,,nợ môn
+8d713b0fa2,2026-10-05,1,1,0,0,0,,có được hoãn không đang học
+d0ce9b029e,2026-10-06,1,0,1,0,0,,bảo lưu
+8bd731a98e,2026-10-06,1,0,1,0,0,,bảo lưu
+b0e0f0f918,2026-10-07,0,0,1,0,0,,nợ môn
+1069448d6e,2026-10-07,1,1,1,0,0,,tạm hoãn sinh viên|bảo lưu|cao đẳng tạm hoãn|có được hoãn không đang học
+cfb9018253,2026-10-07,0,1,0,0,0,,chưa tốt nghiệp
+f3c2e4f45c,2026-10-07,0,0,1,0,1,nguoi_quen_mang,du học
+9d656c4aa4,2026-10-08,0,0,1,0,0,,nợ môn|xã không nhận giấy
+849f9381e2,2026-10-08,0,0,0,0,0,,chưa tốt nghiệp
+ff62bb118c,2026-10-09,1,0,0,0,0,,liên thông|du học|văn bằng 2|cao đẳng tạm hoãn|có được hoãn không đang học
+a4a532e92c,2026-10-09,0,0,1,0,0,,giấy xác nhận sinh viên|du học
+a6935785d0,2026-10-09,0,0,1,0,0,,giấy xác nhận sinh viên
+bb6e77595e,2026-10-10,0,0,1,0,0,,giấy xác nhận sinh viên|tạm hoãn sinh viên|xã không nhận giấy|cao đẳng tạm hoãn|có được hoãn không đang học
+e84f9c4411,2026-10-11,0,0,1,0,0,,liên thông
+194efe2df2,2026-10-11,0,0,0,0,0,,tạm hoãn sinh viên|có được hoãn không đang học
+a6bb828afc,2026-10-12,0,0,0,0,0,,tạm hoãn sinh viên|cao đẳng tạm hoãn
+58283e586b,2026-10-13,0,0,1,0,0,,liên thông
+923bc3692f,2026-10-13,0,0,1,0,0,,nợ môn
+79250e7f36,2026-10-13,0,0,0,0,0,,có được hoãn không đang học
+c6332af529,2026-10-13,0,0,1,0,0,,bảo lưu|có được hoãn không đang học
+ec4fd5f095,2026-10-13,1,0,1,0,0,,du học|cao đẳng tạm hoãn|có được hoãn không đang học
+cc08b9791d,2026-10-14,0,0,1,0,0,,bảo lưu
+2bf9d4a7ad,2026-10-14,0,0,0,1,0,,cao đẳng tạm hoãn
+bdde95ed3f,2026-10-15,0,1,0,0,0,,giấy xác nhận sinh viên|xã không nhận giấy|chưa tốt nghiệp|có được hoãn không đang học
+fe5a1a41ad,2026-10-16,0,1,1,1,1,dia_phuong,nợ môn
+e031cac45b,2026-10-16,0,0,0,0,1,dia_phuong,tạm hoãn sinh viên
+5f6503ce26,2026-10-17,0,0,1,0,0,,giấy xác nhận sinh viên|nợ môn|bảo lưu
+cf6691d154,2026-10-17,0,0,0,1,0,,giấy xác nhận sinh viên
+2bf2a23bcb,2026-10-17,0,0,1,0,0,,giấy xác nhận sinh viên|nợ môn|xã không nhận giấy|chưa tốt nghiệp|có được hoãn không đang học
+764eb3eb9d,2026-10-17,0,0,0,1,0,,giấy xác nhận sinh viên|tạm hoãn sinh viên
+84012084bb,2026-10-17,0,0,0,0,0,,giấy xác nhận sinh viên
+6ae830e218,2026-10-18,0,0,1,0,1,van_ban,cao đẳng tạm hoãn
+c811532374,2026-10-18,0,0,0,1,0,,giấy xác nhận sinh viên
+4530ce42e1,2026-10-19,0,0,1,0,0,,nợ môn
+eb7e81b475,2026-10-19,0,0,1,0,0,,có được hoãn không đang học
+3fb92b9389,2026-10-19,0,0,0,1,0,,có được hoãn không đang học
+f501aca967,2026-10-20,0,0,1,0,0,,văn bằng 2|có được hoãn không đang học
+dbe4183add,2026-10-20,1,0,1,1,0,,có được hoãn không đang học
+8c1c7d1085,2026-10-20,0,0,1,0,0,,tạm hoãn sinh viên
+08fbf214c5,2026-10-21,0,0,1,0,0,,cao đẳng tạm hoãn
+a0b9ae93e2,2026-10-21,0,0,1,1,0,,bảo lưu
+6d9cde5f7b,2026-10-21,1,0,0,0,0,,giấy xác nhận sinh viên|tạm hoãn sinh viên|xã không nhận giấy|du học|chưa tốt nghiệp|có được hoãn không đang học
+a1aa5d6b15,2026-10-21,0,0,1,0,0,,tạm hoãn sinh viên
+9a023418b9,2026-10-22,0,1,0,0,0,,giấy xác nhận sinh viên
+fadba717f7,2026-10-23,0,0,1,0,0,,nợ môn|có được hoãn không đang học
+2cbcaa55e5,2026-10-24,0,0,1,0,1,van_ban,tạm hoãn sinh viên
+cf3ea226c5,2026-10-24,1,1,1,0,1,dia_phuong,có được hoãn không đang học
+e089819e63,2026-10-24,0,0,1,0,0,,liên thông
+2f960c0653,2026-10-24,0,1,0,0,0,,giấy xác nhận sinh viên|tạm hoãn sinh viên|có được hoãn không đang học
+dc41341b3f,2026-10-24,0,1,0,0,0,,giấy xác nhận sinh viên
+2e34e44384,2026-10-24,0,0,1,0,0,,du học
+c3459508d8,2026-10-25,0,0,1,0,0,,giấy xác nhận sinh viên
+2339ee2337,2026-10-25,0,0,1,1,0,,giấy xác nhận sinh viên
+6e641c6c7f,2026-10-26,1,0,1,0,0,,chưa tốt nghiệp
+fb3d425cea,2026-10-27,0,0,0,0,0,,giấy xác nhận sinh viên
+0a70aa3901,2026-10-28,0,1,1,0,0,,giấy xác nhận sinh viên|xã không nhận giấy|du học|chưa tốt nghiệp
+aba96703e9,2026-10-28,0,1,1,0,0,,nợ môn
+b7332c3fe9,2026-10-29,0,0,0,1,0,,giấy xác nhận sinh viên
+f9757e1c0b,2026-10-29,0,0,0,1,0,,giấy xác nhận sinh viên
+9180555933,2026-10-29,0,0,0,1,0,,giấy xác nhận sinh viên
+7d49bf0f0b,2026-10-30,0,0,0,0,0,,giấy xác nhận sinh viên
+2b723d14be,2026-11-01,0,1,0,0,1,dia_phuong,xã không nhận giấy
+a0306bb059,2026-11-02,0,1,0,0,1,dia_phuong,du học
+9da8e0d164,2026-11-02,0,0,0,1,1,dia_phuong,giấy xác nhận sinh viên|xã không nhận giấy|du học
+ff2ce4d2a0,2026-11-03,1,1,1,0,0,,giấy xác nhận sinh viên|xã không nhận giấy|có được hoãn không đang học
+e46719983e,2026-11-03,0,1,0,0,0,,giấy xác nhận sinh viên|chưa tốt nghiệp
+8d6828f1df,2026-11-03,0,0,0,1,0,,tạm hoãn sinh viên
+d88e81eeda,2026-11-03,0,0,1,0,0,,du học|có được hoãn không đang học
+b9488d4ede,2026-11-04,0,0,0,0,0,,tạm hoãn sinh viên
+5c81d4736c,2026-11-04,0,0,1,0,0,,giấy xác nhận sinh viên|liên thông
+80fc93bbab,2026-11-04,1,1,1,0,0,,xã không nhận giấy
+08a8c4b1f6,2026-11-04,0,1,0,0,0,,tạm hoãn sinh viên
+498627ddfd,2026-11-05,0,0,1,0,0,,giấy xác nhận sinh viên|bảo lưu
+d18fc1b621,2026-11-05,0,0,0,0,0,,giấy xác nhận sinh viên|nợ môn|cao đẳng tạm hoãn
+d385c57407,2026-11-05,0,0,1,0,0,,giấy xác nhận sinh viên|nợ môn|tạm hoãn sinh viên
+7aff96bd48,2026-11-05,0,0,0,1,0,,giấy xác nhận sinh viên
+a2449885fa,2026-11-06,0,0,1,1,0,,giấy xác nhận sinh viên
+e4b6e7f073,2026-11-07,0,0,0,0,0,,giấy xác nhận sinh viên
+20e8feb84e,2026-11-09,0,1,0,0,1,dia_phuong,có được hoãn không đang học
+5844de76fb,2026-11-09,0,1,0,0,0,,giấy xác nhận sinh viên
+8dd06fc0da,2026-11-10,0,0,1,0,0,,nợ môn|có được hoãn không đang học
+521d8a596c,2026-11-10,0,0,1,0,0,,liên thông
+8f5d4aa452,2026-11-11,0,1,0,0,1,dia_phuong,giấy xác nhận sinh viên
+2fcd4fe30b,2026-11-13,1,0,1,0,0,,cao đẳng tạm hoãn
+ede8c677db,2026-11-13,1,0,1,0,0,,xã không nhận giấy|du học|chưa tốt nghiệp|cao đẳng tạm hoãn|có được hoãn không đang học
+bda3bc7e0a,2026-11-16,0,0,1,0,0,,liên thông
+1709a9ec70,2026-11-17,0,0,0,1,0,,giấy xác nhận sinh viên
+5ac5f16602,2026-11-17,0,1,0,0,0,,có được hoãn không đang học
+59d08fc7de,2026-11-18,0,1,1,0,0,,nợ môn
+76e07382b7,2026-11-20,0,0,1,1,0,,cao đẳng tạm hoãn|có được hoãn không đang học
+0ba3a6f1e0,2026-11-21,0,0,0,1,0,,giấy xác nhận sinh viên
+6741010cc5,2026-11-21,0,0,1,0,0,,du học
+612c70aa59,2026-11-22,0,1,1,0,0,,bảo lưu
+782007d2e5,2026-11-23,1,1,0,1,1,dia_phuong,giấy xác nhận sinh viên|tạm hoãn sinh viên
+085eaca747,2026-11-23,0,0,1,0,0,,nợ môn
+b5eb8b60e6,2026-11-23,0,0,1,0,1,van_ban,nợ môn
+2be37360c4,2026-11-25,0,0,1,0,0,,du học|cao đẳng tạm hoãn
+a36cd00b03,2026-11-25,0,0,1,0,0,,bảo lưu
+50082956f1,2026-11-26,0,1,0,0,0,,giấy xác nhận sinh viên
+c9325cc7f5,2026-11-27,0,0,1,0,0,,có được hoãn không đang học
+c0a589edfe,2026-11-27,1,0,1,0,0,,nợ môn|tạm hoãn sinh viên|du học|chưa tốt nghiệp|cao đẳng tạm hoãn|có được hoãn không đang học
+77e7d18640,2026-11-27,0,1,0,0,0,,giấy xác nhận sinh viên
+b691abca7b,2026-11-27,0,0,1,0,0,,có được hoãn không đang học
