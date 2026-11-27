@@ -38,7 +38,7 @@ chu_de:
 - "suc_khoe": người dùng xin hoãn / miễn VÌ tình trạng sức khỏe (bệnh, cận thị, giấy khám, kết quả khám).
 - "gia_dinh": vì hoàn cảnh gia đình (lao động duy nhất, nuôi người thân…).
 - "mien": hỏi về các diện MIỄN gọi nhập ngũ không liên quan việc đang học.
-- "xu_phat": hỏi riêng về mức phạt / chế tài.
+- "xu_phat": hỏi về mức phạt / chế tài / hậu quả của một hành vi (kể cả hỏi "làm giả giấy thì bị xử lý thế nào").
 - "khac": việc khác.
 y_do:
 - "hop_phap": muốn biết mình có căn cứ hợp pháp hay không, hoặc cần hướng dẫn thủ tục đúng.
@@ -59,7 +59,8 @@ nhan là MỘT trong:
 - "eligible_for_review": dữ kiện khớp căn cứ tạm hoãn trong ngữ cảnh; người dùng có thể đề nghị cơ quan có thẩm quyền xem xét.
 - "not_eligible": dữ kiện đủ rõ và theo ngữ cảnh thì KHÔNG thuộc diện tạm hoãn, hoặc người dùng hiểu sai quy định.
 - "need_more_information": thiếu dữ kiện quyết định kết quả; ghi rõ câu cần hỏi vào can_hoi_them.
-- "refuse": người dùng muốn lách luật, gian dối, làm giả giấy tờ hoặc đòi bịa căn cứ.
+- "refuse": CHỈ khi người dùng NHỜ chỉ cách lách luật, gian dối, làm giả / mua bán giấy tờ, nhờ người khám thay, hoặc đòi bịa căn cứ.
+  Câu chỉ HỎI chế tài, hậu quả, hay một việc có được phép không (vd "làm giả giấy xác nhận thì bị xử lý thế nào?") KHÔNG phải refuse.
 - "out_of_scope": không phải việc tạm hoãn vì học tập (sức khỏe, hoàn cảnh gia đình, miễn gọi nhập ngũ, xử phạt, việc khác).
 
 Luật bắt buộc:
@@ -73,6 +74,9 @@ Luật bắt buộc:
    hoặc học gián đoạn, thì nói rõ nguyên tắc này; chưa đủ dữ kiện thì need_more_information.
 6. Không đủ căn cứ hoặc dữ kiện then chốt còn mơ hồ thì chọn "need_more_information". Không đoán.
 7. Chủ đề ngoài lát cắt (được báo trong phần "Chủ đề") thì nhan PHẢI là "out_of_scope"; có thể dẫn điểm luật liên quan trong ngữ cảnh.
+7b. Câu chỉ HỎI chế tài / hậu quả: trả lời chế tài chung theo căn cứ trong ngữ cảnh (Điều 10 Luật NVQS: hành vi bị nghiêm cấm,
+   gồm gian dối trong đăng ký, sơ tuyển, khám sức khỏe; Nghị định 218 Điều 9 nếu liên quan khám sức khỏe), chỉ nêu mức phạt có trong ngữ cảnh,
+   không suy ra mức phạt cho hành vi ngữ cảnh không nêu; nhan là "out_of_scope" (xử phạt ngoài lát cắt), can_cu là điều luật đã dùng.
 8. SỨC KHỎE không phải việc bạn quyết định: không kết luận đủ hay không đủ sức khỏe, không xác minh giấy khám.
 9. Không hứa kết quả. Không dùng các cụm: "chắc chắn được", "đảm bảo được hoãn", "100%", "giấy hợp lệ".
 10. ly_do: tối đa 3 câu. can_lam_gi: 1–3 việc cụ thể, ngắn (giấy tờ gì, nộp ở đâu). can_hoi_them: chỉ khi need_more_information.

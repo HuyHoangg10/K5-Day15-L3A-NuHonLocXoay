@@ -132,7 +132,7 @@ _INJECTION = [
 ]
 
 # Câu CHỈ HỎI chế tài ("làm giả giấy thì bị xử lý thế nào", "khám thay có bị phạt không") là câu hợp lệ: không chặn
-# ở code mà để model trả lời — trừ khi câu đồng thời NHỜ làm ("chỉ cách", "mua", "nhờ", "ở đâu"…).
+# ở code mà để model trả lời — trừ khi câu đồng thời NHỜ trợ lý chỉ / bán ("chỉ cách", "mua", "ở đâu"…).
 _PENALTY = [
     r"(?:bị|có\s+bị)\s+(?:phạt|xử\s+lý|xử\s+phạt|truy\s+cứu|phạm\s+tội|tù)",
     r"mức\s+phạt|chế\s+tài|xử\s+phạt|hậu\s+quả|phạt\s+(?:bao\s+nhiêu|thế\s+nào|như\s+thế\s+nào|ra\s+sao)",
@@ -140,7 +140,8 @@ _PENALTY = [
 ]
 _REQUEST = [
     r"chỉ\s+(?:\w+\s+){0,2}cách|hướng\s+dẫn|giúp\s+(?:em|mình|tôi|tớ)|làm\s+(?:sao|thế\s+nào)\s+(?:để|cho)",
-    r"cách\s+(?:để\s+)?(?:làm|lách|né|trốn|có|xin)|ở\s+đâu|mua|bán|thuê|nhờ|dịch\s+vụ|bao\s+nhiêu\s+tiền|chi\s+phí",
+    # "nhờ"/"thuê" KHÔNG nằm ở đây: "nhờ người khám thay thì có phạm luật không" là câu HỎI chế tài (B2).
+    r"cách\s+(?:để\s+)?(?:làm|lách|né|trốn|có|xin)|ở\s+đâu|mua|bán|dịch\s+vụ|bao\s+nhiêu\s+tiền|chi\s+phí",
     r"tốn|liên\s+hệ|muốn",
 ]
 def _compile(patterns):
