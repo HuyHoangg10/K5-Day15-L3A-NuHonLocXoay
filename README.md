@@ -83,7 +83,7 @@ Nhóm dùng stack khác (Node, Streamlit, notebook…): sửa hàm `run_app()` t
 
 | Thành phần | Thật / Giả | Ghi chú |
 |---|---|---|
-| Lời gọi AI ở quyết định trung tâm | **Thật** (bắt buộc từ CP3) | Model: `gpt-4o-mini` (OpenAI), từ tối 27/11. Lượt eval `run-1` chạy bằng `gpt-6.1-terra` nên không dùng tỉ lệ đạt đó cho model mới. |
+| Lời gọi AI ở quyết định trung tâm | **Thật** (bắt buộc từ CP3) | Model bản nộp: `gpt-6.1-terra` (OpenAI-compatible, cấu hình trong `.env`). `gpt-4o-mini` chỉ dùng ở hai lượt phát triển `run-2`, `run-3`. |
 |  |  |  |
 
 ## Dùng AI vào việc gì
