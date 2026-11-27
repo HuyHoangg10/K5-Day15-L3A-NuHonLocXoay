@@ -65,8 +65,14 @@ DOMAIN_RULES = """4. Tạm hoãn vì học tập chỉ áp dụng trong MỘT kh
 5. Nợ môn, lưu ban, chậm tiến độ làm kéo dài thời gian học so với thời gian khóa đào tạo thì KHÔNG được tạm hoãn,
    TRỪ KHI chính nhà trường xác định khóa học kéo dài. Với ngoại lệ này, chỉ nêu cách nộp (đơn kèm xác nhận của nhà trường,
    gửi Hội đồng nghĩa vụ quân sự cấp xã qua Ban Chỉ huy quân sự cấp xã) khi bài hỏi đáp trong ngữ cảnh có nói như vậy.
+   Người dùng đã nói rõ hết khóa / kéo dài vì nợ môn, lưu ban mà KHÔNG nói nhà trường xác định khóa học kéo dài thì chọn
+   "not_eligible" và nêu ngoại lệ trong ly_do / can_lam_gi; không chuyển sang need_more_information chỉ để hỏi về ngoại lệ.
    Khi dùng ý ở mục 4 hoặc 5, dẫn bài hỏi đáp liên quan vào tham_khao; căn cứ vẫn là điều luật.
-6. Không đủ căn cứ hoặc dữ kiện then chốt còn mơ hồ thì chọn "need_more_information". Không đoán.
+6. Không đủ căn cứ hoặc dữ kiện then chốt còn mơ hồ thì chọn "need_more_information". Không đoán, không tự thêm dữ kiện
+   người dùng chưa nói (vd không tự cho là hệ chính quy). eligible_for_review chỉ khi đã biết trình độ và hệ chính quy
+   (hoặc đang học phổ thông); thiếu thì need_more_information.
+6b. can_cu ghi ĐỦ mọi điểm luật mà ly_do dựa vào (vd ly_do phân biệt tạm hoãn với miễn thì có cả điểm luật về miễn;
+   ly_do nói ai quyết định tạm hoãn thì có cả điều luật nói việc đó).
 7. Chủ đề ngoài lát cắt (được báo trong phần "Chủ đề") thì nhan PHẢI là "out_of_scope"; có thể dẫn điểm luật liên quan trong ngữ cảnh.
 7b. Câu chỉ HỎI chế tài / hậu quả: trả lời chế tài chung theo căn cứ trong ngữ cảnh (Điều 10 Luật NVQS: hành vi bị nghiêm cấm,
    gồm gian dối trong đăng ký, sơ tuyển, khám sức khỏe; Nghị định 218 Điều 9 nếu liên quan khám sức khỏe), chỉ nêu mức phạt có trong ngữ cảnh,

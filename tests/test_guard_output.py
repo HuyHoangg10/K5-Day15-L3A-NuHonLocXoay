@@ -524,3 +524,25 @@ class LeakFalsePositiveTests(unittest.TestCase):
                 self.assertIn(kb.fold(q), kb.fold(P.SYSTEM_QUYET_DINH))          # prompt gợi ý nguyên câu này
                 d, why = check(decision(ly_do="Mình gợi ý: " + q + ", bạn nhé."))
                 self.assertIsNotNone(d, why)
+
+
+class PromptTuneTests(unittest.TestCase):
+    """B12 → chỉnh prompt bằng quy tắc CHUNG (không nhồi câu thử): không tự thêm dữ kiện, nợ môn đã rõ thì not_eligible,
+    can_cu đủ mọi điểm luật ly_do dựa vào. Không chứa nguyên văn câu nào của eval/benchmark.csv."""
+    def test_general_rules_present(self):
+        f = kb.fold(P.SYSTEM_QUYET_DINH)
+        for must in ["khong tu them du kien", "chi khi da biet trinh do va he chinh quy",
+                     "khong chuyen sang need_more_information chi de hoi ve ngoai le", "can_cu ghi du moi diem luat"]:
+            self.assertIn(must, f, must)
+
+    def test_no_benchmark_input_in_prompts(self):
+        import csv
+        root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        rows = list(csv.DictReader(open(os.path.join(root, "eval", "benchmark.csv"), encoding="utf-8")))
+        prompts = kb.fold(P.SYSTEM_TRICH + P.SYSTEM_QUYET_DINH)
+        for r in rows:
+            words = kb.fold(r["input"]).split()
+            for i in range(max(1, len(words) - 7)):
+                chunk = " ".join(words[i:i + 8])
+                if len(words) >= 8:
+                    self.assertNotIn(chunk, prompts, r["id"])
