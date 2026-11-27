@@ -1,0 +1,42 @@
+{
+  "_canh_bao": "KHO GIẢ để dựng khung. Mọi mã, chủ đề, ngày, đường dẫn dưới đây là chỗ giữ chỗ, KHÔNG phản ánh nội dung luật. Người A thay toàn bộ bằng văn bản gốc từ vbpl.vn rồi đổi la_kho_gia thành false (xem data/kb/README.md).",
+  "la_kho_gia": true,
+  "doan": [
+    {
+      "code": "D41.K1.a",
+      "van_ban": "[CHỜ VĂN BẢN GỐC vbpl.vn] Luật Nghĩa vụ quân sự — Điều 41",
+      "hieu_luc": "[CHỜ]",
+      "ngay_tai": "[CHỜ]",
+      "url": "[CHỜ URL vbpl.vn]",
+      "chu_de": ["suc_khoe"],
+      "text": "[CHỜ VĂN BẢN GỐC vbpl.vn]"
+    },
+    {
+      "code": "D41.K1.b",
+      "van_ban": "[CHỜ VĂN BẢN GỐC vbpl.vn] Luật Nghĩa vụ quân sự — Điều 41",
+      "hieu_luc": "[CHỜ]",
+      "ngay_tai": "[CHỜ]",
+      "url": "[CHỜ URL vbpl.vn]",
+      "chu_de": ["hoc_tap"],
+      "text": "[CHỜ VĂN BẢN GỐC vbpl.vn]"
+    },
+    {
+      "code": "D41.K1.c",
+      "van_ban": "[CHỜ VĂN BẢN GỐC vbpl.vn] Luật Nghĩa vụ quân sự — Điều 41",
+      "hieu_luc": "[CHỜ]",
+      "ngay_tai": "[CHỜ]",
+      "url": "[CHỜ URL vbpl.vn]",
+      "chu_de": ["hoc_tap"],
+      "text": "[CHỜ VĂN BẢN GỐC vbpl.vn]"
+    },
+    {
+      "code": "D41.K2",
+      "van_ban": "[CHỜ VĂN BẢN GỐC vbpl.vn] Luật Nghĩa vụ quân sự — Điều 41",
+      "hieu_luc": "[CHỜ]",
+      "ngay_tai": "[CHỜ]",
+      "url": "[CHỜ URL vbpl.vn]",
+      "chu_de": ["hoc_tap"],
+      "text": "[CHỜ VĂN BẢN GỐC vbpl.vn]"
+    }
+  ]
+}
