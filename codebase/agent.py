@@ -337,6 +337,9 @@ def validate_decision(raw: str, qa_allowed=(), must_be_out_of_scope: bool = Fals
         art = guards.unknown_article(model_text, passages, context)
         if art:
             return None, "G_ARTICLE: lời văn nêu \"%s\" không có trong ngữ cảnh" % art
+        url = guards.unknown_url(model_text, passages, refs)
+        if url:
+            return None, "G_URL: lời văn có URL không thuộc nguồn đã dùng"
     return {"nhan": nhan, "can_cu": can_cu, "tham_khao": tham_khao, "ly_do": ly_do.strip(),
             "can_lam_gi": viec.strip(), "can_hoi_them": hoi_them}, None
 

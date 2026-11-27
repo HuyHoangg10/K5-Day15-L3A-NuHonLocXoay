@@ -129,3 +129,25 @@ class ArticleTests(unittest.TestCase):
     def test_without_context_skips_article_check(self):
         d, _ = agent.validate_decision(decision(ly_do="Theo Điều 99."))
         self.assertIsNotNone(d)
+
+
+class UrlTests(unittest.TestCase):
+    """B4: URL trong lời văn phải là nguồn của chunk / bài hỏi đáp đã đưa vào ngữ cảnh."""
+    def test_source_url_passes(self):
+        url = kb.get_chunk("vbhn133-d41-k1-g")["nguon"]
+        self.assertIsNotNone(check(decision(ly_do="Bạn xem văn bản tại " + url + "."))[0])
+        ref = kb.get_chunk("qa-q01")
+        self.assertIsNotNone(check(decision(ly_do="Hướng dẫn của Bộ Quốc phòng: " + ref["url"]), refs=[ref])[0])
+
+    def test_foreign_url_falls_to_safe(self):
+        for u in ["https://example.com/giay-hoan", "www.luat-sinh-vien.vn", "http://bit.ly/abc",
+                  "https://baochinhphu.vn/bai-khong-co-trong-kho.htm"]:
+            with self.subTest(url=u):
+                d, why = check(decision(can_lam_gi=["Đọc thêm ở " + u]))
+                self.assertIsNone(d)
+                self.assertTrue(why.startswith("G_URL"), why)
+
+    def test_qa_url_not_retrieved_is_foreign(self):
+        ref = kb.get_chunk("qa-q01")
+        d, why = check(decision(ly_do="Xem " + ref["url"]), refs=[])     # bài này KHÔNG được đưa vào ngữ cảnh
+        self.assertIsNone(d)

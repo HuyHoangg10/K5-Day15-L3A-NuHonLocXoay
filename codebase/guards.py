@@ -83,3 +83,75 @@ def unknown_article(text: str, passages, context: str = ""):
             if khoan.get(d) and k not in khoan[d]:
                 return m.group(0)
     return None
+
+
+# ---------------------------------------------------------------- B4: URL trong lời văn phải là URL của chunk / bài đã dùng
+_URL = re.compile(r"(?:https?://|www\.)[^\s<>\"'()\[\]]+", re.IGNORECASE)
+
+
+def _norm_url(u: str) -> str:
+    u = u.strip().rstrip(".,;:!?)»”’").lower()
+    u = re.sub(r"^https?://", "", u)
+    return u[4:] if u.startswith("www.") else u
+
+
+def unknown_url(text: str, passages, refs) -> str:
+    """URL trong lời văn không thuộc nguồn của chunk luật / bài hỏi đáp đã đưa vào ngữ cảnh → trả URL đó."""
+    allowed = {_norm_url(p.get("nguon") or "") for p in passages or []} | {_norm_url(q.get("url") or "") for q in refs or []}
+    allowed.discard("")
+    for m in _URL.finditer(text or ""):
+        if _norm_url(m.group(0)) not in allowed:
+            return m.group(0)
+    return None
+
+
+# ---------------------------------------------------------------- B5: số tiền / mức phạt tù / thời hạn ngày phải có trong ngữ cảnh
+_UNIT = {"nghìn": 1_000, "ngàn": 1_000, "triệu": 1_000_000, "tỷ": 1_000_000_000}
+_NUM = r"\d{1,3}(?:[.,]\d{3})+|\d+(?:[.,]\d+)?"
+_MONEY_RANGE = re.compile(r"(%s)\s*(?:đến|tới|-|–)\s*(%s)\s*(nghìn|ngàn|triệu|tỷ)?\s*(?:đồng|vnđ|vnd)?" % (_NUM, _NUM), re.IGNORECASE)
+_MONEY = re.compile(r"(%s)\s*(?:(nghìn|ngàn|triệu|tỷ)\s*(?:đồng|vnđ|vnd)?|(?:đồng|vnđ|vnd))(?!\w)" % _NUM, re.IGNORECASE)
+_PRISON = re.compile(r"(?:tù|cải\s+tạo)[^.;\n]{0,25}?(\d+)\s*(tháng|năm)|(\d+)\s*(tháng|năm)\s*(?:tù|cải\s+tạo)", re.IGNORECASE)
+_DAYS = re.compile(r"(?<![\d/])(\d+)\s*ngày(?!\s*\d)", re.IGNORECASE)
+
+
+def _to_number(s: str) -> float:
+    if re.fullmatch(r"\d{1,3}(?:[.,]\d{3})+", s):
+        return float(re.sub(r"[.,]", "", s))
+    return float(s.replace(",", "."))
+
+
+def money_values(text: str) -> set:
+    """Mọi số tiền (đồng) trong văn bản, quy về đồng: "30.000.000 đồng", "30 triệu đồng", "từ 30 đến 40 triệu đồng"."""
+    out, t = set(), text or ""
+    for m in _MONEY_RANGE.finditer(t):
+        if m.group(3) or re.search(r"đồng|vnđ|vnd", m.group(0), re.IGNORECASE):
+            mul = _UNIT.get((m.group(3) or "").lower(), 1)
+            out.update({_to_number(m.group(1)) * mul, _to_number(m.group(2)) * mul})
+    for m in _MONEY.finditer(t):
+        out.add(_to_number(m.group(1)) * _UNIT.get((m.group(2) or "").lower(), 1))
+    return out
+
+
+def prison_terms(text: str) -> set:
+    return {(m.group(1) or m.group(3), (m.group(2) or m.group(4)).lower()) for m in _PRISON.finditer(text or "")}
+
+
+def day_terms(text: str) -> set:
+    return {m.group(1) for m in _DAYS.finditer(text or "")}
+
+
+def unknown_number(text: str, allowed_text: str):
+    """Số tiền / mức tù / thời hạn ngày trong lời văn không có trong allowed_text (ngữ cảnh + câu người dùng) → mô tả; ok → None."""
+    money_ok = money_values(allowed_text)
+    for v in money_values(text):
+        if v not in money_ok:
+            return "số tiền %s đồng" % format(int(v), ",")
+    prison = prison_terms(text)
+    if prison:
+        ok = prison_terms(allowed_text) | {(n, u.lower()) for n, u in re.findall(r"(\d+)\s*(tháng|năm)", allowed_text or "")}
+        for term in prison:
+            if term not in ok:
+                return "mức tù %s %s" % term
+    for d in day_terms(text) - day_terms(allowed_text):
+        return "thời hạn %s ngày" % d
+    return None
