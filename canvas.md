@@ -9,7 +9,7 @@
 | 5 | Lát cắt một câu | Khi sinh viên nam trong độ tuổi gọi nhập ngũ tìm hiểu trường hợp học tập của mình, AI phân loại tình huống theo căn cứ đã xác minh hoặc hỏi thêm dữ kiện để đưa ra nhận định sơ bộ kèm trích dẫn và checklist bước tiếp theo khi đủ căn cứ. |
 | 6 | Mức tự động | AI hỏi thêm, phân loại và giải thích dựa trên nguồn đã xác minh. Người dùng kiểm tra căn cứ và cơ quan có thẩm quyền quyết định, vì nhận định sai có thể khiến sinh viên hiểu sai nghĩa vụ hoặc chuẩn bị thiếu hồ sơ. |
 | 7 | Phân công có tên | `Nhi` khám phá người dùng · `Hiếu` kiểm chứng nguồn luật · `Tùng` triển khai bản chạy thử · `Hoàng` đánh giá và chuẩn bị demo. |
-| — | *(CP2)* Đã đổi gì so với CP1 | Nhóm bổ sung KB và truy xuất, kết nối model thật, các lớp guard và benchmark 25 ca; chi tiết lịch sử ở git log origin/main. Chuẩn đạt và bằng chứng pain đang chờ nhóm chốt/thu thập. |
+| — | *(CP2)* Đã đổi gì so với CP1 | Nhóm bổ sung KB và truy xuất, kết nối model thật, các lớp guard và benchmark 27 ca; chi tiết lịch sử ở git log origin/main. Chuẩn đạt 75% và điều kiện an toàn đã chốt; bằng chứng pain đang thu thập. |
 
 ## Track F · Đối chiếu tạm hoãn gọi nhập ngũ vì lý do học tập
 
