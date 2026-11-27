@@ -20,6 +20,71 @@ for _stream in (sys.stdout, sys.stderr, sys.stdin):
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 
+class _ReplaceWriter:
+    """Bọc luồng ra KHÔNG reconfigure được (vd console / IDE cp1252, cp437): ký tự không mã hóa được thành '?' thay vì
+    ném UnicodeEncodeError giữa buổi demo."""
+
+    def __init__(self, stream):
+        self._s = stream
+        self._enc = getattr(stream, "encoding", None) or "utf-8"
+
+    def write(self, text):
+        return self._s.write(str(text).encode(self._enc, "replace").decode(self._enc, "replace"))
+
+    def __getattr__(self, name):
+        return getattr(self._s, name)
+
+
+def safe_streams():
+    """stdout / stderr: UTF-8 (thay ký tự hỏng) nếu được, không thì bọc _ReplaceWriter; stdin: thay byte hỏng."""
+    for name in ("stdout", "stderr"):
+        s = getattr(sys, name)
+        if s is None or isinstance(s, _ReplaceWriter):
+            continue
+        try:
+            s.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            enc = (getattr(s, "encoding", None) or "").lower().replace("_", "-")
+            if enc not in ("utf-8", "utf8"):
+                setattr(sys, name, _ReplaceWriter(s))
+    try:
+        sys.stdin.reconfigure(errors="replace")
+    except Exception:
+        pass
+
+
+PASTE_MAX_LINES = 50
+PASTE_WAIT_S = 0.03
+
+
+def _more_waiting() -> bool:
+    """Còn dòng đã dán đang chờ ở console? Chỉ xét console thật (đầu vào qua ống / file: mỗi dòng là một lượt)."""
+    try:
+        if not sys.stdin.isatty():
+            return False
+        time.sleep(PASTE_WAIT_S)
+        if os.name == "nt":
+            import msvcrt
+            return bool(msvcrt.kbhit())
+        import select
+        return bool(select.select([sys.stdin], [], [], 0)[0])
+    except Exception:
+        return False
+
+
+def read_message(prompt: str = "> ", more=None) -> str:
+    """Đọc một câu hỏi. Dán đoạn nhiều dòng vào console → gộp thành MỘT câu (nối bằng dấu cách), tối đa
+    PASTE_MAX_LINES dòng, thay vì mỗi dòng thành một lượt hỏi riêng."""
+    more = more or _more_waiting
+    lines = [input(prompt)]
+    while len(lines) < PASTE_MAX_LINES and more():
+        try:
+            lines.append(input())
+        except EOFError:
+            break
+    return " ".join(x.strip() for x in lines if x.strip())
+
+
 def _where(e):
     """File (trong codebase/) gây lỗi khi nạp: SyntaxError có e.filename, lỗi khác lấy khung cuối của traceback."""
     import traceback
@@ -31,6 +96,7 @@ def _where(e):
     return os.path.relpath(p, base).replace(os.sep, "/") if p.startswith(base) else path
 
 def main() -> int:
+    safe_streams()
     try:
         import tracing
         import agent
@@ -50,7 +116,7 @@ def main() -> int:
     blank = 0
     while True:
         try:
-            text = input("> ").strip()
+            text = read_message("> ").strip()
         except (EOFError, KeyboardInterrupt):     # Ctrl+D / Ctrl+Z, Ctrl+C ở dấu nhắc: thoát gọn, không in traceback
             print()
             print(demo_ui.BYE)
