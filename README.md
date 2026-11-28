@@ -90,7 +90,8 @@ Nhóm dùng stack khác (Node, Streamlit, notebook…): sửa hàm `run_app()` t
 
 2–3 dòng (bắt buộc): nhóm dùng công cụ AI nào để làm gì, người kiểm lại phần nào. Chi tiết: [docs/ai-usage.md](docs/ai-usage.md). Coding agent đọc [AGENTS.md](AGENTS.md).
 
-____
+Nhóm dùng **Claude Code (Claude Opus)** để viết script đếm data và khảo sát, sửa prompt (luật 6a, PR #24), viết script chấm cột `pass` bằng code, dựng giao diện web, nháp tài liệu và slide; dùng **Antigravity** để rà PR, viết và chạy bộ 100 câu tình huống biên, gợi ý câu khảo sát. Model trong sản phẩm: `gpt-6.1-terra`; không dùng LLM để chấm.
+Người kiểm: Nhi duyệt data và số bằng chứng; Hiếu chọn nhãn câu thử và chấm tay run-1 (khớp script 27/27); Tùng rà PR và kết quả bộ 100 câu; Hoàng [Hoàng điền]. Chi tiết: [docs/ai-usage.md](docs/ai-usage.md).
 
 ## File mẫu — điền ở bước nào
 
@@ -122,5 +123,5 @@ ____
 | 4 | Bản chạy thử làm trọn lát cắt | `codebase/` · lệnh ở mục "Lệnh" · video 30 giây gọi AI thật (CP3, `gpt-6.1-terra`): [Google Drive](https://drive.google.com/file/d/1lffjdLlopMako0CvnkQevkklQDhLKPLM/view?usp=sharing) · kịch bản: [docs/video-cp3.md](docs/video-cp3.md) |
 | 5 | Định nghĩa "tốt" + bộ câu thử | `data/DATA_CARD.md` · `eval/` |
 | 6 | Mô phỏng chi phí khi dùng thật | `cost/` |
-| 7 | Slide + demo + video dự phòng | `demo-slides.pdf` ở thư mục gốc · link video: ____ |
+| 7 | Slide + demo + video dự phòng | `demo-slides.pdf` ở thư mục gốc · video demo dự phòng (web, `gpt-6.1-terra`): [Google Drive](https://drive.google.com/file/d/1iMmnBOkjekVArtKo5sunkW7PI3NBv_WP/view?usp=sharing) · kịch bản: [docs/video-cp4.md](docs/video-cp4.md) |
 | + | *Bonus:* người dùng thử | `validation/log.md` |

@@ -36,7 +36,7 @@
 | Lượt | Run ID | Model | Cấu hình (prompt / công cụ / thay đổi) | Đạt / tổng | % | Đạt chuẩn? |
 |---|---|---|---|---|---|---|
 | 1 | `run-1@20261127-183305` | `gpt-6.1-terra` | prompt hiện tại trên main (sau PR #9/#10) · công cụ `tra_cuu_can_cu` · sửa cục bộ `codebase/ai.py`: bỏ `temperature: 0` khỏi body gọi model (model không nhận tham số) · `--wait 4` | 18/27 | 67% | **chưa** (nhan_dung 18/27 < ≥21/27) |
-| 2 | | | | __/__ | | |
+| 2 | `run-7@20261128-120720` | `gpt-6.1-terra` | `main` `01b27e5` sau merge PR #24 (luật 6a + liệt kê id hợp lệ cho `can_cu`) · `--wait 4` · chạy một lần | 23/27 | 85% | **đạt** (nhan_dung 23/27 ≥ 21/27; trich_dan_hop_le 27/27; tu_choi_dung 6/6, 0 nhầm) |
 | (phát triển) | `run-2@20261127-215431` | `gpt-4o-mini` | như lượt 1, chỉ đổi model | 10/27 | 37% | chưa |
 | (phát triển) | `run-3@20261127-215756` | `gpt-4o-mini` | + liệt kê id hợp lệ cho `can_cu` trong ngữ cảnh | 13/27 | 48% | chưa |
 | (phát triển) | `run-4@20261127-220724` | `gpt-6.1-terra` | như run-3, quay lại model của lượt 1 | 19/27 | 70% | chưa |
@@ -49,4 +49,4 @@ Lượt chạy lại vì lỗi kỹ thuật, lượt sau CP4: ghi thêm dòng, k
 
 ## 6. Lỗi chính
 
-Lượt 1: 18/27 (67%) — chưa đạt chuẩn `nhan_dung` (≥75%); `trich_dan_hop_le` 27/27 và `tu_choi_dung` 6/6, 0 nhầm là đạt. Nhóm lỗi lớn nhất: kết luận `not_eligible` khi benchmark yêu cầu hỏi thêm (GT04, GT09, GT19, GT20). Chưa sửa gì; lượt 2 sẽ chọn đúng một nhóm lỗi. Chi tiết: `eval/report.md`.
+Lượt 1: 18/27 (67%) — chưa đạt chuẩn `nhan_dung` (≥75%); `trich_dan_hop_le` 27/27 và `tu_choi_dung` 6/6, 0 nhầm là đạt. Nhóm lỗi lớn nhất: kết luận `not_eligible` khi benchmark yêu cầu hỏi thêm (GT04, GT09, GT19, GT20). Lượt 2 (`run-7`, sau một cải tiến nhắm nhóm A): 23/27 (85%) — đạt chuẩn; nhóm A 0/4 → 3/4, không câu nào tệ đi. Còn trượt GT03, GT11 (thiếu mã căn cứ), GT04 (nhãn tranh cãi), GT14 (hỏi lại thay vì cảnh báo bỏ khám). Chi tiết: `eval/report.md`.
