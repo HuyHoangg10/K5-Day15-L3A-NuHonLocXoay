@@ -304,15 +304,15 @@
   ]
  },
  "stub/GT01": {
-  "output": "NHAN: eligible_for_review\nCAN_CU: vbhn133-d41-k1-g\n\nGiải thích: Theo những gì bạn kể, bạn có căn cứ để đề nghị xem xét tạm hoãn. Việc này chỉ áp dụng trong một khóa học, tính từ ngày nhập học tới khi tốt nghiệp.\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn:\n- vbhn133-d41-k1-g — 133/2026/VBHN-LQ-VPQH; https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/9/133-vbhn-vpqh.signed.pdf; kiểm tra ngày 27/11/2026\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
+  "output": "NHAN: need_more_information\nCAN_CU: vbhn133-d41-k1-g\n\nGiải thích: Mình cần thêm thông tin về việc học của bạn để đối chiếu căn cứ.\nCần biết thêm: Bạn đang học trình độ nào, hệ chính quy hay không?\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn:\n- vbhn133-d41-k1-g — 133/2026/VBHN-LQ-VPQH; https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/9/133-vbhn-vpqh.signed.pdf; kiểm tra ngày 27/11/2026\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
   "prompts": [
    [
     "c7cb43c0440572cc40400f6d03477679a5fcc2ebecc3ea36db7c2493f2fec5b5",
     "45afcd20ba7a00825cb74eda46379ce12f50ea2c03024160685ab0c5d14ad74b"
    ],
    [
-    "c8d3430e4725c6f723e547991fd70cb4c4c51fcfc33e7489ac2c563202adc861",
-    "de30725a1f4ebf5da0f3516e40152856846f1121f26f0d939de907260e629ae2"
+    "bae5bff0d47a7aa7cf4a84269ca021317fbb72889cf2d6e614db7c15295a7c43",
+    "c1a2976c3d966fe6183e9218aafbd3b3f3ee39f8ad2796cb37da9c02c10cecd2"
    ]
   ]
  },
@@ -324,47 +324,47 @@
     "31ffa2c0cf723e8a104fc06a53aff89fc620b27d6b9e40c279d034064cb5f36d"
    ],
    [
-    "c8d3430e4725c6f723e547991fd70cb4c4c51fcfc33e7489ac2c563202adc861",
-    "880436e7cdbe0fd9c2d4dd22d510fa4aa4dbd0ad6a474110dba49db034575b4b"
+    "bae5bff0d47a7aa7cf4a84269ca021317fbb72889cf2d6e614db7c15295a7c43",
+    "30f1649aa67657bf5373c6cfabd33724549b59f4693fbec979dd54f7e501cff9"
    ]
   ]
  },
  "stub/GT03": {
-  "output": "NHAN: not_eligible\nCAN_CU: vbhn133-d41-k1-g\n\nGiải thích: Theo những gì bạn kể, bạn thường không thuộc diện tạm hoãn vì học tập.\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn:\n- vbhn133-d41-k1-g — 133/2026/VBHN-LQ-VPQH; https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/9/133-vbhn-vpqh.signed.pdf; kiểm tra ngày 27/11/2026\nTham khảo (hỏi đáp chính thức, không phải căn cứ pháp lý):\n- qa-q04 — Xác định thời gian tạm hoãn gọi nhập ngũ đối với sinh viên; https://baochinhphu.vn/xac-dinh-thoi-gian-tam-hoan-goi-nhap-ngu-doi-voi-sinh-vien-102261008075934987.htm; kiểm tra ngày 27/11/2026\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
+  "output": "NHAN: not_eligible\nCAN_CU: vbhn133-d41-k1-g\n\nGiải thích: Theo những gì bạn kể, bạn thường không thuộc diện tạm hoãn vì học tập.\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn:\n- vbhn133-d41-k1-g — 133/2026/VBHN-LQ-VPQH; https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/9/133-vbhn-vpqh.signed.pdf; kiểm tra ngày 27/11/2026\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
   "prompts": [
    [
     "c7cb43c0440572cc40400f6d03477679a5fcc2ebecc3ea36db7c2493f2fec5b5",
     "ce69b6c95228bce80cbfd6561395cfcc512ca915182dde2d45632c1c7698dc6c"
    ],
    [
-    "c8d3430e4725c6f723e547991fd70cb4c4c51fcfc33e7489ac2c563202adc861",
-    "ba605508952c795fd56381021e16ece58abb8c85d4313c76b17888893ae49be4"
+    "bae5bff0d47a7aa7cf4a84269ca021317fbb72889cf2d6e614db7c15295a7c43",
+    "9e43d23c892e9ca606b9787729066375b5a40074591d865de04b782511478c84"
    ]
   ]
  },
  "stub/GT04": {
-  "output": "NHAN: need_more_information\nCAN_CU: vbhn133-d41-k1-g\n\nGiải thích: Mình cần thêm thông tin về việc học của bạn để đối chiếu căn cứ.\nCần biết thêm: Bạn đang học trình độ nào, hệ chính quy hay không?\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn:\n- vbhn133-d41-k1-g — 133/2026/VBHN-LQ-VPQH; https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/9/133-vbhn-vpqh.signed.pdf; kiểm tra ngày 27/11/2026\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
+  "output": "NHAN: need_more_information\nCAN_CU: vbhn133-d41-k1-g\n\nGiải thích: Mình cần thêm thông tin về việc học của bạn để đối chiếu căn cứ.\nCần biết thêm: Bạn đang học trình độ nào, hệ chính quy hay không?\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn:\n- vbhn133-d41-k1-g — 133/2026/VBHN-LQ-VPQH; https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/9/133-vbhn-vpqh.signed.pdf; kiểm tra ngày 27/11/2026\nTham khảo (hỏi đáp chính thức, không phải căn cứ pháp lý):\n- qa-q06 — Học liên thông có tiếp tục được tạm hoãn gọi nhập ngũ?; https://baochinhphu.vn/hoc-lien-thong-co-tiep-tuc-duoc-tam-hoan-goi-nhap-ngu-102261013083602116.htm; kiểm tra ngày 27/11/2026\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
   "prompts": [
    [
     "c7cb43c0440572cc40400f6d03477679a5fcc2ebecc3ea36db7c2493f2fec5b5",
     "24aa36d94adeaf6be76658f8b2f157caf805b3e1bb51040f74d26b8676cc0e9b"
    ],
    [
-    "c8d3430e4725c6f723e547991fd70cb4c4c51fcfc33e7489ac2c563202adc861",
-    "c8fba54422462cf8f750b64418c134538dcb8faaa609336f31a13274736c4c9e"
+    "bae5bff0d47a7aa7cf4a84269ca021317fbb72889cf2d6e614db7c15295a7c43",
+    "aa2353b5588b845646ee412a801dc2e4004a4203678b18abb7640ca979c5db34"
    ]
   ]
  },
  "stub/GT05": {
-  "output": "NHAN: not_eligible\nCAN_CU: vbhn133-d41-k1-g\n\nGiải thích: Theo những gì bạn kể, bạn thường không thuộc diện tạm hoãn vì học tập.\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn:\n- vbhn133-d41-k1-g — 133/2026/VBHN-LQ-VPQH; https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/9/133-vbhn-vpqh.signed.pdf; kiểm tra ngày 27/11/2026\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
+  "output": "NHAN: out_of_scope\nCAN_CU: \n\nGiải thích: Câu này nằm ngoài phạm vi tạm hoãn vì học tập mà mình hỗ trợ.\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn: không dùng điều luật nào.\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
   "prompts": [
    [
     "c7cb43c0440572cc40400f6d03477679a5fcc2ebecc3ea36db7c2493f2fec5b5",
     "08138a395218160088628cdd50082238c424df9fa74bd7a0221b01a7b5f16fdb"
    ],
    [
-    "c8d3430e4725c6f723e547991fd70cb4c4c51fcfc33e7489ac2c563202adc861",
-    "fa1b92e4bb79f2d9067593c70e79a9a96e42eb3e64ef56347d6478031dc2ab5a"
+    "bae5bff0d47a7aa7cf4a84269ca021317fbb72889cf2d6e614db7c15295a7c43",
+    "1b599dde8d2c3b6c336ca2d8d76cb8bfd5bf5af7786480e79f67e1314e3c49f9"
    ]
   ]
  },
@@ -376,47 +376,47 @@
     "6ed5846c03cbd4bd59d4d86f63cc471ad05a252f2923441c108f8720e0f80b26"
    ],
    [
-    "c8d3430e4725c6f723e547991fd70cb4c4c51fcfc33e7489ac2c563202adc861",
-    "3eb3b2388ca9aec57cf9fa5c921414d0f3f9bcbc74a7db41fcf9b76d8340b240"
+    "bae5bff0d47a7aa7cf4a84269ca021317fbb72889cf2d6e614db7c15295a7c43",
+    "928d1e546515e15be602e0a64b551eec71d9dfae7e1270de2d741bcaa698f0b5"
    ]
   ]
  },
  "stub/GT07": {
-  "output": "NHAN: need_more_information\nCAN_CU: vbhn133-d41-k1-g\n\nGiải thích: Mình cần thêm thông tin về việc học của bạn để đối chiếu căn cứ.\nCần biết thêm: Bạn đang học trình độ nào, hệ chính quy hay không?\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn:\n- vbhn133-d41-k1-g — 133/2026/VBHN-LQ-VPQH; https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/9/133-vbhn-vpqh.signed.pdf; kiểm tra ngày 27/11/2026\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
+  "output": "NHAN: eligible_for_review\nCAN_CU: vbhn133-d41-k1-g\n\nGiải thích: Theo những gì bạn kể, bạn có căn cứ để đề nghị xem xét tạm hoãn. Việc này chỉ áp dụng trong một khóa học, tính từ ngày nhập học tới khi tốt nghiệp.\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn:\n- vbhn133-d41-k1-g — 133/2026/VBHN-LQ-VPQH; https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/9/133-vbhn-vpqh.signed.pdf; kiểm tra ngày 27/11/2026\nTham khảo (hỏi đáp chính thức, không phải căn cứ pháp lý):\n- qa-q25 — Điều kiện, hồ sơ đề nghị tạm hoãn gọi nhập ngũ; https://baochinhphu.vn/dieu-kien-ho-so-de-nghi-tam-hoan-goi-nhap-ngu-102260915102424943.htm; kiểm tra ngày 27/11/2026\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
   "prompts": [
    [
     "c7cb43c0440572cc40400f6d03477679a5fcc2ebecc3ea36db7c2493f2fec5b5",
     "a4710b276867535f1bf4ccffa32d75a6d78b19d974b12f5f3b52a5c1de3463c0"
    ],
    [
-    "c8d3430e4725c6f723e547991fd70cb4c4c51fcfc33e7489ac2c563202adc861",
-    "0bfc4d0008333461767c38e69d30192e57744cf065f3fa5fd133da494f2286a5"
+    "bae5bff0d47a7aa7cf4a84269ca021317fbb72889cf2d6e614db7c15295a7c43",
+    "8b8334df43a63aebe21d57c643a2ce853d0269b117a5ffe442aa45849bda05d7"
    ]
   ]
  },
  "stub/GT08": {
-  "output": "NHAN: out_of_scope\nCAN_CU: \n\nGiải thích: Câu này nằm ngoài phạm vi tạm hoãn vì học tập mà mình hỗ trợ.\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn: không dùng điều luật nào.\nTham khảo (hỏi đáp chính thức, không phải căn cứ pháp lý):\n- qa-q11 — Thủ tục chuyển đăng ký nghĩa vụ quân sự đối với trường hợp đã thôi học trường cũ, trúng tuyển đại học mới; https://xaydungchinhsach.chinhphu.vn/thu-tuc-chuyen-dang-ky-nghia-vu-quan-su-doi-voi-truong-hop-da-thoi-hoc-truong-cu-va-trung-tuyen-dai-hoc-moi-119260914121330769.htm; kiểm tra ngày 27/11/2026\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
+  "output": "NHAN: need_more_information\nCAN_CU: vbhn133-d41-k1-g\n\nGiải thích: Mình cần thêm thông tin về việc học của bạn để đối chiếu căn cứ.\nCần biết thêm: Bạn đang học trình độ nào, hệ chính quy hay không?\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn:\n- vbhn133-d41-k1-g — 133/2026/VBHN-LQ-VPQH; https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/9/133-vbhn-vpqh.signed.pdf; kiểm tra ngày 27/11/2026\nTham khảo (hỏi đáp chính thức, không phải căn cứ pháp lý):\n- qa-q11 — Thủ tục chuyển đăng ký nghĩa vụ quân sự đối với trường hợp đã thôi học trường cũ, trúng tuyển đại học mới; https://xaydungchinhsach.chinhphu.vn/thu-tuc-chuyen-dang-ky-nghia-vu-quan-su-doi-voi-truong-hop-da-thoi-hoc-truong-cu-va-trung-tuyen-dai-hoc-moi-119260914121330769.htm; kiểm tra ngày 27/11/2026\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
   "prompts": [
    [
     "c7cb43c0440572cc40400f6d03477679a5fcc2ebecc3ea36db7c2493f2fec5b5",
     "1c1a8b2acafd9e927eebb7a49d6e2cff9dd55a933af26936567c1e4832f3b911"
    ],
    [
-    "c8d3430e4725c6f723e547991fd70cb4c4c51fcfc33e7489ac2c563202adc861",
-    "3e51d7e264975ca26c5f5f0c82df8ca192d651450360ef642244434093dee119"
+    "bae5bff0d47a7aa7cf4a84269ca021317fbb72889cf2d6e614db7c15295a7c43",
+    "cd48b5f48abf2a70005c0cb1f6bdc3c14c7873db4109f9ba71a0db7249447066"
    ]
   ]
  },
  "stub/GT09": {
-  "output": "NHAN: need_more_information\nCAN_CU: vbhn133-d41-k1-g\n\nGiải thích: Mình cần thêm thông tin về việc học của bạn để đối chiếu căn cứ.\nCần biết thêm: Bạn đang học trình độ nào, hệ chính quy hay không?\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn:\n- vbhn133-d41-k1-g — 133/2026/VBHN-LQ-VPQH; https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/9/133-vbhn-vpqh.signed.pdf; kiểm tra ngày 27/11/2026\nTham khảo (hỏi đáp chính thức, không phải căn cứ pháp lý):\n- qa-q12 — Trường hợp nào được tạm hoãn gọi nhập ngũ?; https://baochinhphu.vn/truong-hop-nao-duoc-tam-hoan-goi-nhap-ngu-102240807164214856.htm; kiểm tra ngày 27/11/2026\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
+  "output": "NHAN: out_of_scope\nCAN_CU: \n\nGiải thích: Câu này nằm ngoài phạm vi tạm hoãn vì học tập mà mình hỗ trợ.\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn: không dùng điều luật nào.\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
   "prompts": [
    [
     "c7cb43c0440572cc40400f6d03477679a5fcc2ebecc3ea36db7c2493f2fec5b5",
     "d90b7f44ba40983b33dc2d26e9562f25f5d4b7514796c2b87874afbe5d882d0f"
    ],
    [
-    "c8d3430e4725c6f723e547991fd70cb4c4c51fcfc33e7489ac2c563202adc861",
-    "e4dfa6874bddf7f06caa6f3d11d5e02d67200dff8cfe2195e162bf4e58080a9b"
+    "bae5bff0d47a7aa7cf4a84269ca021317fbb72889cf2d6e614db7c15295a7c43",
+    "9abdf81d1747384315951fd60539a7f5ad3943b7538681f4d2d89302eb1b5c12"
    ]
   ]
  },
@@ -428,21 +428,21 @@
     "2db938db15dc196461f64d98e071608f1684a6bdbd4e7231d468ed7637be8851"
    ],
    [
-    "c8d3430e4725c6f723e547991fd70cb4c4c51fcfc33e7489ac2c563202adc861",
-    "1d189f206e7fcf9917f0eaad534d516445c7bf4da6de5879cfd2f69e1309c129"
+    "bae5bff0d47a7aa7cf4a84269ca021317fbb72889cf2d6e614db7c15295a7c43",
+    "1f500b51fc52d33fda046a5618b52d85166fc5ee36428c4993dc426e9f330163"
    ]
   ]
  },
  "stub/GT11": {
-  "output": "NHAN: out_of_scope\nCAN_CU: \n\nGiải thích: Câu này nằm ngoài phạm vi tạm hoãn vì học tập mà mình hỗ trợ.\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn: không dùng điều luật nào.\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
+  "output": "NHAN: out_of_scope\nCAN_CU: \n\nGiải thích: Câu này nằm ngoài phạm vi tạm hoãn vì học tập mà mình hỗ trợ.\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn: không dùng điều luật nào.\nTham khảo (hỏi đáp chính thức, không phải căn cứ pháp lý):\n- qa-q23 — Sinh viên được tạm hoãn gọi nhập ngũ mấy khóa đào tạo?; https://baochinhphu.vn/sinh-vien-duoc-tam-hoan-goi-nhap-ngu-may-khoa-dao-tao-102261106105816406.htm; kiểm tra ngày 27/11/2026\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
   "prompts": [
    [
     "c7cb43c0440572cc40400f6d03477679a5fcc2ebecc3ea36db7c2493f2fec5b5",
     "bf1013273c1122c9aa1a482148f87ae31e0a82d27794b80407a413af8a37cd5d"
    ],
    [
-    "c8d3430e4725c6f723e547991fd70cb4c4c51fcfc33e7489ac2c563202adc861",
-    "9a736a2ab53fc0b68d21d993455e33b79b63f624aa925479d228a018e9e88df7"
+    "bae5bff0d47a7aa7cf4a84269ca021317fbb72889cf2d6e614db7c15295a7c43",
+    "7752913392a17b3c7dc0d58a480beaeefcdc7cbbec31f216c258d04d82b4b542"
    ]
   ]
  },
@@ -456,15 +456,15 @@
   ]
  },
  "stub/GT13": {
-  "output": "NHAN: out_of_scope\nCAN_CU: \n\nGiải thích: Câu này nằm ngoài phạm vi tạm hoãn vì học tập mà mình hỗ trợ.\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn: không dùng điều luật nào.\nTham khảo (hỏi đáp chính thức, không phải căn cứ pháp lý):\n- qa-q04 — Xác định thời gian tạm hoãn gọi nhập ngũ đối với sinh viên; https://baochinhphu.vn/xac-dinh-thoi-gian-tam-hoan-goi-nhap-ngu-doi-voi-sinh-vien-102261008075934987.htm; kiểm tra ngày 27/11/2026\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
+  "output": "NHAN: out_of_scope\nCAN_CU: \n\nGiải thích: Câu này nằm ngoài phạm vi tạm hoãn vì học tập mà mình hỗ trợ.\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn: không dùng điều luật nào.\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
   "prompts": [
    [
     "c7cb43c0440572cc40400f6d03477679a5fcc2ebecc3ea36db7c2493f2fec5b5",
     "b6e1eb7b984e11fd5c849b779e62a827f1d5525a5bb3694a8d4efc834cc39053"
    ],
    [
-    "c8d3430e4725c6f723e547991fd70cb4c4c51fcfc33e7489ac2c563202adc861",
-    "6a40ddee9bb21d9bd1321ec8fcefe8bdc8fc7f29968979b57a1246961661480b"
+    "bae5bff0d47a7aa7cf4a84269ca021317fbb72889cf2d6e614db7c15295a7c43",
+    "7075147ade3ba3b4098df3220837b8e1bc35150c94b903abd00088e19dbf9b09"
    ]
   ]
  },
@@ -490,41 +490,41 @@
   "prompts": []
  },
  "stub/GT18": {
-  "output": "NHAN: out_of_scope\nCAN_CU: \n\nGiải thích: Câu này nằm ngoài phạm vi tạm hoãn vì học tập mà mình hỗ trợ.\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn: không dùng điều luật nào.\nTham khảo (hỏi đáp chính thức, không phải căn cứ pháp lý):\n- qa-q25 — Điều kiện, hồ sơ đề nghị tạm hoãn gọi nhập ngũ; https://baochinhphu.vn/dieu-kien-ho-so-de-nghi-tam-hoan-goi-nhap-ngu-102260915102424943.htm; kiểm tra ngày 27/11/2026\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
+  "output": "NHAN: out_of_scope\nCAN_CU: \n\nGiải thích: Câu này nằm ngoài phạm vi tạm hoãn vì học tập mà mình hỗ trợ.\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn: không dùng điều luật nào.\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
   "prompts": [
    [
     "c7cb43c0440572cc40400f6d03477679a5fcc2ebecc3ea36db7c2493f2fec5b5",
     "d88fc2cc9fb18c2c7addcec99d11c39dfb1cd30b0fbdcb6e0e9a62a93413329c"
    ],
    [
-    "c8d3430e4725c6f723e547991fd70cb4c4c51fcfc33e7489ac2c563202adc861",
-    "5a40a1d9d9301e580ec263f521fd4727b6709f9f79691ea4da342c3186ad12a1"
+    "bae5bff0d47a7aa7cf4a84269ca021317fbb72889cf2d6e614db7c15295a7c43",
+    "277efe5eb36cac2027bdc166c85fef55ffb78e3bd8f22cb22e6cedcddc78a7b6"
    ]
   ]
  },
  "stub/GT19": {
-  "output": "NHAN: need_more_information\nCAN_CU: vbhn133-d41-k1-g\n\nGiải thích: Mình cần thêm thông tin về việc học của bạn để đối chiếu căn cứ.\nCần biết thêm: Bạn đang học trình độ nào, hệ chính quy hay không?\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn:\n- vbhn133-d41-k1-g — 133/2026/VBHN-LQ-VPQH; https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/9/133-vbhn-vpqh.signed.pdf; kiểm tra ngày 27/11/2026\nTham khảo (hỏi đáp chính thức, không phải căn cứ pháp lý):\n- qa-q23 — Sinh viên được tạm hoãn gọi nhập ngũ mấy khóa đào tạo?; https://baochinhphu.vn/sinh-vien-duoc-tam-hoan-goi-nhap-ngu-may-khoa-dao-tao-102261106105816406.htm; kiểm tra ngày 27/11/2026\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
+  "output": "NHAN: eligible_for_review\nCAN_CU: vbhn133-d41-k1-g\n\nGiải thích: Theo những gì bạn kể, bạn có căn cứ để đề nghị xem xét tạm hoãn. Việc này chỉ áp dụng trong một khóa học, tính từ ngày nhập học tới khi tốt nghiệp.\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn:\n- vbhn133-d41-k1-g — 133/2026/VBHN-LQ-VPQH; https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/9/133-vbhn-vpqh.signed.pdf; kiểm tra ngày 27/11/2026\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
   "prompts": [
    [
     "c7cb43c0440572cc40400f6d03477679a5fcc2ebecc3ea36db7c2493f2fec5b5",
     "09ecb0962acd0c0778a9c6bfe95c6a89e138cc75aa6d9893c7d27aaedf01ed01"
    ],
    [
-    "c8d3430e4725c6f723e547991fd70cb4c4c51fcfc33e7489ac2c563202adc861",
-    "29a10b80ddd3a393562893ee51825951969d752ff9c673167fb3b51158bc607c"
+    "bae5bff0d47a7aa7cf4a84269ca021317fbb72889cf2d6e614db7c15295a7c43",
+    "7e66df98d34d60864b25c1058538d88941ab451d229bca3e7261cf52a4897938"
    ]
   ]
  },
  "stub/GT20": {
-  "output": "NHAN: eligible_for_review\nCAN_CU: vbhn133-d41-k1-g\n\nGiải thích: Theo những gì bạn kể, bạn có căn cứ để đề nghị xem xét tạm hoãn. Việc này chỉ áp dụng trong một khóa học, tính từ ngày nhập học tới khi tốt nghiệp.\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn:\n- vbhn133-d41-k1-g — 133/2026/VBHN-LQ-VPQH; https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/9/133-vbhn-vpqh.signed.pdf; kiểm tra ngày 27/11/2026\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
+  "output": "NHAN: out_of_scope\nCAN_CU: \n\nGiải thích: Câu này nằm ngoài phạm vi tạm hoãn vì học tập mà mình hỗ trợ.\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn: không dùng điều luật nào.\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
   "prompts": [
    [
     "c7cb43c0440572cc40400f6d03477679a5fcc2ebecc3ea36db7c2493f2fec5b5",
     "70975d7606b75ec8c06f97cf1fee7e5a6f452793d51638fd3b325c1f427fda22"
    ],
    [
-    "c8d3430e4725c6f723e547991fd70cb4c4c51fcfc33e7489ac2c563202adc861",
-    "5e64dd00b0bccd53d8e3056fa5696d29830271a931bc6aa45fb3effa5bd51555"
+    "bae5bff0d47a7aa7cf4a84269ca021317fbb72889cf2d6e614db7c15295a7c43",
+    "75fbd29f7219ec7d3ef27270c2503df077cf1f8a48c6598472faad2b55a3c465"
    ]
   ]
  },
@@ -537,15 +537,15 @@
   "prompts": []
  },
  "stub/X03": {
-  "output": "NHAN: eligible_for_review\nCAN_CU: vbhn133-d41-k1-g\n\nGiải thích: Theo những gì bạn kể, bạn có căn cứ để đề nghị xem xét tạm hoãn. Việc này chỉ áp dụng trong một khóa học, tính từ ngày nhập học tới khi tốt nghiệp.\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn:\n- vbhn133-d41-k1-g — 133/2026/VBHN-LQ-VPQH; https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/9/133-vbhn-vpqh.signed.pdf; kiểm tra ngày 27/11/2026\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
+  "output": "NHAN: need_more_information\nCAN_CU: vbhn133-d41-k1-g\n\nGiải thích: Mình cần thêm thông tin về việc học của bạn để đối chiếu căn cứ.\nCần biết thêm: Bạn đang học trình độ nào, hệ chính quy hay không?\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn:\n- vbhn133-d41-k1-g — 133/2026/VBHN-LQ-VPQH; https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/9/133-vbhn-vpqh.signed.pdf; kiểm tra ngày 27/11/2026\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
   "prompts": [
    [
     "c7cb43c0440572cc40400f6d03477679a5fcc2ebecc3ea36db7c2493f2fec5b5",
     "4f70aa5918af6eb5f1268865e8eb3701d411deecd593d6ce5100d0912cfd56a6"
    ],
    [
-    "c8d3430e4725c6f723e547991fd70cb4c4c51fcfc33e7489ac2c563202adc861",
-    "a94911fbe14c6b8c65d749dad01ee5c34318d46de8415b63b4bc5e5e21c34e72"
+    "bae5bff0d47a7aa7cf4a84269ca021317fbb72889cf2d6e614db7c15295a7c43",
+    "d1d40be9d43e0f4b875585fcc8a6f3f57b1c3d601b10a00a938b05dc72faf0c8"
    ]
   ]
  },
@@ -558,15 +558,15 @@
   "prompts": []
  },
  "stub/X06": {
-  "output": "NHAN: not_eligible\nCAN_CU: vbhn133-d41-k1-g\n\nGiải thích: Theo những gì bạn kể, bạn thường không thuộc diện tạm hoãn vì học tập.\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn:\n- vbhn133-d41-k1-g — 133/2026/VBHN-LQ-VPQH; https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/9/133-vbhn-vpqh.signed.pdf; kiểm tra ngày 27/11/2026\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
+  "output": "NHAN: not_eligible\nCAN_CU: vbhn133-d41-k1-g\n\nGiải thích: Theo những gì bạn kể, bạn thường không thuộc diện tạm hoãn vì học tập.\nViệc cần làm:\n1. Bạn chuẩn bị giấy xác nhận của nhà trường.\n2. Bạn nên hỏi Ban Chỉ huy quân sự cấp xã nơi bạn cư trú để được hướng dẫn.\nNguồn:\n- vbhn133-d41-k1-g — 133/2026/VBHN-LQ-VPQH; https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/9/133-vbhn-vpqh.signed.pdf; kiểm tra ngày 27/11/2026\nTham khảo (hỏi đáp chính thức, không phải căn cứ pháp lý):\n- qa-q23 — Sinh viên được tạm hoãn gọi nhập ngũ mấy khóa đào tạo?; https://baochinhphu.vn/sinh-vien-duoc-tam-hoan-goi-nhap-ngu-may-khoa-dao-tao-102261106105816406.htm; kiểm tra ngày 27/11/2026\nLưu ý: Thông tin này chỉ để tham khảo, không phải quyết định chính thức. Quyết định cuối cùng thuộc cơ quan có thẩm quyền: Hội đồng nghĩa vụ quân sự cấp xã xem xét hồ sơ (bạn nộp qua Ban Chỉ huy quân sự cấp xã), Chủ tịch Ủy ban nhân dân cấp tỉnh quyết định tạm hoãn; kết luận về sức khỏe do Hội đồng khám sức khỏe đưa ra.",
   "prompts": [
    [
     "c7cb43c0440572cc40400f6d03477679a5fcc2ebecc3ea36db7c2493f2fec5b5",
     "dafe5bb1c012409507e4e4e456bd1c51c3e9167fb4ef621f275b7e2dfa2e5523"
    ],
    [
-    "c8d3430e4725c6f723e547991fd70cb4c4c51fcfc33e7489ac2c563202adc861",
-    "ee263ff278edb7056d90755fba804d3f56397f9b6a7f406d256f645a99e71d44"
+    "bae5bff0d47a7aa7cf4a84269ca021317fbb72889cf2d6e614db7c15295a7c43",
+    "aa3514974ed4b652583705b0b7ab3a7423b5f373d216005a38f9fcf7fecfa1bc"
    ]
   ]
  },

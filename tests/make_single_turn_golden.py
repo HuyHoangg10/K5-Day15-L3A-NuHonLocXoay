@@ -2,7 +2,7 @@
 eval/benchmark.csv + vài input biên, dưới hai model giả (MODEL_PROVIDER=fake và tests/single_turn_stub.py), kèm
 sha256 của từng prompt gửi model. Không gọi mạng.
 
-Bản golden trong repo được sinh từ code main 5ac7fb5 (trước khi thêm bộ nhớ hội thoại). Chỉ sinh lại khi CỐ Ý đổi
+Bản golden trong repo được sinh từ code main 8d16ad6 (agent giống bản chạy run-7) (trước khi thêm bộ nhớ hội thoại). Chỉ sinh lại khi CỐ Ý đổi
 hành vi một lượt (khi đó đường đo eval cũng đổi):  MODEL_PROVIDER=fake python tests/make_single_turn_golden.py
 """
 import csv

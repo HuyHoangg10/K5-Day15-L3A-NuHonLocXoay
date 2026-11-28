@@ -1,5 +1,5 @@
 """BẤT BIẾN ĐƯỜNG ĐO: answer(text) không phiên phải cho đầu ra GIỐNG TỪNG BYTE và gửi model ĐÚNG các prompt như
-main 5ac7fb5 (bản chụp tests/fixtures/single_turn_golden.json), với mọi input của eval/benchmark.csv + input biên,
+main 8d16ad6 (bản chụp tests/fixtures/single_turn_golden.json), với mọi input của eval/benchmark.csv + input biên,
 dưới hai model giả. Lượt 2 chính thức (`python run.py eval`) gọi đúng đường này. Không gọi mạng."""
 import json
 import os
