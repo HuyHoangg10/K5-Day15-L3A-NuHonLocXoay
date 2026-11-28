@@ -93,13 +93,13 @@ Theo `codebase/agent.py`: đủ thông tin và nguồn có thể ra `eligible_fo
 ## §7. Đánh giá & chuẩn đạt
 `python run.py check` ngày 27/11: 27 câu, 7 `thuong`, 11 `kho`, 9 `tu_choi`, gồm 12/27 ghi nguồn `data_that`; kiểm provenance và nhãn với nhóm. `eval/metric_spec.yaml` có 3 metric chấm bằng code: `nhan_dung` (ngưỡng 75%, ≥ 21/27), `trich_dan_hop_le` (100%), `tu_choi_dung` (100% / 0 nhầm).
 **Chuẩn "đạt"** (nhóm chốt 27/11, trước 19:30; giữ nguyên đến 23:59 Thứ Bảy 28/11): "Đạt khi ≥ 75% số câu của `eval/benchmark.csv` đạt `nhan_dung` (đúng nhãn; câu có `CAN_CU chứa …` thì đủ mã), 100% câu đạt `trich_dan_hop_le`, và `tu_choi_dung`: 100% câu expected refuse ra refuse, 0 câu hợp lệ bị refuse nhầm."
-Lượt 1: 18/27 (67%), run ID `run-1@20261127-183305` — chưa đạt chuẩn. Lượt 2: __/__ (__%), run ID __. Xem `eval/report.md`, `eval/README.md`.
+Lượt 1: 18/27 (67%), run ID `run-1@20261127-183305` — chưa đạt chuẩn. Lượt 2: 23/27 (85%), run ID `run-7@20261128-120720` — đạt chuẩn (≥ 21/27). Xem `eval/report.md`, `eval/README.md`.
 
 ## §8. Chi phí khi dùng thật *(guide 4.2)*
-- Persona + giá: `cost/personas.yaml` · lượt mô phỏng: `cost/simulate-__.csv` (__ phiên)
-- Chi phí / task thành công: __ (model __) · __ (model __)
-- Chi phí / tháng ở quy mô thật: thấp __ · cơ sở __ · cao __ → chi tiết `cost/cost-estimate.md`
-- So với impact / người / tháng (§2): đáng làm không, vì sao:
+- Persona + giá: `cost/personas.yaml` · lượt mô phỏng: `cost/simulate-1.csv` (50 phiên, 0 lỗi, token đo trên `gpt-6.1-terra`)
+- Chi phí / task thành công (tỉ lệ đạt run-7, 85%): $0.0253 ≈ 645 ₫ (`gpt-6.1-terra`) · $0.0036 ≈ 92 ₫ (`gpt-4o-mini`) · $0.0604 ≈ 1.539 ₫ (`gpt-4o`)
+- Chi phí / tháng ở quy mô thật (`gpt-6.1-terra`): thấp $31.55 (500 người) · cơ sở $126.18 (2.000) · cao $315.46 (5.000) *(số người tự ước tính)* → chi tiết `cost/cost-estimate.md`
+- So với impact / người / tháng (§2): $0.063 ≈ 1.600 ₫ / người / tháng so với 10–45 phút tra cứu / người trong tháng gọi khám — chi phí model không phải rào cản; chưa đủ căn cứ mở rộng vì chưa có số người dùng thật và chưa đo người dùng có chắc chắn hơn. Đáng làm tiếp ở mức thí điểm.
 
 ## §9. Rủi ro & an toàn
 - Sai nhận định pháp lý: trả thông tin tham khảo, yêu cầu dữ kiện còn thiếu và dẫn nguồn, không tự quyết hồ sơ. Kiểm id không bảo đảm nội dung nguồn hỗ trợ kết luận, cần người rà (`codebase/agent.py`, `kb-nvqs/README.md`).
@@ -110,8 +110,12 @@ Lượt 1: 18/27 (67%), run ID `run-1@20261127-183305` — chưa đạt chuẩn.
 - Số đo khi phát triển (DeepSeek, 27/11, mỗi câu chạy 1 lần, gọi `answer()` trực tiếp — không phải lượt đánh giá chính thức ở §7): 25 câu neo đạt nhãn 20/25, nhãn + mã 19/25, 0 câu `tu_choi` bị lọt, 0 câu hợp lệ bị `refuse` nhầm, 0 `safe_fallback` — bằng mốc trước khi thêm guard. Kiểm thử 7 câu hỏi chế tài + 8 câu nhờ gian lận: 8/8 câu nhờ ra `refuse`, 0/7 câu hỏi bị `refuse`; nhưng ở lần chạy này bộ kiểm rò rỉ prompt chặn nhầm 6/7 câu hỏi chế tài thành `safe_fallback` (và 3/25 câu neo ở lần chạy neo đầu) vì model nhắc lại đúng câu prompt gợi ý. Đã sửa, phát lại offline trên chính chữ model đó thì qua; 25 câu neo đã chạy lại thật (số ở trên), 7 câu hỏi chế tài chưa chạy lại thật.
 
 ## §10. Phân công & changelog
-- Phân công có tên (theo chặng, chia cặp — guide "Cách chia việc"): __
-- Dùng AI vào việc gì (2–3 dòng; chi tiết `docs/ai-usage.md`):
+- Phân công có tên (theo chặng, chia cặp — guide "Cách chia việc"; theo tác giả PR trên GitHub):
+  - **Nguyễn Huy Hoàng** (đội trưởng): khung agent, guardrail, nối model thật (#3–#6, #9); chốt ngưỡng 75% và metric (#10, #20); spec §4, §9; thử sửa nhóm C (#25).
+  - **Đỗ Minh Hiếu**: canvas và TEAMS CP1 (#1); bộ 27 câu thử (#11); chạy và chấm run-1 (#15); web demo (#27, #33).
+  - **Trần Thanh Tùng**: personas và giá (#22); bộ 100 câu tình huống biên (#28, #29); log Google Sheet (#31).
+  - **Nguyễn Văn Nhi**: đào data Facebook, cổng Chính phủ và khảo sát (#12, #23); kho `kb-nvqs` (#16–#18); cải tiến lượt 2 (#24); run-7, chi phí, slide (#34).
+- Dùng AI vào việc gì (2–3 dòng; chi tiết `docs/ai-usage.md`): Claude Code (Claude Opus) viết script đếm data, script chấm `pass` bằng code, sửa prompt (PR #24), giao diện web, nháp tài liệu và slide; Antigravity rà PR, chạy bộ 100 câu tình huống biên, gợi ý câu khảo sát. Model sản phẩm `gpt-6.1-terra`, không dùng LLM chấm. Người kiểm từng phần ghi ở README mục "Dùng AI vào việc gì".
 - Nhật ký thay đổi — **mọi thay đổi sau CP2 19:30 Thứ Sáu 27/11 phải có dòng ở đây**:
 
 **CP2 → CP4** (vd thu hẹp lát cắt, hỏi thêm người dùng, lần cải tiến trước lượt 2)
@@ -119,9 +123,12 @@ Lượt 1: 18/27 (67%), run ID `run-1@20261127-183305` — chưa đạt chuẩn.
 | Thời điểm | Đổi gì | Vì sao (trỏ về câu thử / lỗi / bằng chứng nào) |
 |---|---|---|
 | 27/11 tối | Sửa câu pain (`canvas.md` dòng 3, §1); thêm số khảo sát vào §0, §1, §2 | Bằng chứng mới: nhóm Facebook N = 180 (`evidence/data-mining-fb.md`), khảo sát n = 19 (`evidence/survey/`); khảo sát cho thấy 15/19 mất dưới 15 phút/lần nên bỏ ý "mất thời gian" |
+| 28/11 sáng | Prompt: luật 6a, liệt kê id hợp lệ cho `can_cu` (PR #24) | Nhóm lỗi A ở run-1: GT04, GT09, GT19, GT20 kết luận `not_eligible` quá sớm (`eval/report.md` mục 2–3) |
+| 28/11 trưa | Web demo, log ẩn danh sang Google Sheet (PR #27, #31) | Demo CP4; không đổi agent (`web/README.md`) |
+| 28/11 12:07 | Lượt 2 chính thức run-7: 23/27; mô phỏng chi phí 50 phiên (PR #34) | Đo kết quả của cải tiến trên (`eval/report.md`, `cost/cost-estimate.md`) |
 
 **Sau CP4 (đến 23:59 Thứ Bảy 28/11)** (sửa theo góp ý — không sửa chuẩn "đạt", câu thử, số bằng chứng, kết quả các lượt đã chạy)
 
 | Thời điểm | Đổi gì | Vì sao |
 |---|---|---|
-|  |  |  |
+| 28/11 chiều | Thêm bộ nhớ hội thoại cho **bản demo web**: `answer(text, session=None)` + `codebase/session.py`. Không có session thì đầu ra giữ nguyên từng byte (`tests/test_single_turn_invariance.py`); `eval`, `simulate`, run-7 vẫn đo đường một lượt | Người dùng thật trả lời ngắn nối tiếp, bản một lượt bị `G_OFFTOPIC` (thử 28/11). Không đổi chuẩn "đạt", câu thử hay kết quả lượt nào |

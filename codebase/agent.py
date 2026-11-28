@@ -4,7 +4,8 @@
 `python run.py`, `python run.py eval`, `python run.py simulate` đều gọi answer(text).
 
 Hợp đồng khung: answer(text: str) -> {"output": str}. Mỗi câu thử là MỘT chuỗi, MỘT lượt: "hỏi lại" là một kết quả
-(need_more_information).
+(need_more_information). Bản demo nhiều lượt gọi answer(text, session=ChatSession) (codebase/session.py); không có
+session thì luồng, prompt và đầu ra giữ nguyên từng byte (tests/test_single_turn_invariance.py).
 
 Hình dạng: workflow cố định (sơ đồ ở spec.md §4):
   1 tiền xử lý (code) · 2 chặn đầu vào (code) · 3 trích dữ kiện (model → JSON nhỏ, KHÔNG kèm kho)
@@ -433,19 +434,38 @@ def validate_decision(raw: str, qa_allowed=(), must_be_out_of_scope: bool = Fals
 
 # ================================================================ answer
 
-def answer(text: str) -> dict:
+def answer(text: str, session=None) -> dict:
+    """session=None: đường đo một lượt (eval / simulate), y hệt trước. Có session (session.ChatSession): dùng dữ kiện,
+    chủ đề và vài lượt gần nhất đã nhớ; mọi bước chặn đầu vào / kiểm đầu ra vẫn chạy đủ ở lượt này."""
+    if session is None:
+        return _answer(text, None)
+    session._turn_text = ""
+    out = _answer(text, session)
+    session.record(session._turn_text, out.get("output", ""))
+    return out
+
+
+def _answer(text: str, session) -> dict:
     t0 = time.monotonic()
+    history = session is not None and session.has_history()
 
     # 1. Tiền xử lý
     clean, masked = preprocess(text if isinstance(text, str) else "")
     if masked:
         note("tiền xử lý: đã che " + ", ".join(masked))
+    if session is not None:
+        session._turn_text = clean        # bản ĐÃ che PII — chỉ bản này được lưu vào lịch sử
     if not clean:
         note("G_EMPTY: đầu vào rỗng — không gọi model")
         return render("need_more_information", "Mình chưa nhận được nội dung nào.", hoi_them=[P.TOPIC_QUESTION])
 
     # 2. Chặn đầu vào (không gọi model). Chặn TRƯỚC khi xét độ dài: câu dài có chèn lệnh vẫn là refuse.
     hit = screen_input(clean)
+    if not hit and history:
+        # tấn công chia nhỏ qua nhiều lượt: kiểm cả văn bản ghép 2 lượt gần nhất (không bị chặn) với lượt này
+        hit = screen_input(" ".join(session.recent_user_texts(2) + [clean]))
+        if hit:
+            note("chặn trên văn bản ghép các lượt gần nhất (tấn công chia nhỏ qua nhiều lượt)")
     if hit:
         note(("G_EVASION" if hit == "lach_luat" else "G_INJECTION") + ": chặn đầu vào bằng code — không gọi model")
         if hit == "lach_luat":
@@ -466,6 +486,11 @@ def answer(text: str) -> dict:
     facts = clean_facts(parsed) if parsed is not None else None
     if facts is None:
         return safe_answer("G_EXTRACT: trích dữ kiện — JSON hỏng hoặc chu_de / y_do không hợp lệ")
+    if session is not None:
+        session.stage(facts, facts["chu_de"])       # chỉ gộp vào phiên nếu lượt này không bị chặn
+        if history:
+            facts = session.merged_facts(facts)     # dữ kiện / chủ đề đã nhớ; y_do luôn theo lượt hiện tại
+            note("phiên: dùng dữ kiện và chủ đề đã nhớ từ các lượt trước")
     if facts["y_do"] == "lach_luat":
         note("G_EVASION: model đánh dấu y_do=lach_luat — không tra căn cứ")
         return refuse_answer(clean, P.REFUSE_EVASION)
@@ -489,7 +514,7 @@ def answer(text: str) -> dict:
 
     # 5. Tra cứu (công cụ): chunk luật mvp + 2 bài hỏi đáp gần nhất
     try:
-        found = tra_cuu_can_cu(clean)
+        found = tra_cuu_can_cu(" ".join(session.recent_user_texts(1) + [clean]) if history else clean)
     except Exception as e:        # thiếu / hỏng kho
         return error_answer("E_KB: tra cứu — " + type(e).__name__)
     passages, refs = found["luat"], found["tham_khao"]
@@ -504,7 +529,10 @@ def answer(text: str) -> dict:
     out_of_slice = chu_de in P.OUT_OF_SLICE_TOPICS
     try:
         with ai.max_tokens_at_least(DECISION_MAX_TOKENS):
-            res = call_model(P.SYSTEM_QUYET_DINH, P.user_quyet_dinh(clean, facts, context))
+            user_msg = P.user_quyet_dinh(clean, facts, context)
+            if history:
+                user_msg = session.context_block() + "\n\n" + user_msg
+            res = call_model(P.SYSTEM_QUYET_DINH, user_msg)
     except NotImplementedError:
         raise
     except Exception as e:
@@ -513,7 +541,8 @@ def answer(text: str) -> dict:
     # 7. Kiểm đầu ra (code)
     try:
         decision, why = validate_decision(res.get("text"), [q["id"] for q in refs], must_be_out_of_scope=out_of_slice,
-                                          passages=passages, refs=refs, context=context, user_text=clean)
+                                          passages=passages, refs=refs, context=context,
+                                          user_text=" \n ".join(session.recent_user_texts(6) + [clean]) if history else clean)
     except Exception as e:        # không đọc được kho để kiểm mã → không dám tin đầu ra
         return error_answer("E_KB: kiểm đầu ra — " + type(e).__name__)
     if decision is None:

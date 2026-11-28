@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="vi" data-theme="light" data-size="md" data-design="main">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trợ lý NVQS</title>
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1><span class="mark" aria-hidden="true"></span>Trợ lý NVQS</h1>
+    <nav id="rail" aria-label="Điều hướng chính">
+      <button class="rail-btn" data-view="chat" aria-label="Chat"><span>Chat</span></button>
+      <button class="rail-btn" data-view="history" aria-label="Lịch sử"><span>Lịch sử</span></button>
+      <button class="rail-btn" data-view="saved" aria-label="Đã lưu"><span>Đã lưu</span></button>
+      <button class="rail-btn" data-view="settings" aria-label="Cài đặt"><span>Cài đặt</span></button>
+    </nav>
+    <span id="mode-badge" hidden></span>
+    <button id="menu-btn" aria-label="Mở menu" hidden></button>
+    <button id="src-btn" aria-expanded="false" aria-controls="sources"><span>Nguồn tham khảo</span></button>
+  </header>
+  <div id="notice" role="status" hidden></div>
+  <div id="main">
+    <section id="view-chat" class="view">
+      <div id="scroll" tabindex="-1">
+        <div id="welcome">
+          <h2>Hỏi về tạm hoãn vì học tập</h2>
+          <div id="suggest">
+            <button class="chip-q" type="button">Em đang học đại học chính quy, có thể được xem xét tạm hoãn không?</button>
+            <button class="chip-q" type="button">Em học cao đẳng hệ chính quy, tạm hoãn gọi nhập ngũ cần điều kiện gì?</button>
+            <button class="chip-q" type="button">Em đã học xong đại học và muốn học thêm thạc sĩ, có được tạm hoãn không?</button>
+          </div>
+          <details id="privacy" open>
+            <summary>Trước khi dùng</summary>
+            <ul>
+              <li>Kết quả chỉ mang tính tham khảo; quyết định thuộc cơ quan có thẩm quyền.</li>
+              <li>Mỗi câu hỏi được xử lý độc lập; hãy đưa đủ thông tin vào câu hỏi.</li>
+              <li>Nội dung bạn hỏi được gửi tới máy chủ demo và nhà cung cấp model để tạo câu trả lời.</li>
+              <li>Lịch sử và mục đã lưu nằm trong trình duyệt này; ai dùng chung thiết bị có thể xem, xóa dữ liệu trình duyệt có thể làm mất.</li>
+              <li>Không nhập tên, số giấy tờ, địa chỉ hoặc chi tiết sức khỏe nhận diện được.</li>
+            </ul>
+          </details>
+        </div>
+        <ol id="msgs" aria-live="polite"></ol>
+      </div>
+      <div id="scope-hint" class="hint">Mình chỉ trả lời về tạm hoãn gọi nhập ngũ vì học tập của sinh viên nam.</div>
+      <form id="composer">
+        <label for="input" class="sr">Câu hỏi của bạn</label>
+        <textarea id="input" rows="1" placeholder="Nhập câu hỏi của bạn…" autocomplete="off"></textarea>
+        <button id="send" type="submit"><span>Gửi</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </form>
+      <div id="count" class="hint">Enter để gửi, Shift+Enter xuống dòng. Mỗi câu hỏi được xử lý độc lập.</div>
+    </section>
+    <section id="view-history" class="view page" hidden>
+      <div class="bar"><h2>Lịch sử</h2><button id="new-chat" class="btn">Cuộc trò chuyện mới</button></div>
+      <ul id="hist-list" class="list"></ul>
+    </section>
+    <section id="view-saved" class="view page" hidden>
+      <div class="bar"><h2>Đã lưu</h2></div>
+      <ul id="saved-list" class="list"></ul>
+    </section>
+    <section id="view-settings" class="view page" hidden>
+      <div class="bar"><h2>Cài đặt</h2></div>
+      <fieldset><legend>Phiên bản giao diện</legend><div class="opts"><button id="design-switch" class="btn" type="button">Chuyển sang giao diện cũ</button></div></fieldset>
+      <fieldset><legend>Giao diện</legend><div id="themes" class="opts"></div></fieldset>
+      <fieldset><legend>Cỡ chữ</legend><div id="sizes" class="opts"></div></fieldset>
+      <fieldset><legend>Dữ liệu trên trình duyệt này</legend>
+        <div class="opts"><button id="clear-hist" class="btn danger">Xóa toàn bộ lịch sử</button>
+        <button id="clear-saved" class="btn danger">Xóa toàn bộ mục đã lưu</button></div>
+      </fieldset>
+    </section>
+  </div>
+  <aside id="sources" aria-label="Nguồn tham khảo" hidden>
+    <div class="bar"><h2>Nguồn tham khảo</h2><button id="src-close" class="icon-x" aria-label="Đóng">✕</button></div>
+    <div id="src-cited"></div>
+    <h3>Danh mục nguồn chung</h3>
+    <p class="hint">Lấy từ kho dữ liệu của nhóm. Tình trạng hiệu lực hiện hành chưa được kiểm độc lập (chưa kiểm).</p>
+    <ul id="src-list" class="list"></ul>
+  </aside>
+  <div id="scrim" hidden></div>
+</div>
+<dialog id="confirm"><form method="dialog"><p id="confirm-text"></p><div class="row"><button value="no" class="btn">Hủy</button><button value="yes" class="btn danger">Xóa</button></div></form></dialog>
+<script src="/app.js"></script>
+</body>
+</html>
