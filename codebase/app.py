@@ -3,6 +3,9 @@
 Chạy bằng: python run.py   (macOS/Linux có thể là python3, Windows có thể là py)
 Nhóm thay bằng giao diện của mình (web, bot…) nhưng giữ `python run.py` là lệnh duy nhất
 để chạy bản chạy thử (sửa hàm run_app() trong run.py nếu cần).
+
+Bộ nhớ hội thoại (codebase/session.py): mỗi lần chạy app là MỘT cuộc trò chuyện riêng (một phiên), agent nhớ dữ kiện
+và vài lượt gần nhất trong cuộc đó. Gõ /moi (hoặc /reset) để xóa và bắt đầu lại. Không lưu gì xuống đĩa.
 """
 import os
 import sys
@@ -30,11 +33,14 @@ def main() -> int:
     try:
         import tracing
         from agent import answer
+        from session import ChatSession
     except Exception as e:  # lỗi cú pháp, thiếu thư viện… trong codebase/
         print("Không nạp được codebase/ — lỗi ở %s: %s: %s" % (_where(e), type(e).__name__, e))
         print("Sửa lỗi rồi chạy lại. Cách nối model: docs/connect-model.md")
         return 1
     print("Bản chạy thử — gõ đầu vào rồi Enter. Thoát: Ctrl+C (hoặc Enter 2 lần với dòng trống).")
+    session = ChatSession()
+    print("(%s Gõ /moi để bắt đầu lại.)" % session.status())
     blank = 0
     while True:
         try:
@@ -48,9 +54,13 @@ def main() -> int:
                 return 0
             continue
         blank = 0
+        if text.lower() in ("/moi", "/mới", "/reset"):
+            session.reset()
+            print("(Đã xóa cuộc trò chuyện. %s)" % session.status())
+            continue
         tracing.begin("app")
         try:
-            result = answer(text)
+            result = answer(text, session=session)
         except NotImplementedError as e:
             tracing.end()
             print("Chưa nối model: %s" % e)
@@ -63,6 +73,7 @@ def main() -> int:
         print(result.get("output", "") if isinstance(result, dict) else result)
         print("   (model: %s · gọi model %d lần · công cụ %d lần · token vào %d / ra %d)"
               % (", ".join(s["models"]) or "—", s["model_calls"], s["tool_calls"], s["tokens_in"], s["tokens_out"]))
+        print("   (%s)" % session.status())
 
 
 if __name__ == "__main__":
