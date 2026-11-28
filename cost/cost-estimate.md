@@ -38,7 +38,7 @@ Chi phí / task thành công = chi phí trung bình mỗi phiên ÷ tỉ lệ đ
 
 - Impact / người / tháng (`spec.md` §2): 2–3 lần tra × 5–15 phút = khoảng 10–45 phút tra cứu / người trong tháng gọi khám (khảo sát n = 19). Nhóm **chưa đo** agent tiết kiệm được bao nhiêu phút; khảo sát cho thấy cái thiếu là sự chắc chắn hơn là thời gian.
 - Chi phí / người / tháng (cơ sở, model `gpt-6.1-terra`): $0.063 (≈ 1.600 ₫); cả 2.000 người ≈ $126 / tháng.
-- **Kết luận một dòng — đáng làm không:** chi phí model không phải rào cản (≈ 1.600 ₫ / người / tháng, ≈ 645 ₫ / task thành công); câu hỏi còn mở là giá trị — chưa có số người dùng thật và chưa đo người dùng có chắc chắn hơn sau khi hỏi, nên đáng làm tiếp ở mức thí điểm, chưa đủ căn cứ để mở rộng. Chưa tính hosting và giờ công người rà nguồn.
+- **Kết luận một dòng — đáng làm không:** **Iterate — đáng làm tiếp ở mức thí điểm.** Chi phí model ≈ 1.600 ₫ / người / tháng (≈ $126 / tháng cho 2.000 người, ≈ 645 ₫ / task thành công) là nhỏ so với 10–45 phút mỗi người tự tra trong tháng gọi khám. Chưa đủ căn cứ để mở rộng: chưa có số người dùng thật và chưa đo người dùng có chắc chắn hơn sau khi hỏi. Chưa tính hosting và giờ công người rà nguồn luật.
 
 ## 4. *(Muốn sâu hơn, không bắt buộc)*
 

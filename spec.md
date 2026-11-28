@@ -110,8 +110,12 @@ Lượt 1: 18/27 (67%), run ID `run-1@20261127-183305` — chưa đạt chuẩn.
 - Số đo khi phát triển (DeepSeek, 27/11, mỗi câu chạy 1 lần, gọi `answer()` trực tiếp — không phải lượt đánh giá chính thức ở §7): 25 câu neo đạt nhãn 20/25, nhãn + mã 19/25, 0 câu `tu_choi` bị lọt, 0 câu hợp lệ bị `refuse` nhầm, 0 `safe_fallback` — bằng mốc trước khi thêm guard. Kiểm thử 7 câu hỏi chế tài + 8 câu nhờ gian lận: 8/8 câu nhờ ra `refuse`, 0/7 câu hỏi bị `refuse`; nhưng ở lần chạy này bộ kiểm rò rỉ prompt chặn nhầm 6/7 câu hỏi chế tài thành `safe_fallback` (và 3/25 câu neo ở lần chạy neo đầu) vì model nhắc lại đúng câu prompt gợi ý. Đã sửa, phát lại offline trên chính chữ model đó thì qua; 25 câu neo đã chạy lại thật (số ở trên), 7 câu hỏi chế tài chưa chạy lại thật.
 
 ## §10. Phân công & changelog
-- Phân công có tên (theo chặng, chia cặp — guide "Cách chia việc"): __
-- Dùng AI vào việc gì (2–3 dòng; chi tiết `docs/ai-usage.md`):
+- Phân công có tên (theo chặng, chia cặp — guide "Cách chia việc"; theo tác giả PR trên GitHub):
+  - **Nguyễn Huy Hoàng** (đội trưởng): khung agent, guardrail, nối model thật (#3–#6, #9); chốt ngưỡng 75% và metric (#10, #20); spec §4, §9; thử sửa nhóm C (#25).
+  - **Đỗ Minh Hiếu**: canvas và TEAMS CP1 (#1); bộ 27 câu thử (#11); chạy và chấm run-1 (#15); web demo (#27, #33).
+  - **Trần Thanh Tùng**: personas và giá (#22); bộ 100 câu tình huống biên (#28, #29); log Google Sheet (#31).
+  - **Nguyễn Văn Nhi**: đào data Facebook, cổng Chính phủ và khảo sát (#12, #23); kho `kb-nvqs` (#16–#18); cải tiến lượt 2 (#24); run-7, chi phí, slide (#34).
+- Dùng AI vào việc gì (2–3 dòng; chi tiết `docs/ai-usage.md`): Claude Code (Claude Opus) viết script đếm data, script chấm `pass` bằng code, sửa prompt (PR #24), giao diện web, nháp tài liệu và slide; Antigravity rà PR, chạy bộ 100 câu tình huống biên, gợi ý câu khảo sát. Model sản phẩm `gpt-6.1-terra`, không dùng LLM chấm. Người kiểm từng phần ghi ở README mục "Dùng AI vào việc gì".
 - Nhật ký thay đổi — **mọi thay đổi sau CP2 19:30 Thứ Sáu 27/11 phải có dòng ở đây**:
 
 **CP2 → CP4** (vd thu hẹp lát cắt, hỏi thêm người dùng, lần cải tiến trước lượt 2)
@@ -119,6 +123,9 @@ Lượt 1: 18/27 (67%), run ID `run-1@20261127-183305` — chưa đạt chuẩn.
 | Thời điểm | Đổi gì | Vì sao (trỏ về câu thử / lỗi / bằng chứng nào) |
 |---|---|---|
 | 27/11 tối | Sửa câu pain (`canvas.md` dòng 3, §1); thêm số khảo sát vào §0, §1, §2 | Bằng chứng mới: nhóm Facebook N = 180 (`evidence/data-mining-fb.md`), khảo sát n = 19 (`evidence/survey/`); khảo sát cho thấy 15/19 mất dưới 15 phút/lần nên bỏ ý "mất thời gian" |
+| 28/11 sáng | Prompt: luật 6a, liệt kê id hợp lệ cho `can_cu` (PR #24) | Nhóm lỗi A ở run-1: GT04, GT09, GT19, GT20 kết luận `not_eligible` quá sớm (`eval/report.md` mục 2–3) |
+| 28/11 trưa | Web demo, log ẩn danh sang Google Sheet (PR #27, #31) | Demo CP4; không đổi agent (`web/README.md`) |
+| 28/11 12:07 | Lượt 2 chính thức run-7: 23/27; mô phỏng chi phí 50 phiên (PR #34) | Đo kết quả của cải tiến trên (`eval/report.md`, `cost/cost-estimate.md`) |
 
 **Sau CP4 (đến 23:59 Thứ Bảy 28/11)** (sửa theo góp ý — không sửa chuẩn "đạt", câu thử, số bằng chứng, kết quả các lượt đã chạy)
 
