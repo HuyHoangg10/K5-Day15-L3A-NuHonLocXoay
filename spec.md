@@ -111,7 +111,7 @@ Lượt 1: 18/27 (67%), run ID `run-1@20261127-183305` — chưa đạt chuẩn.
 
 ## §10. Phân công & changelog
 - Phân công có tên (theo chặng, chia cặp — guide "Cách chia việc"; theo tác giả PR trên GitHub):
-  - **Nguyễn Huy Hoàng** (đội trưởng): khung agent, guardrail, nối model thật (#3–#6, #9); chốt ngưỡng 75% và metric (#10, #20); spec §4, §9; thử sửa nhóm C (#25).
+  - **Ngô Huy Hoàng** (đội trưởng): khung agent, guardrail, nối model thật (#3–#6, #9); chốt ngưỡng 75% và metric (#10, #20); spec §4, §9; thử sửa nhóm C (#25).
   - **Đỗ Minh Hiếu**: canvas và TEAMS CP1 (#1); bộ 27 câu thử (#11); chạy và chấm run-1 (#15); web demo (#27, #33).
   - **Trần Thanh Tùng**: personas và giá (#22); bộ 100 câu tình huống biên (#28, #29); log Google Sheet (#31).
   - **Nguyễn Văn Nhi**: đào data Facebook, cổng Chính phủ và khảo sát (#12, #23); kho `kb-nvqs` (#16–#18); cải tiến lượt 2 (#24); run-7, chi phí, slide (#34).
