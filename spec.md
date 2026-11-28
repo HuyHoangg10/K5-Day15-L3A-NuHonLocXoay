@@ -131,4 +131,4 @@ Lượt 1: 18/27 (67%), run ID `run-1@20261127-183305` — chưa đạt chuẩn.
 
 | Thời điểm | Đổi gì | Vì sao |
 |---|---|---|
-|  |  |  |
+| 28/11 chiều | Thêm bộ nhớ hội thoại cho **bản demo web**: `answer(text, session=None)` + `codebase/session.py`. Không có session thì đầu ra giữ nguyên từng byte (`tests/test_single_turn_invariance.py`); `eval`, `simulate`, run-7 vẫn đo đường một lượt | Người dùng thật trả lời ngắn nối tiếp, bản một lượt bị `G_OFFTOPIC` (thử 28/11). Không đổi chuẩn "đạt", câu thử hay kết quả lượt nào |
