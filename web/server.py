@@ -10,6 +10,9 @@ import os
 import re
 import sys
 import threading
+import time
+import urllib.parse
+import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -30,6 +33,54 @@ _lock = threading.Lock()  # tracing dùng trạng thái toàn cục → mỗi l�
 
 MIME = {".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8",
         ".js": "application/javascript; charset=utf-8"}
+
+SHEET_ENTRIES = {
+    "session_id": "entry.1442197971",
+    "question_masked": "entry.193704735",
+    "nhan": "entry.1264836539",
+    "can_cu": "entry.1621608250",
+    "model": "entry.792190072",
+    "latency_s": "entry.1665943169",
+}
+
+
+def _sheet_log_url():
+    u = (os.environ.get("SHEET_LOG_URL") or "").strip()
+    return u if u.startswith("https://docs.google.com/forms/") else ""
+
+
+def _build_sheet_payload(message, nhan, cites, latency_s, session_id="web"):
+    """Chuẩn bị payload đã che PII/key để gửi Google Form (không lưu raw input)."""
+    clean_q = ai._redact(agent.preprocess(message)[0])[:500]
+    can_cu = ", ".join(c["id"] for c in (cites or []) if isinstance(c, dict) and c.get("id"))
+    model_name = ai.MODEL_NAME or mode()
+    return {
+        SHEET_ENTRIES["session_id"]: str(session_id or "web")[:64],
+        SHEET_ENTRIES["question_masked"]: clean_q,
+        SHEET_ENTRIES["nhan"]: str(nhan or ""),
+        SHEET_ENTRIES["can_cu"]: can_cu,
+        SHEET_ENTRIES["model"]: str(model_name),
+        SHEET_ENTRIES["latency_s"]: str(round(float(latency_s), 2)),
+    }
+
+
+def _log_to_sheet_async(message, nhan, cites, latency_s, session_id="web"):
+    """Gửi log ngầm (daemon thread) khi .env đặt SHEET_LOG_URL. Lỗi mạng bỏ qua, không chặn chat."""
+    url = _sheet_log_url()
+    if not url:
+        return
+    data = urllib.parse.urlencode(_build_sheet_payload(message, nhan, cites, latency_s, session_id)).encode("utf-8")
+
+    def _send():
+        try:
+            req = urllib.request.Request(url, data=data, method="POST",
+                                         headers={"Content-Type": "application/x-www-form-urlencoded"})
+            with urllib.request.urlopen(req, timeout=5):
+                pass
+        except Exception:
+            pass
+
+    threading.Thread(target=_send, daemon=True).start()
 
 
 def _safe_url(u):
@@ -89,12 +140,13 @@ def ref_names(output):
     return refs
 
 
-def run_agent(message):
+def run_agent(message, session_id="web"):
     """Gọi agent trong khoá. Trả (http_status, dict)."""
     if not _lock.acquire(timeout=BUSY_WAIT_S):
         return 503, {"error": "Máy chủ đang xử lý câu hỏi khác. Hãy thử lại sau ít giây."}
     try:
         fn = ANSWER_FN or agent.answer
+        t0 = time.perf_counter()
         tracing.begin("web")
         try:
             res = fn(message)
@@ -109,6 +161,8 @@ def run_agent(message):
         if not isinstance(out, str) or not out.strip():
             return 500, {"error": "Agent không trả nội dung. Hãy thử lại."}
         nhan, cites = split_output(out)
+        if ANSWER_FN is None:
+            _log_to_sheet_async(message, nhan, cites, time.perf_counter() - t0, session_id=session_id)
         return 200, {"output": out, "nhan": nhan, "citations": cites, "refs": ref_names(out)}
     finally:
         _lock.release()
@@ -127,14 +181,18 @@ class Handler(BaseHTTPRequestHandler):
 
     def _host_ok(self):
         host = (self.headers.get("Host") or "").split(":")[0].strip("[]").lower()
-        if host not in ("localhost", "127.0.0.1", "::1"):
+        origin = (self.headers.get("Origin") or "").strip().lower()
+        allow_origin = (os.environ.get("WEB_ALLOW_ORIGIN") or "").strip().rstrip("/").lower()
+        allow_host = ""
+        if allow_origin and re.match(r"^https://[a-z0-9-]+(\.[a-z0-9-]+)*$", allow_origin):
+            allow_host = allow_origin.split("://", 1)[1]
+        if host not in ("localhost", "127.0.0.1", "::1") and not (allow_host and host == allow_host):
             return False
-        origin = self.headers.get("Origin")
         if not origin or re.match(r"^https?://(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$", origin):
             return True
-        # tunnel tạm (vd trycloudflare.com): chỉ khi người chạy bật WEB_ALLOW_ORIGIN_SUFFIX
-        suf = (os.environ.get("WEB_ALLOW_ORIGIN_SUFFIX") or "").strip().lower()
-        return bool(suf) and re.match(r"^https://[a-z0-9-]+(\.[a-z0-9-]+)*$", origin) is not None and origin.endswith(suf)
+        if allow_origin and origin == allow_origin:
+            return True
+        return False
 
     def _send(self, code, body, ctype="application/json; charset=utf-8"):
         data = body if isinstance(body, bytes) else json.dumps(body, ensure_ascii=False).encode("utf-8")

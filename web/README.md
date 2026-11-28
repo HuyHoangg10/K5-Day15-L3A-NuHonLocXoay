@@ -21,7 +21,8 @@ python run.py check
 - `POST /api/chat` `{"message": "..."}` → `{"output", "nhan", "citations"}`. `output` là nguyên văn agent; `citations` ánh xạ đúng các id ở dòng `CAN_CU:` qua `kb.get_chunk` (không đoán thêm).
 - `GET /api/sources` → danh mục nguồn chung từ `kb-nvqs/SOURCES.csv` (chỉ URL http/https hợp lệ).
 - Một lúc chỉ một yêu cầu qua agent (`tracing` dùng trạng thái toàn cục); yêu cầu thứ hai chờ ≤3 giây rồi nhận "đang bận, thử lại".
-- Không ghi log truy cập/nội dung; không trả traceback; chỉ nhận `Host` localhost.
+- Không ghi log truy cập/nội dung ra đĩa; không trả traceback; chỉ nhận `Host` localhost (hoặc đúng 1 origin/host đầy đủ khi bật `WEB_ALLOW_ORIGIN=https://<domain>` cho tunnel).
+- Tuỳ chọn ghi log thống kê ẩn danh sang Google Sheet qua Google Form: đặt `SHEET_LOG_URL=https://docs.google.com/forms/d/e/.../formResponse` trong `.env`. Câu hỏi luôn qua `agent.preprocess()` + `ai._redact()` để che PII/key trước khi gửi ngầm trong thread nền (không làm chậm chat; để trống thì tắt hoàn toàn).
 - Lịch sử, mục đã lưu, giao diện, cỡ chữ lưu trong `localStorage` của trình duyệt; không gửi lên máy chủ.
 
 ## Giới hạn đã biết
