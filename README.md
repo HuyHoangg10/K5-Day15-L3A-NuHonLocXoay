@@ -90,7 +90,7 @@ Nhóm dùng stack khác (Node, Streamlit, notebook…): sửa hàm `run_app()` t
 
 2–3 dòng (bắt buộc): nhóm dùng công cụ AI nào để làm gì, người kiểm lại phần nào. Chi tiết: [docs/ai-usage.md](docs/ai-usage.md). Coding agent đọc [AGENTS.md](AGENTS.md).
 
-Claude Code (Claude Opus) viết script đào data và đếm khảo sát, chỉnh prompt sau CP2, chấm cột `pass` bằng script code (không dùng LLM chấm), nháp tài liệu và slide; người phụ trách kiểm tay nhãn data, trích dẫn và kết quả chấm (chi tiết ở `docs/ai-usage.md`). [Các thành viên khác bổ sung phần mình.] Không dùng AI để tạo người được phỏng vấn, trích dẫn hay câu trả lời khảo sát.
+Claude Code (Claude Opus) viết script đào data và đếm khảo sát, chỉnh prompt sau CP2, chấm cột `pass` bằng script code (không dùng LLM chấm), nháp tài liệu và slide; người phụ trách kiểm tay nhãn data, trích dẫn và kết quả chấm. Antigravity hỗ trợ Trần Thanh Tùng rà PR, gợi ý câu hỏi khảo sát ẩn danh, điền `cost/personas.yaml`, chạy stress-test 100 edge cases và gắn log Google Sheet ẩn danh cho web demo; Tùng tự dựng form khảo sát thật, tự kiểm `.env`/test và rà báo cáo trước khi mở PR (chi tiết ở `docs/ai-usage.md`). [Hoàng, Hiếu bổ sung phần mình.] Không dùng AI để tạo người được phỏng vấn, trích dẫn hay câu trả lời khảo sát.
 
 ## File mẫu — điền ở bước nào
 
