@@ -27,6 +27,17 @@
   function uid() { return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2); }
   function fmt(t) { try { return new Date(t).toLocaleString("vi-VN"); } catch (e) { return ""; } }
 
+  /* ---------- chọn thiết kế #1 / #2 ---------- */
+  var DESIGN = document.documentElement.getAttribute("data-design") || "v1";
+  KEY.design = "nvqs.design";
+  var pref = readRaw(KEY.design);
+  if ((pref === "v1" || pref === "v2") && pref !== DESIGN) { location.replace(pref === "v2" ? "/v2" : "/"); return; }
+  var dsw = $("#design-switch");
+  if (dsw) {
+    dsw.textContent = DESIGN === "v1" ? "Chuyển sang thiết kế #2" : "Chuyển sang thiết kế #1";
+    dsw.addEventListener("click", function () { var to = DESIGN === "v1" ? "v2" : "v1"; write(KEY.design, to); location.href = to === "v2" ? "/v2" : "/"; });
+  }
+
   /* ---------- giao diện ---------- */
   function applyTheme(t) {
     var eff = t === "auto" ? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : t;
@@ -56,7 +67,8 @@
   /* ---------- hiển thị câu trả lời (chỉ textContent, không innerHTML) ---------- */
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
   var KEYS = /^(Giải thích|Cần biết thêm|Việc cần làm|Nguồn|Tham khảo[^:]*|Lưu ý|LOI):\s*(.*)$/;
-  function renderBody(box, output) {
+  function renderBody(box, output, refs) {
+    refs = refs || {};
     var lines = output.split("\n");
     if (/^NHAN:/.test(lines[0]) && /^CAN_CU:/.test(lines[1] || "")) lines = lines.slice(2);
     var ul = null;
@@ -64,7 +76,14 @@
       if (!ln.trim()) { ul = null; return; }
       if (/^\s*-\s+/.test(ln)) {
         if (!ul) { ul = el("ul"); box.appendChild(ul); }
-        ul.appendChild(el("li", "", ln.replace(/^\s*-\s+/, ""))); return;
+        var item = ln.replace(/^\s*-\s+/, ""), mm = item.match(/^([\w.-]+) — (.*)$/), li = el("li");
+        if (mm && refs[mm[1]]) {
+          var rf = refs[mm[1]], dt = mm[2].match(/kiểm tra ngày [\d\/]+/);
+          if (rf.url) { var a = el("a", "", rf.ten); a.href = rf.url; a.target = "_blank"; a.rel = "noopener noreferrer"; li.appendChild(a); }
+          else li.appendChild(document.createTextNode(rf.ten));
+          if (dt) li.appendChild(document.createTextNode(" · " + dt[0]));
+        } else li.textContent = item;
+        ul.appendChild(li); return;
       }
       ul = null;
       var m = ln.match(KEYS), p = el("p");
@@ -87,10 +106,9 @@
     opts = opts || {};
     var li = el("li", "m bot"), b = el("div", "bubble");
     var err = m.error || /^LOI:/.test(m.text || "");
-    if (m.nhan) b.appendChild(el("div", "label", "Kết luận: " + m.nhan));
-    else if (err) b.appendChild(el("div", "label err", "Lỗi"));
+    if (err) b.appendChild(el("div", "label err", "Lỗi"));
     if (m.error) b.appendChild(el("p", "", m.text));
-    else renderBody(b, m.text);
+    else renderBody(b, m.text, m.refs);
     if (m.cites && m.cites.length) {
       b.appendChild(el("div", "k", "Căn cứ agent trả về:"));
       b.appendChild(citeNodes(m.cites));
@@ -102,9 +120,6 @@
       sv.type = "button"; sv.setAttribute("aria-pressed", String(isSaved(m.id)));
       sv.addEventListener("click", function () { toggleSave(m); sv.textContent = isSaved(m.id) ? "Bỏ lưu" : "Lưu"; sv.setAttribute("aria-pressed", String(isSaved(m.id))); });
       a.appendChild(sv);
-      var so = el("button", "mini", "Xem nguồn"); so.type = "button";
-      so.addEventListener("click", function () { lastCites = m.cites || []; drawCited(); openSources(true); });
-      a.appendChild(so);
       li.appendChild(a);
     }
     return li;
@@ -152,7 +167,7 @@
       .then(function (res) {
         wait.remove();
         if (res.ok && typeof res.j.output === "string") {
-          var m = { role: "bot", id: uid(), text: res.j.output, nhan: res.j.nhan || "", cites: res.j.citations || [], time: Date.now(), q: q };
+          var m = { role: "bot", id: uid(), text: res.j.output, nhan: res.j.nhan || "", cites: res.j.citations || [], refs: res.j.refs || {}, time: Date.now(), q: q };
           c.msgs.push(m); persist(); $("#msgs").appendChild(botBubble(m)); lastCites = m.cites; drawCited();
         } else fail(res.j && res.j.error || "Có lỗi, hãy thử lại.", q);
       })
@@ -172,7 +187,7 @@
   function isSaved(id) { return saved.some(function (s) { return s.id === id; }); }
   function toggleSave(m) {
     if (isSaved(m.id)) saved = saved.filter(function (s) { return s.id !== m.id; });
-    else saved.unshift({ id: m.id, q: m.q || "", text: m.text, nhan: m.nhan || "", cites: m.cites || [], time: Date.now() });
+    else saved.unshift({ id: m.id, q: m.q || "", text: m.text, nhan: m.nhan || "", cites: m.cites || [], refs: m.refs || {}, time: Date.now() });
     persist();
   }
 
@@ -207,7 +222,7 @@
     saved.forEach(function (s) {
       var li = el("li"), d = el("details", "t");
       d.appendChild(el("summary", "", s.q || "(không có câu hỏi)"));
-      var holder = el("ul", "msgs-ro"); holder.appendChild(botBubble({ id: s.id, text: s.text, nhan: s.nhan, cites: s.cites }, { readonly: true }));
+      var holder = el("ul", "msgs-ro"); holder.appendChild(botBubble({ id: s.id, text: s.text, nhan: s.nhan, cites: s.cites, refs: s.refs }, { readonly: true }));
       holder.style.listStyle = "none"; holder.style.padding = "0";
       d.appendChild(holder);
       var un = el("button", "btn", "Bỏ lưu"); un.type = "button";

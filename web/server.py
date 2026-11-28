@@ -73,6 +73,22 @@ def split_output(output):
     return nhan, cites
 
 
+def ref_names(output):
+    """Id trong các dòng '- <id> — ...' (Nguồn / Tham khảo) → tên đọc được + URL, lấy từ kho; id lạ thì bỏ qua."""
+    refs = {}
+    for m in re.finditer(r"^- ([\w.-]+) — ", output, re.M):
+        cid = m.group(1)
+        c = kb.get_chunk(cid)
+        if not c:
+            continue
+        if kb.is_qa_id(cid):
+            refs[cid] = {"ten": c.get("title", cid), "url": _safe_url(c.get("url"))}
+        else:
+            label = "Điều %s" % c.get("dieu") + (" khoản %s" % c["khoan"] if c.get("khoan") else "")                 + (" điểm %s" % c["diem"] if c.get("diem") else "")
+            refs[cid] = {"ten": "%s · %s" % (label, c.get("so_hieu", "")), "url": _safe_url(c.get("nguon"))}
+    return refs
+
+
 def run_agent(message):
     """Gọi agent trong khoá. Trả (http_status, dict)."""
     if not _lock.acquire(timeout=BUSY_WAIT_S):
@@ -93,7 +109,7 @@ def run_agent(message):
         if not isinstance(out, str) or not out.strip():
             return 500, {"error": "Agent không trả nội dung. Hãy thử lại."}
         nhan, cites = split_output(out)
-        return 200, {"output": out, "nhan": nhan, "citations": cites}
+        return 200, {"output": out, "nhan": nhan, "citations": cites, "refs": ref_names(out)}
     finally:
         _lock.release()
 
@@ -139,8 +155,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, {"sources": load_sources()})
         if path == "/api/info":
             return self._send(200, {"mode": mode(), "max_chars": agent.MAX_INPUT_CHARS, "wait_s": agent.DEADLINE_S})
-        name = "index.html" if path == "/" else path.lstrip("/")
-        if name in ("index.html", "app.css", "app.js"):
+        name = {"/": "index.html", "/v2": "v2.html", "/v2/": "v2.html"}.get(path, path.lstrip("/"))
+        if name in ("index.html", "v2.html", "app.css", "v2.css", "app.js"):
             with open(os.path.join(STATIC, name), "rb") as f:
                 return self._send(200, f.read(), MIME[os.path.splitext(name)[1]])
         self._send(404, {"error": "Không tìm thấy."})

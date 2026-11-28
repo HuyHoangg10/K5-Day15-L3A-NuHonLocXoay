@@ -59,6 +59,14 @@ class WebTest(unittest.TestCase):
         self.assertEqual(ids, ["vbhn133-d41-k1-g", "qa-q01"])
         self.assertTrue(j["citations"][0]["ten"].startswith("Điều 41 khoản 1 điểm g"))
         self.assertTrue(j["citations"][0]["url"].startswith("https://"))
+        self.assertEqual(j["refs"], {})  # stub không có dòng "- id — ..."
+
+    def test_refs_names_from_kb(self):
+        out = ("NHAN: x\nCAN_CU: \n\nNguồn:\n- vbhn133-d41-k1-g — 133/2026/VBHN-LQ-VPQH; u; kiểm tra ngày 27/11/2026\n"
+               "- qa-q01 — t; u")
+        refs = server.ref_names(out)
+        self.assertTrue(refs["vbhn133-d41-k1-g"]["ten"].startswith("Điều 41 khoản 1 điểm g"))
+        self.assertIn("qa-q01", refs)
 
     def test_refuse_is_http_200(self):
         st, j = self.req("POST", "/api/chat", {"message": "refuse"})
@@ -90,7 +98,7 @@ class WebTest(unittest.TestCase):
         self.assertTrue(all(s["url"] == "" or s["url"].startswith("http") for s in j["sources"]))
 
     def test_static_files(self):
-        for p in ("/", "/app.css", "/app.js"):
+        for p in ("/", "/v2", "/app.css", "/v2.css", "/app.js"):
             st, _ = self.req("GET", p)
             self.assertEqual(st, 200)
         self.assertEqual(self.req("GET", "/../server.py")[0], 404)
