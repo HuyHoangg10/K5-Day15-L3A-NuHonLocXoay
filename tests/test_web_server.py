@@ -145,6 +145,46 @@ class WebTest(unittest.TestCase):
         finally:
             server.BUSY_WAIT_S = old
 
+    def test_exact_tunnel_origin_and_host(self):
+        old = os.environ.get("WEB_ALLOW_ORIGIN")
+        os.environ["WEB_ALLOW_ORIGIN"] = "https://demo-nvqs.trycloudflare.com"
+        try:
+            st_ok, _ = self.req("GET", "/api/sources", headers={
+                "Host": "demo-nvqs.trycloudflare.com",
+                "Origin": "https://demo-nvqs.trycloudflare.com",
+            })
+            self.assertEqual(st_ok, 200)
+            st_bad_origin, _ = self.req("GET", "/api/sources", headers={
+                "Host": "demo-nvqs.trycloudflare.com",
+                "Origin": "https://other.trycloudflare.com",
+            })
+            self.assertEqual(st_bad_origin, 403)
+            st_bad_host, _ = self.req("GET", "/api/sources", headers={
+                "Host": "other.trycloudflare.com",
+                "Origin": "https://demo-nvqs.trycloudflare.com",
+            })
+            self.assertEqual(st_bad_host, 403)
+        finally:
+            if old is None:
+                os.environ.pop("WEB_ALLOW_ORIGIN", None)
+            else:
+                os.environ["WEB_ALLOW_ORIGIN"] = old
+
+    def test_sheet_log_masks_pii_and_skips_when_unset(self):
+        payload = server._build_sheet_payload(
+            "CCCD 001202012345 SDT 0912345678 email a@b.com key sk-proj-SecretTest12345",
+            "eligible_for_review",
+            [{"id": "vbhn133-d41-k1-g"}],
+            1.234,
+        )
+        q = payload[server.SHEET_ENTRIES["question_masked"]]
+        self.assertNotIn("001202012345", q)
+        self.assertNotIn("0912345678", q)
+        self.assertNotIn("a@b.com", q)
+        self.assertNotIn("SecretTest12345", q)
+        self.assertEqual(payload[server.SHEET_ENTRIES["can_cu"]], "vbhn133-d41-k1-g")
+        self.assertEqual(payload[server.SHEET_ENTRIES["latency_s"]], "1.23")
+
 
 if __name__ == "__main__":
     unittest.main()
