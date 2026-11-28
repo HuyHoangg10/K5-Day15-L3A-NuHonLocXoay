@@ -11,7 +11,7 @@
 
 | STT | Họ và tên | Mã học viên | Vai trò | Phần việc chính |
 |---|---|---|---|---|
-| 1 | Nguyễn Huy Hoàng | 2A202603622 | Đội trưởng | Đánh giá, chuẩn bị demo |
+| 1 | Ngô Huy Hoàng | 2A202603622 | Đội trưởng | Đánh giá, chuẩn bị demo |
 | 2 | Đỗ Minh Hiếu | 2A202603402 | Thành viên | Đối chiếu kiểm chứng nguồn luật |
 | 3 | Trần Thanh Tùng | 2A202603418 | Thành viên | Triển khai MVP |
 | 4 | Nguyễn Văn Nhi | 2A202603697 | Thành viên | Tìm data, khám phá user |

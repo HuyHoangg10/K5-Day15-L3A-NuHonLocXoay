@@ -83,14 +83,15 @@ Nhóm dùng stack khác (Node, Streamlit, notebook…): sửa hàm `run_app()` t
 
 | Thành phần | Thật / Giả | Ghi chú |
 |---|---|---|
-| Lời gọi AI ở quyết định trung tâm | **Thật** (bắt buộc từ CP3) | Model: ____ |
+| Lời gọi AI ở quyết định trung tâm | **Thật** (bắt buộc từ CP3) | Model bản nộp: `gpt-6.1-terra` (OpenAI-compatible, cấu hình trong `.env`). `gpt-4o-mini` chỉ dùng ở hai lượt phát triển `run-2`, `run-3`. |
 |  |  |  |
 
 ## Dùng AI vào việc gì
 
 2–3 dòng (bắt buộc): nhóm dùng công cụ AI nào để làm gì, người kiểm lại phần nào. Chi tiết: [docs/ai-usage.md](docs/ai-usage.md). Coding agent đọc [AGENTS.md](AGENTS.md).
 
-Claude Code (Claude Opus) viết script đào data và đếm khảo sát, chỉnh prompt sau CP2, chấm cột `pass` bằng script code (không dùng LLM chấm), nháp tài liệu và slide; người phụ trách kiểm tay nhãn data, trích dẫn và kết quả chấm. Antigravity hỗ trợ Trần Thanh Tùng rà PR, gợi ý câu hỏi khảo sát ẩn danh, điền `cost/personas.yaml`, chạy stress-test 100 edge cases và gắn log Google Sheet ẩn danh cho web demo; Tùng tự dựng form khảo sát thật, tự kiểm `.env`/test và rà báo cáo trước khi mở PR (chi tiết ở `docs/ai-usage.md`). [Hoàng, Hiếu bổ sung phần mình.] Không dùng AI để tạo người được phỏng vấn, trích dẫn hay câu trả lời khảo sát.
+Nhóm dùng **Claude Code (Claude Opus)** để viết script đếm data và khảo sát, sửa prompt (luật 6a, PR #24), viết script chấm cột `pass` bằng code, dựng giao diện web, nháp tài liệu và slide; dùng **Antigravity** để rà PR, viết và chạy bộ 100 câu tình huống biên, gợi ý câu khảo sát. Model trong sản phẩm: `gpt-6.1-terra`; không dùng LLM để chấm.
+Người kiểm: Nhi duyệt data và số bằng chứng; Hiếu chọn nhãn câu thử và chấm tay run-1 (khớp script 27/27); Tùng rà PR và kết quả bộ 100 câu; Hoàng phụ trách agent (RAG + guardrail + kết nối model), phân tích lỗi lượt 1, đo và so sánh cải tiến (#24/#25), bộ nhớ hội thoại và độ bền bản demo. Chi tiết: [docs/ai-usage.md](docs/ai-usage.md). Không dùng AI để tạo người được phỏng vấn, trích dẫn hay câu trả lời khảo sát.
 
 ## File mẫu — điền ở bước nào
 
@@ -119,8 +120,8 @@ Claude Code (Claude Opus) viết script đào data và đếm khảo sát, chỉ
 | 1 | Bằng chứng pain | `evidence/` (tổng hợp ở `evidence/summary.md`) |
 | 2 | Impact có số | `spec.md` §2 |
 | 3 | Thiết kế giải pháp | `spec.md` §4 |
-| 4 | Bản chạy thử làm trọn lát cắt | `codebase/` · lệnh ở mục "Lệnh" |
+| 4 | Bản chạy thử làm trọn lát cắt | `codebase/` · lệnh ở mục "Lệnh" · video 30 giây gọi AI thật (CP3, `gpt-6.1-terra`): [Google Drive](https://drive.google.com/file/d/1lffjdLlopMako0CvnkQevkklQDhLKPLM/view?usp=sharing) · kịch bản: [docs/video-cp3.md](docs/video-cp3.md) |
 | 5 | Định nghĩa "tốt" + bộ câu thử | `data/DATA_CARD.md` · `eval/` |
 | 6 | Mô phỏng chi phí khi dùng thật | `cost/` |
-| 7 | Slide + demo + video dự phòng | `demo-slides.pdf` ở thư mục gốc · link video: ____ |
+| 7 | Slide + demo + video dự phòng | `demo-slides.pdf` ở thư mục gốc · video demo dự phòng (web, `gpt-6.1-terra`): [Google Drive](https://drive.google.com/file/d/1iMmnBOkjekVArtKo5sunkW7PI3NBv_WP/view?usp=sharing) · kịch bản: [docs/video-cp4.md](docs/video-cp4.md) |
 | + | *Bonus:* người dùng thử | `validation/log.md` |
