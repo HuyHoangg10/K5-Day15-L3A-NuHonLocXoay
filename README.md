@@ -91,7 +91,7 @@ Nhóm dùng stack khác (Node, Streamlit, notebook…): sửa hàm `run_app()` t
 2–3 dòng (bắt buộc): nhóm dùng công cụ AI nào để làm gì, người kiểm lại phần nào. Chi tiết: [docs/ai-usage.md](docs/ai-usage.md). Coding agent đọc [AGENTS.md](AGENTS.md).
 
 Nhóm dùng **Claude Code (Claude Opus)** để viết script đếm data và khảo sát, sửa prompt (luật 6a, PR #24), viết script chấm cột `pass` bằng code, dựng giao diện web, nháp tài liệu và slide; dùng **Antigravity** để rà PR, viết và chạy bộ 100 câu tình huống biên, gợi ý câu khảo sát. Model trong sản phẩm: `gpt-6.1-terra`; không dùng LLM để chấm.
-Người kiểm: Nhi duyệt data và số bằng chứng; Hiếu chọn nhãn câu thử và chấm tay run-1 (khớp script 27/27); Tùng rà PR và kết quả bộ 100 câu; Hoàng phụ trách agent (RAG + guardrail + kết nối model), phân tích lỗi lượt 1, đo và so sánh cải tiến (#24/#25), bộ nhớ hội thoại và độ bền bản demo. Chi tiết: [docs/ai-usage.md](docs/ai-usage.md).
+Người kiểm: Nhi duyệt data và số bằng chứng; Hiếu chọn nhãn câu thử và chấm tay run-1 (khớp script 27/27); Tùng rà PR và kết quả bộ 100 câu; Hoàng phụ trách agent (RAG + guardrail + kết nối model), phân tích lỗi lượt 1, đo và so sánh cải tiến (#24/#25), bộ nhớ hội thoại và độ bền bản demo. Chi tiết: [docs/ai-usage.md](docs/ai-usage.md). Không dùng AI để tạo người được phỏng vấn, trích dẫn hay câu trả lời khảo sát.
 
 ## File mẫu — điền ở bước nào
 
