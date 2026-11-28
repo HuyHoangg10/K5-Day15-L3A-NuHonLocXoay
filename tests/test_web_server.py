@@ -186,5 +186,56 @@ class WebTest(unittest.TestCase):
         self.assertEqual(payload[server.SHEET_ENTRIES["latency_s"]], "1.23")
 
 
+class MemoryTest(unittest.TestCase):
+    """Đường có bộ nhớ: dùng ChatSession GIẢ và agent STUB có tham số session (đánh dấu rõ, không gọi model)."""
+
+    class FakeSession:
+        def __init__(self, sid=None):
+            self.sid, self.seen = sid, []
+
+    class FakeModule:
+        pass
+
+    def setUp(self):
+        self.old = (server.ANSWER_FN, server.chat_session)
+        fake = self.FakeModule()
+        fake.ChatSession = self.FakeSession
+        server.chat_session = fake
+        server._sessions.clear()
+
+        def stub(text, session=None):  # STUB
+            session.seen.append(text)
+            return {"output": "NHAN: need_more_information\nCAN_CU: \n\nGiải thích: đã thấy %d lượt" % len(session.seen)}
+        server.ANSWER_FN = stub
+
+    def tearDown(self):
+        server.ANSWER_FN, server.chat_session = self.old
+        server._sessions.clear()
+
+    def test_same_id_remembers_other_id_isolated(self):
+        sid_a, sid_b = "aaaaaaaa-1111", "bbbbbbbb-2222"
+        self.assertIn("1 lượt", server.run_agent("x", sid_a)[1]["output"])
+        self.assertIn("2 lượt", server.run_agent("y", sid_a)[1]["output"])
+        self.assertIn("1 lượt", server.run_agent("z", sid_b)[1]["output"])
+
+    def test_bad_id_runs_single_turn_without_crash(self):
+        server.ANSWER_FN = lambda text: {"output": "NHAN: refuse\nCAN_CU: \n\nGiải thích: ok"}  # STUB một lượt
+        st, j = server.run_agent("x", "!!")
+        self.assertEqual((st, j["nhan"]), (200, "refuse"))
+
+    def test_session_cap(self):
+        old = server.MAX_SESSIONS
+        server.MAX_SESSIONS = 3
+        try:
+            for i in range(6):
+                server.run_agent("x", "sess-%04d-abcd" % i)
+            self.assertEqual(len(server._sessions), 3)
+        finally:
+            server.MAX_SESSIONS = old
+
+    def test_no_memory_when_agent_has_no_session_param(self):
+        self.assertFalse(server.uses_memory(lambda text: {"output": ""}))
+
+
 if __name__ == "__main__":
     unittest.main()
