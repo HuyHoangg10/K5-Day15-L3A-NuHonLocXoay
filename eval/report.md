@@ -9,11 +9,11 @@
 | Lượt | Run ID | Đạt / tổng | % | thuong | kho | tu_choi | So với chuẩn "đạt" |
 |---|---|---|---|---|---|---|---|
 | 1 | `run-1@20261127-183305` | 18/27 | 67% | 4/7 | 5/11 | 9/9 | **chưa** (nhan_dung 66.7% < 75%) |
-| 2 | | __/__ | | __/__ | __/__ | __/__ | đạt / chưa |
+| 2 | `run-7@20261128-120720` | 23/27 | 85% | 6/7 | 8/11 | 9/9 | **đạt** (nhan_dung 85.2% ≥ 75%; trich_dan_hop_le 27/27; tu_choi_dung 6/6, 0 nhầm) |
 
 Kết quả từng câu: `eval/run-1.csv`, `eval/run-7.csv`. Trace: `traces/run-1.jsonl`, `traces/run-7.jsonl`.
 
-> **Lượt 2 chính thức = `run-7`**, chạy **một lần** bằng `gpt-6.1-terra` (cùng model lượt 1) sau khi merge PR #24; ghi SHA `main` lúc chạy: `__`. *(Nháp: dòng 2 chờ số thật, không điền trước.)*
+> **Lượt 2 chính thức = `run-7`**, chạy **một lần** bằng `gpt-6.1-terra` (cùng model lượt 1) sau khi merge PR #24; SHA `main` lúc chạy: `01b27e5` (28/11/2026 12:07, sau merge #24–#28; #25–#28 không đổi `codebase/` hay KB), `--wait 4`, 0 lỗi, trung bình 1.3 lần gọi model và 5.025 token vào / 288 ra mỗi câu.
 > `run-2` → `run-6` là **lượt phát triển** chạy trên chính bộ 27 câu trong lúc chỉnh prompt (bảng ở `eval/README.md` mục 5). Không dùng số của chúng làm lượt 2.
 
 ## 2. Lỗi lượt 1 — gom thành nhóm có tên
@@ -42,15 +42,15 @@ Kết quả từng câu: `eval/run-1.csv`, `eval/run-7.csv`. Trace: `traces/run-
   1. Luật 6a: chỉ chọn `not_eligible` khi chính người dùng **đã nói** dữ kiện loại trừ (đã được tạm hoãn ở khóa trước, kéo dài vì nợ môn, đã thôi học…). Kết luận "không" phải dựa vào dữ kiện chưa nói (đã từng tạm hoãn chưa, đã nhập học chưa) hoặc tình huống ngữ cảnh không có quy định riêng (bảo lưu, tạm nghỉ) thì chọn `need_more_information`, hỏi đúng dữ kiện thiếu, vẫn ghi điểm luật vào `can_cu`.
   2. Giới hạn 6a: không dùng để hoãn kết luận `eligible_for_review` khi người dùng đã nói đủ trình độ và hệ chính quy (thêm sau khi run-5 làm GT10, GT11 bị hỏi lại thừa).
 - **Ghi thật — PR #24 còn một thay đổi khác nhóm:** ngữ cảnh liệt kê nguyên văn các id hợp lệ cho `can_cu` (luật 2). Thay đổi này làm để sửa lỗi chép sai mã của `gpt-4o-mini` ở lượt phát triển run-2 (14 câu `G_CITE_MVP`), không nhắm nhóm A, nhưng có thể đổi kết quả nhóm B. Ở run-6, GT13 (nhóm B) từ trượt thành đạt nhiều khả năng do thay đổi này, không phải do luật 6a.
-- **Kết quả lượt 2 chính thức (`run-7`):** nhóm A 0/4 → __/4 · tổng 67% → __% *(chờ run-7)*.
+- **Kết quả lượt 2 chính thức (`run-7`):** nhóm A 0/4 → 3/4 (GT09, GT19, GT20 đạt; GT04 vẫn trượt) · tổng 18/27 → 23/27 (67% → 85%), cao hơn lượt phát triển run-6 (22/27).
   - Tham khảo lượt phát triển `run-6` (đã chỉnh trên chính bộ thử, nên lượt 2 có thể thấp hơn): nhóm A 0/4 → 3/4 (GT09, GT19, GT20 đạt; GT04 vẫn trượt) · tổng 18/27 → 22/27 (67% → 81%).
 - **Kiểm chứng ngoài mẫu:** 14 câu mới chưa ai chỉnh theo, `gpt-6.1-terra`, mỗi câu 2 lần: `main` 22/28 · PR #24 24/28. Câu thắng thêm (tạm nghỉ một học kỳ) đổi từ `not_eligible` sang `need_more_information`. *(Nguồn: tài liệu quyết định CP4 của nhóm, 27/11; 2 nhãn trong 14 câu là nhóm tự suy.)*
-- **Câu nào tệ đi sau khi sửa:** __ *(so run-7 với run-1, chờ run-7)*. Ở lượt phát triển: run-5 làm GT10 và GT11 bị hỏi lại thừa (GT10 trượt); run-6 sửa lại, so với run-1 không câu nào tệ đi.
+- **Câu nào tệ đi sau khi sửa:** không câu nào — mọi câu đạt ở run-1 vẫn đạt ở run-7. Ngoài nhóm A còn thêm GT02 (nhóm C) và GT13 (nhóm B) chuyển sang đạt; GT13 nhiều khả năng do thay đổi liệt kê id ở luật 2, GT02 chưa rõ nguyên nhân (một lần chạy, có thể do biến động của model). Ở lượt phát triển: run-5 làm GT10 và GT11 bị hỏi lại thừa (GT10 trượt); run-6 sửa lại, so với run-1 không câu nào tệ đi.
 
 ## 4. Còn lại
 
-- **Lỗi chưa sửa + nguy hiểm thế nào** *(theo run-6; cập nhật theo run-7)*:
-  - **Nhóm C — GT02, GT14 (và GT03 ở nhóm B):** bước chặn `G_ASK_STUDY` trả `need_more_information` mà không tra luật, nên không có căn cứ. Nguy hiểm nhất ở GT14: người dùng hỏi có bỏ buổi khám được không, agent chỉ hỏi lại trình độ mà không cảnh báo giấy xác nhận không phải quyết định tạm hoãn và bỏ khám có thể bị phạt (NĐ 218 Đ9). Hướng sửa (luôn tra luật trước khi hỏi thêm) đã thử ở PR #25, chưa merge để giữ một cải tiến cho lượt 2.
+- **Lỗi chưa sửa + nguy hiểm thế nào** *(theo run-7: còn trượt GT03, GT04, GT11, GT14)*:
+  - **Nhóm C — GT14 (và GT03 ở nhóm B; GT02 đạt ở run-7):** bước chặn `G_ASK_STUDY` trả `need_more_information` mà không tra luật, nên không có căn cứ. Nguy hiểm nhất ở GT14: người dùng hỏi có bỏ buổi khám được không, agent chỉ hỏi lại trình độ mà không cảnh báo giấy xác nhận không phải quyết định tạm hoãn và bỏ khám có thể bị phạt (NĐ 218 Đ9). Hướng sửa (luôn tra luật trước khi hỏi thêm) đã thử ở PR #25, chưa merge để giữ một cải tiến cho lượt 2.
   - **GT11:** đúng nhãn nhưng thiếu `vbhn133-d42` (ai quyết định tạm hoãn). Người dùng không biết quyết định cuối thuộc Chủ tịch UBND cấp tỉnh — mức nguy hiểm thấp, phần miễn trừ vẫn nêu điều này.
   - **GT04 — nhãn tranh cãi:** model vẫn ra `not_eligible`. Input gần giống GT05 (đã tạm hoãn ở trình độ trước, nay học liên thông) mà GT05 có expected `not_eligible`; GT04 khác ở chỗ địa phương không nhận giấy và ghi "liên thông phải liên tục không gián đoạn". Nhóm giữ nguyên `expected` theo hướng dẫn BQP đã dùng khi dựng bộ thử, **không sửa** để khớp output, và không viết luật riêng cho câu này.
 - **Nếu có thêm 1 tuần:**

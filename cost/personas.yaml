@@ -1,6 +1,6 @@
 # Mô phỏng chi phí khi dùng thật — Track F (Trợ lý đối chiếu tạm hoãn NVQS vì học tập).
 # Chạy thử: python run.py simulate --try   (10 phiên, kiểm khung → cost/simulate-try.csv)
-# Bản nộp CP4: python run.py simulate --rate-from eval/run-2.csv   (≥50 phiên)
+# Bản nộp CP4: python run.py simulate --rate-from eval/run-7.csv   (≥50 phiên; run-7 = lượt 2 chính thức)
 
 sessions: 50
 seed: 42
@@ -29,6 +29,10 @@ personas:
     source: "khảo sát nhóm ngày 27/11/2026 (n = 24 sinh viên nam 18–27 tuổi, 21/24 đã từng tra cứu): 5/21 (23.8%) tra ≥4 lần/tháng, 3/5 hỏi ≥4 câu/lần (câu 3 & 4)"
 
 prices:
+  - model: gpt-6.1-terra
+    input: 1.00
+    output: 5.00
+    source: "https://developers.openai.com/api/docs/pricing (Standard, ngữ cảnh ngắn) · xem 28/11/2026"
   - model: gpt-4o-mini
     input: 0.15
     output: 0.60

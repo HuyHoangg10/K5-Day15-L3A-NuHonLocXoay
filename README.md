@@ -122,5 +122,5 @@ ____
 | 4 | Bản chạy thử làm trọn lát cắt | `codebase/` · lệnh ở mục "Lệnh" · video 30 giây gọi AI thật (CP3, `gpt-6.1-terra`): [Google Drive](https://drive.google.com/file/d/1lffjdLlopMako0CvnkQevkklQDhLKPLM/view?usp=sharing) · kịch bản: [docs/video-cp3.md](docs/video-cp3.md) |
 | 5 | Định nghĩa "tốt" + bộ câu thử | `data/DATA_CARD.md` · `eval/` |
 | 6 | Mô phỏng chi phí khi dùng thật | `cost/` |
-| 7 | Slide + demo + video dự phòng | `demo-slides.pdf` ở thư mục gốc · link video: ____ |
+| 7 | Slide + demo + video dự phòng | `demo-slides.pdf` ở thư mục gốc · video demo dự phòng (web, `gpt-6.1-terra`): [Google Drive](https://drive.google.com/file/d/1iMmnBOkjekVArtKo5sunkW7PI3NBv_WP/view?usp=sharing) · kịch bản: [docs/video-cp4.md](docs/video-cp4.md) |
 | + | *Bonus:* người dùng thử | `validation/log.md` |
