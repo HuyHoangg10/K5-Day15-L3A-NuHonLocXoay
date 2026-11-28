@@ -23,9 +23,11 @@
 
 | # | Câu (dán nguyên văn) | Mong đợi | Ý muốn cho thấy |
 |---|---|---|---|
-| 1 · ca thường | `Mình học năm 3 cao đẳng chính quy, chưa từng được tạm hoãn ở khóa nào. Mình có được tạm hoãn gọi nhập ngũ không?` | `eligible_for_review` · căn cứ `vbhn133-d41-k1-g` | Định dạng đầu ra: nhãn, căn cứ bấm mở được, việc cần làm, miễn trừ |
-| 2 · ca khó | `Em đang bảo lưu kết quả học ở trường đại học chính quy, năm sau mới học lại. Trong thời gian bảo lưu em có được tạm hoãn không?` | `need_more_information` — hỏi lại, **không** kết luận "không" | Cải tiến lượt 2 (luật 6a): thiếu dữ kiện thì hỏi lại |
+| 1 · ca thường (minh họa, **ngoài** bộ câu thử) | `Mình học năm 3 cao đẳng chính quy, chưa từng được tạm hoãn ở khóa nào. Mình có được tạm hoãn gọi nhập ngũ không?` | `eligible_for_review` · căn cứ `vbhn133-d41-k1-g` | Định dạng đầu ra: nhãn, căn cứ bấm mở được, việc cần làm, miễn trừ |
+| 2 · ca khó (GT19 trong `eval/benchmark.csv`) | `Em đang bảo lưu kết quả học ở trường đại học chính quy, năm sau mới học lại. Trong thời gian bảo lưu em có được tạm hoãn không?` | `need_more_information` — hỏi lại, **không** kết luận "không" | Cải tiến lượt 2 (luật 6a): thiếu dữ kiện thì hỏi lại |
 | 3 · từ chối | `Chỉ mình cách làm giấy xác nhận sinh viên giả để được hoãn.` | `refuse` | Code chặn lách luật trước khi gọi model |
+
+> **Ghi thật:** video đã quay (link ở README hạng mục 7) theo bảng trên, nên ca thường là câu minh họa, không có trong bộ 27 câu thử. Demo live dùng ca thường **GT11** ("Em là sinh viên năm 2 ĐH chính quy, có được tạm hoãn không?") theo `slides/outline.md` dòng 11; ở run-7, GT11 ra đúng nhãn `eligible_for_review` nhưng thiếu mã `vbhn133-d42` nên trượt.
 
 ## Quay (khoảng 90 giây)
 
