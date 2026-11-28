@@ -92,3 +92,6 @@ legend{font-weight:700;padding:0 6px}
  .bubble{max-width:100%}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* chặn nhảy bố cục khi thanh cuộn xuất hiện/biến mất */
+#scroll,.page,#sources{scrollbar-gutter:stable both-edges}

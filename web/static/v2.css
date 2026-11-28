@@ -140,3 +140,6 @@ legend{font:600 1.1rem var(--display);padding:0 12px 0 0}
 @media (prefers-reduced-motion:reduce){
  *,*::before,*::after{animation:none!important;transition:none!important}
 }
+
+/* chặn nhảy bố cục khi thanh cuộn xuất hiện/biến mất */
+#scroll,.page,#sources{scrollbar-gutter:stable both-edges}
