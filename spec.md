@@ -19,11 +19,11 @@ Giả thuyết CP1 ("thông tin phân tán… mất thời gian") phải đổi:
 ## §2. Impact & quyết định chọn
 | Hướng | Người / tháng | Lần / người / tháng | Phút / lần | Impact | Quyết định |
 |---|---|---|---|---|---|
-| Học tập | (chưa có) | 2–3 *(trung vị khảo sát, tháng gọi khám)* | 5–15 *(trung vị khảo sát)* | (chưa có) | Chọn, theo `canvas.md` dòng 1–5 |
+| Học tập | 2.000 *(cơ sở; thấp 500 · cao 5.000 — tự ước tính, cùng số với `cost/personas.yaml`)* | 2–3 *(trung vị khảo sát, tháng gọi khám)* | 5–15 *(trung vị khảo sát)* | 20.000–90.000 phút ≈ 330–1.500 giờ tra cứu / tháng *(cơ sở)* | Chọn, theo `canvas.md` dòng 1–5 |
 | Sức khỏe | (chưa có) | (chưa có) | (chưa có) | (chưa có) | Để sau vì ngoài lát cắt, `kb-nvqs/DATA_CARD.md` §4 |
 | Hoàn cảnh gia đình | (chưa có) | (chưa có) | (chưa có) | (chưa có) | Để sau vì ngoài lát cắt, `kb-nvqs/DATA_CARD.md` §4 |
 
-Impact / tháng = số người (chưa có) × số lần/người/tháng (2–3 trong tháng gọi khám, khảo sát n = 19) × số phút/lần (5–15, khảo sát n = 19) = (chưa có, thiếu số người). Khảo sát hỏi tạm hoãn nói chung, không riêng lý do học tập. Nguồn dự kiến: `evidence/summary.md`. Tần suất từng persona (chưa có).
+Impact / tháng = số người (2.000, kịch bản cơ sở *tự ước tính*: thí điểm cho sinh viên nam 18–27 tuổi tại 1–3 trường trong mùa khám tuyển) × số lần/người/tháng (2–3 trong tháng gọi khám, khảo sát n = 19) × số phút/lần (5–15, khảo sát n = 19) = 20.000–90.000 phút ≈ 330–1.500 giờ tra cứu / tháng. Thấp (500 người): 5.000–22.500 phút; cao (5.000 người): 50.000–225.000 phút. Đây là thời gian người dùng đang bỏ ra để tra, **chưa đo** agent tiết kiệm được bao nhiêu; khảo sát cho thấy cái thiếu chủ yếu là sự chắc chắn (9/19 tra ≥ 2 cách vẫn chưa chắc), không phải thời gian. Khảo sát hỏi tạm hoãn nói chung, không riêng lý do học tập. Nguồn dự kiến: `evidence/summary.md`. Tần suất từng persona (chưa có).
 
 ## §3. Giải pháp tương tự
 - Cổng văn bản Chính phủ cung cấp văn bản và PDF để đối chiếu: [VBHN 133](https://vanban.chinhphu.vn/?docid=219575&pageid=27160). Hướng nhóm là hỏi dữ kiện và hiển thị đoạn liên quan; mức độ khó tra cứu của sinh viên (chưa kiểm).
