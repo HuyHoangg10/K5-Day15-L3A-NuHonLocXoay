@@ -147,3 +147,16 @@ legend{font:600 1.1rem var(--display);padding:0 12px 0 0}
 /* #app giữ đúng cỡ khung nhìn: hoạt ảnh trượt của .view không làm trang có thanh cuộn gốc */
 html,body{overflow:hidden}
 #app{overflow:hidden}
+
+/* câu trả lời ngoài phạm vi: gợi ý hỏi tiếp, lưu ý gọn, gợi ý phạm vi */
+.follow{margin-top:10px;max-width:100%}
+.follow .k{margin:0 0 6px;font-weight:600}
+.follow-row{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+.chip-q.small{font-size:.92em;padding:8px 12px;border:1px solid var(--rule);border-radius:12px;display:block;text-align:left;background:var(--sheet);cursor:pointer}
+.chip-q.small::after{content:none}
+.chip-q.small:hover{border-color:var(--ink);padding-left:12px}
+.bubble .note{color:var(--mute);font-size:.88em;margin-top:.8em}
+.note .more{display:inline}
+.note .more summary{display:inline;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.note .more[open] summary{display:none}
+#scope-hint{max-width:720px;width:calc(100% - 40px);margin:0 auto;padding:0 6px 6px;text-align:center}
