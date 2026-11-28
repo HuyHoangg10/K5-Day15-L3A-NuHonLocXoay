@@ -4,7 +4,9 @@ Chạy:  python web/server.py            (mở http://127.0.0.1:8765)
 Nối vào agent có sẵn: codebase/agent.py → answer(text) → {"output": str}. Không sửa agent/tracing.
 Không ghi log nội dung câu hỏi; không trả traceback ra trình duyệt.
 """
+import collections
 import csv
+import inspect
 import json
 import os
 import re
@@ -22,6 +24,10 @@ sys.path.insert(0, os.path.join(ROOT, "codebase"))
 import tracing  # noqa: E402
 import kb  # noqa: E402
 import agent  # noqa: E402
+try:  # bộ nhớ hội thoại (nhánh feat/chat-memory): chưa merge thì không có, web chạy một lượt như cũ
+    import session as chat_session  # noqa: E402
+except Exception:  # pragma: no cover
+    chat_session = None
 import ai  # noqa: E402  (nạp .env)
 
 STATIC = os.path.join(HERE, "static")
@@ -140,6 +146,29 @@ def ref_names(output):
     return refs
 
 
+MAX_SESSIONS = 300
+_sessions = collections.OrderedDict()   # id -> ChatSession; quá MAX_SESSIONS thì bỏ phiên lâu nhất
+
+
+def uses_memory(fn=None):
+    """True khi agent nhận tham số session và codebase/session.py có mặt."""
+    fn = fn or ANSWER_FN or agent.answer
+    try:
+        return chat_session is not None and "session" in inspect.signature(fn).parameters
+    except (TypeError, ValueError):
+        return False
+
+
+def _get_session(sid):
+    if not re.fullmatch(r"[\w-]{8,64}", sid or ""):
+        return None
+    s = _sessions.pop(sid, None) or chat_session.ChatSession(sid)
+    _sessions[sid] = s
+    while len(_sessions) > MAX_SESSIONS:
+        _sessions.popitem(last=False)
+    return s
+
+
 def run_agent(message, session_id="web"):
     """Gọi agent trong khoá. Trả (http_status, dict)."""
     if not _lock.acquire(timeout=BUSY_WAIT_S):
@@ -149,7 +178,8 @@ def run_agent(message, session_id="web"):
         t0 = time.perf_counter()
         tracing.begin("web")
         try:
-            res = fn(message)
+            sess = _get_session(session_id) if uses_memory(fn) else None
+            res = fn(message, session=sess) if sess is not None else fn(message)
             out = res.get("output") if isinstance(res, dict) else None
         except Exception:
             return 500, {"error": "Agent gặp lỗi khi xử lý. Hãy thử lại."}
@@ -212,7 +242,7 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/sources":
             return self._send(200, {"sources": load_sources()})
         if path == "/api/info":
-            return self._send(200, {"mode": mode(), "max_chars": agent.MAX_INPUT_CHARS, "wait_s": agent.DEADLINE_S})
+            return self._send(200, {"memory": uses_memory(), "mode": mode(), "max_chars": agent.MAX_INPUT_CHARS, "wait_s": agent.DEADLINE_S})
         name = {"/": "index.html", "/legacy": "legacy.html", "/legacy/": "legacy.html"}.get(path, path.lstrip("/"))
         if name in ("index.html", "legacy.html", "app.css", "legacy.css", "app.js"):
             with open(os.path.join(STATIC, name), "rb") as f:
@@ -231,14 +261,16 @@ class Handler(BaseHTTPRequestHandler):
         if n <= 0 or n > MAX_BODY:
             return self._send(400, {"error": "Nội dung gửi không hợp lệ hoặc quá lớn."})
         try:
-            msg = json.loads(self.rfile.read(n).decode("utf-8")).get("message")
+            payload = json.loads(self.rfile.read(n).decode("utf-8"))
+            msg = payload.get("message")
+            sid = payload.get("session_id")
         except Exception:
             return self._send(400, {"error": "Dữ liệu gửi không phải JSON hợp lệ."})
         if not isinstance(msg, str) or not msg.strip():
             return self._send(400, {"error": "Hãy nhập câu hỏi trước khi gửi."})
         if len(msg) > agent.MAX_INPUT_CHARS:
             return self._send(400, {"error": "Câu hỏi quá dài (tối đa %d ký tự)." % agent.MAX_INPUT_CHARS})
-        code, body = run_agent(msg)
+        code, body = run_agent(msg, sid if isinstance(sid, str) else "web")
         self._send(code, body)
 
 

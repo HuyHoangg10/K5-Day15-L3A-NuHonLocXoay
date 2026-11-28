@@ -162,7 +162,7 @@
     wait.appendChild(wb); $("#msgs").appendChild(wait); scrollEnd();
     $("#input").value = ""; autosize(); setBusy(true);
     var ctl = new AbortController(), timer = setTimeout(function () { ctl.abort(); }, (info.wait_s + 15) * 1000);
-    fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: q }), signal: ctl.signal })
+    fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: q, session_id: c.id }), signal: ctl.signal })
       .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (res) {
         wait.remove();
@@ -285,6 +285,10 @@
 
   fetch("/api/info").then(function (r) { return r.json(); }).then(function (j) {
     info = j;
+    if (j.memory) {
+      $("#count").textContent = "Enter để gửi, Shift+Enter xuống dòng. Mình nhớ các câu trước trong cuộc trò chuyện này.";
+      document.querySelectorAll("#privacy li").forEach(function (li) { if (/xử lý độc lập/.test(li.textContent)) li.textContent = "Mình nhớ các câu trước trong cuộc trò chuyện này; bấm “Cuộc trò chuyện mới” để bắt đầu lại từ đầu."; });
+    }
     if (j.mode === "fake") { var b = $("#mode-badge"); b.textContent = "Model giả (chưa phải model thật)"; b.hidden = false; }
     $("#input").maxLength = j.max_chars;
   }).catch(function () {});
