@@ -17,21 +17,21 @@ README của nhóm có mục "Dùng AI vào việc gì" (2–3 dòng, bắt bu�
 
 **Không dùng AI để:** tạo người được phỏng vấn, trích dẫn, câu trả lời khảo sát; sửa kết quả các lượt đã chạy (`eval/run-*.csv`, `cost/simulate-*.csv`, `traces/`).
 
-## Phần của Nguyễn Huy Hoàng (HuyHoangg10)
+## Phần của Ngô Huy Hoàng (HuyHoangg10)
 
 **Công cụ:** Claude (claude.ai) để thảo luận, lập kế hoạch và viết prompt giao việc; Claude Code (Claude Opus / Sonnet) để code, viết test, đo và mở PR theo prompt đó. Con người (Hoàng) quyết định phạm vi, chọn nhóm lỗi và quyết định merge.
 
 | Việc | Công cụ AI | AI làm gì | Người kiểm/sửa gì | Ai phụ trách |
 |---|---|---|---|---|
-| Khung agent, nối model | Claude Code | Checklist build (PR #2, `3d757c3`); khung agent + guardrail (PR #3, `4f355d9`); nối model thật vào `codebase/ai.py` (PR #4, `37e0528`) | Hoàng đọc diff, chạy thử, merge | Nguyễn Huy Hoàng |
-| RAG và độ bền đầu vào | Claude Code | RAG với `kb-nvqs` + nhãn theo ground truth (PR #5, `8e56797`); chuẩn hóa đầu vào, guard không dấu, che dữ liệu cá nhân (PR #6, `191cf32`); siết guard + văn phong dễ hiểu (PR #9, `4d3d6cd`) | Hoàng chạy unittest với model giả, kiểm câu bị chặn nhầm, merge | Nguyễn Huy Hoàng |
-| Tài liệu CP2 | Claude Code | Nháp chốt ngưỡng, bỏ `nvqs.md`, sửa canvas (PR #10, `3c87e78`) | Hoàng chốt ngưỡng ≥ 75%; nhóm duyệt. (PR #11 bổ sung benchmark là của Hiếu, không thuộc phần này.) | Nguyễn Huy Hoàng |
-| Phân tích lỗi run-1 | Claude Code | Đọc 9 câu trượt của `run-1`, gom thành nhóm lỗi A/B/C (`eval/report.md` mục 2) | Hoàng chọn nhóm A ("kết luận `not_eligible` quá sớm") làm cải tiến chính thức (PR #24) vì đau nhất với người dùng; không sửa `expected` dù có nhãn tranh cãi (GT04) | Nguyễn Huy Hoàng |
-| Thử hướng sửa khác (không vào main) | Claude Code | `fix/retrieve-before-ask` (`c1afcee`); `fix/retrieve-before-ask-lite` (`1ccc125`, PR #25 — đã đóng, không merge); `fix/citation-group` (`83a31a3`, đo không tốt hơn, không mở PR) | Hoàng quyết định không merge để giữ đúng một cải tiến cho lượt 2 | Nguyễn Huy Hoàng |
-| So sánh ngoài mẫu #24 / #25 | Claude Code | 14 câu mới chưa ai chỉnh theo, `gpt-6.1-terra`, mỗi câu 2 lần: `main` 22/28 · PR #24 24/28 (ghi ở `eval/report.md`) · PR #25 24/28 (không có file kết quả trong repo) | Hoàng đọc kết quả, chọn #24 | Nguyễn Huy Hoàng |
-| Bộ nhớ hội thoại | Claude Code | `codebase/session.py`, `answer(text, session=None)` và test bộ nhớ (nhánh `feat/chat-memory`, `440ef04`; vào `main` qua PR #36 sau lượt 2) | Hoàng kiểm bản chụp bất biến đường eval một lượt | Nguyễn Huy Hoàng |
-| Nhánh `demo/final` | Claude Code | `6203ac5`, 298 test với model giả: bộ nhớ, chặn giấy tờ giả, hiển thị thân thiện, vá tấn công ngụy trang / diễn đạt lại, che dữ liệu cá nhân trong trace, giảm độ trễ câu đầu, chặn commit key (`scripts/check_secrets.py`), hướng dẫn demo (`docs/demo-guide.md`). Chưa merge vào `main` | Hoàng giao việc theo từng vòng, đọc báo cáo, kiểm trước khi push | Nguyễn Huy Hoàng |
-| Thử nghiệm prompt sau CP4 | Claude Code | Nhánh `exp/post-cp4-prompt` (`526cebe`, 309 test với model giả): y_do riêng cho chèn lệnh, không hỏi lại dữ kiện đã trích, dữ kiện "đã nhập học". **Chưa kiểm bằng model thật**, không merge | Hoàng quyết định để sau CP4 | Nguyễn Huy Hoàng |
+| Khung agent, nối model | Claude Code | Checklist build (PR #2, `3d757c3`); khung agent + guardrail (PR #3, `4f355d9`); nối model thật vào `codebase/ai.py` (PR #4, `37e0528`) | Hoàng đọc diff, chạy thử, merge | Ngô Huy Hoàng |
+| RAG và độ bền đầu vào | Claude Code | RAG với `kb-nvqs` + nhãn theo ground truth (PR #5, `8e56797`); chuẩn hóa đầu vào, guard không dấu, che dữ liệu cá nhân (PR #6, `191cf32`); siết guard + văn phong dễ hiểu (PR #9, `4d3d6cd`) | Hoàng chạy unittest với model giả, kiểm câu bị chặn nhầm, merge | Ngô Huy Hoàng |
+| Tài liệu CP2 | Claude Code | Nháp chốt ngưỡng, bỏ `nvqs.md`, sửa canvas (PR #10, `3c87e78`) | Hoàng chốt ngưỡng ≥ 75%; nhóm duyệt. (PR #11 bổ sung benchmark là của Hiếu, không thuộc phần này.) | Ngô Huy Hoàng |
+| Phân tích lỗi run-1 | Claude Code | Đọc 9 câu trượt của `run-1`, gom thành nhóm lỗi A/B/C (`eval/report.md` mục 2) | Hoàng chọn nhóm A ("kết luận `not_eligible` quá sớm") làm cải tiến chính thức (PR #24) vì đau nhất với người dùng; không sửa `expected` dù có nhãn tranh cãi (GT04) | Ngô Huy Hoàng |
+| Thử hướng sửa khác (không vào main) | Claude Code | `fix/retrieve-before-ask` (`c1afcee`); `fix/retrieve-before-ask-lite` (`1ccc125`, PR #25 — đã đóng, không merge); `fix/citation-group` (`83a31a3`, đo không tốt hơn, không mở PR) | Hoàng quyết định không merge để giữ đúng một cải tiến cho lượt 2 | Ngô Huy Hoàng |
+| So sánh ngoài mẫu #24 / #25 | Claude Code | 14 câu mới chưa ai chỉnh theo, `gpt-6.1-terra`, mỗi câu 2 lần: `main` 22/28 · PR #24 24/28 (ghi ở `eval/report.md`) · PR #25 24/28 (không có file kết quả trong repo) | Hoàng đọc kết quả, chọn #24 | Ngô Huy Hoàng |
+| Bộ nhớ hội thoại | Claude Code | `codebase/session.py`, `answer(text, session=None)` và test bộ nhớ (nhánh `feat/chat-memory`, `440ef04`; vào `main` qua PR #36 sau lượt 2) | Hoàng kiểm bản chụp bất biến đường eval một lượt | Ngô Huy Hoàng |
+| Nhánh `demo/final` | Claude Code | `6203ac5`, 298 test với model giả: bộ nhớ, chặn giấy tờ giả, hiển thị thân thiện, vá tấn công ngụy trang / diễn đạt lại, che dữ liệu cá nhân trong trace, giảm độ trễ câu đầu, chặn commit key (`scripts/check_secrets.py`), hướng dẫn demo (`docs/demo-guide.md`). Chưa merge vào `main` | Hoàng giao việc theo từng vòng, đọc báo cáo, kiểm trước khi push | Ngô Huy Hoàng |
+| Thử nghiệm prompt sau CP4 | Claude Code | Nhánh `exp/post-cp4-prompt` (`526cebe`, 309 test với model giả): y_do riêng cho chèn lệnh, không hỏi lại dữ kiện đã trích, dữ kiện "đã nhập học". **Chưa kiểm bằng model thật**, không merge | Hoàng quyết định để sau CP4 | Ngô Huy Hoàng |
 
 **Quyết định của con người:** chọn lát cắt tạm hoãn vì học tập; ngưỡng ≥ 75%; không sửa `expected` sau lượt 1; chọn nhóm lỗi A cho PR #24; giữ `gpt-6.1-terra` cho lượt 2 và mô phỏng chi phí; không merge nhánh demo trước CP4.
 

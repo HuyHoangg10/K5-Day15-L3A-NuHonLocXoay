@@ -47,6 +47,8 @@
 
 Lượt chạy lại vì lỗi kỹ thuật, lượt sau CP4: ghi thêm dòng, không sửa dòng cũ.
 
+- PR #36 (bộ nhớ hội thoại) merge lúc 13:22 sau lượt 2 (run-7 chạy ở `01b27e5`): thay đổi sau lượt 2, không dùng để chấm R5.
+
 ## 6. Lỗi chính
 
 Lượt 1: 18/27 (67%) — chưa đạt chuẩn `nhan_dung` (≥75%); `trich_dan_hop_le` 27/27 và `tu_choi_dung` 6/6, 0 nhầm là đạt. Nhóm lỗi lớn nhất: kết luận `not_eligible` khi benchmark yêu cầu hỏi thêm (GT04, GT09, GT19, GT20). Lượt 2 (`run-7`, sau một cải tiến nhắm nhóm A): 23/27 (85%) — đạt chuẩn; nhóm A 0/4 → 3/4, không câu nào tệ đi. Còn trượt GT03, GT11 (thiếu mã căn cứ), GT04 (nhãn tranh cãi), GT14 (hỏi lại thay vì cảnh báo bỏ khám). Chi tiết: `eval/report.md`.
