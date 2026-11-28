@@ -258,7 +258,8 @@ class RagFlowTests(unittest.TestCase):
         ctx = P.build_context(kb.legal_mvp(), refs)
         for i in kb.legal_ids():
             self.assertIn("[%s] " % i, ctx)
-        self.assertIn("Tham khảo cách hiểu chính thức (không phải căn cứ pháp lý)", ctx)
+        self.assertIn("Tham khảo cách hiểu chính thức của Bộ Quốc phòng", ctx)
+        self.assertIn("không phải căn cứ pháp lý", ctx)
         for q in refs:
             self.assertIn("[%s] " % q["id"], ctx)
             line = next(l for l in ctx.splitlines() if l.startswith("Trả lời (rút gọn): ") and ctx.index(l) > ctx.index(q["id"]))

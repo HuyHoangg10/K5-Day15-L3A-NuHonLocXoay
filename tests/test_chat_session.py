@@ -233,7 +233,8 @@ class ParseOutputTests(unittest.TestCase):
     def test_parse(self):
         out = agent.render("need_more_information", "Thiếu dữ kiện.", hoi_them=["Hệ gì?", "Năm mấy?"])["output"]
         info = S.parse_output(out)
-        self.assertEqual(info, {"nhan": "need_more_information", "can_cu": [], "hoi_them": ["Hệ gì?", "Năm mấy?"]})
+        self.assertEqual(info, {"nhan": "need_more_information", "can_cu": [], "hoi_them": ["Hệ gì?", "Năm mấy?"],
+                                "giai_thich": "Thiếu dữ kiện."})
         self.assertEqual(S.parse_output("LOI: lỗi")["nhan"], "")
 
 

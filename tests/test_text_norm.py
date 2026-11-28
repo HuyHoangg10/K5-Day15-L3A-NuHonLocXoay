@@ -77,9 +77,12 @@ class AgentUsesNormTests(unittest.TestCase):
         self.assertNotIn("sinh viên", seen[0])
 
     def test_bm25_query_uses_expansion(self):
-        self.assertEqual([q["id"] for q in tools.tra_cuu_can_cu("sv no mon chua tn co dc hoan ko")["tham_khao"]],
-                         [q["id"] for q in kb.qa_search("sv no mon chua tn co dc hoan ko "
-                                                        "sinh viên no mon chua tốt nghiệp co được hoan không", 2)])
+        q = "sv no mon chua tn co dc hoan ko"
+        expanded = tools.expand_query(q)
+        self.assertIn("sinh viên no mon chua tốt nghiệp co được hoan không", expanded)   # viết tắt đã mở rộng
+        self.assertIn("lưu ban", expanded)                                               # từ đồng nghĩa "nợ môn"
+        got = [h["id"] for h in tools.tra_cuu_can_cu(q)["tham_khao"]]
+        self.assertEqual(got[:tools.QA_K], [h["id"] for h in kb.qa_search(expanded, tools.QA_K)])
 
 
 if __name__ == "__main__":

@@ -26,7 +26,7 @@
 
 **Lát cắt.** Khi sinh viên nam trong độ tuổi gọi nhập ngũ tìm hiểu trường hợp học tập của mình, AI phân loại tình huống theo căn cứ đã xác minh hoặc hỏi thêm dữ kiện để đưa ra nhận định sơ bộ kèm trích dẫn và checklist bước tiếp theo khi đủ căn cứ.
 
-**Công cụ của agent.** Công cụ `tra_cuu_can_cu` nhận câu hỏi đã chuẩn hóa của người dùng (đã che dữ liệu cá nhân), trả các đoạn luật trong kho kèm mã, đường dẫn và ngày kiểm tra, cùng tối đa 2 bài hỏi đáp chính thức để tham khảo. Công cụ chỉ đọc kho nội bộ và không tác động ra ngoài.
+**Công cụ của agent.** Công cụ `tra_cuu_can_cu` nhận câu hỏi đã chuẩn hóa của người dùng (đã che dữ liệu cá nhân), trả các đoạn luật trong kho kèm mã, đường dẫn và ngày kiểm tra, cùng tối đa 3 bài hỏi đáp chính thức gần nhất (và một bài nền liệt kê các trường hợp không được tạm hoãn) để tham khảo. Công cụ chỉ đọc kho nội bộ và không tác động ra ngoài.
 
 **Bộ câu thử.** Bao phủ học đúng hạn, nợ môn, bảo lưu, văn bằng hai, du học, chuyển trường và liên thông. Chấm phân loại, độ phù hợp của trích dẫn và câu hỏi bổ sung khi thiếu dữ kiện. Từ chối yêu cầu giả mạo hồ sơ hoặc bịa căn cứ.
 
