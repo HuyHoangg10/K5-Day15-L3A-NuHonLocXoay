@@ -455,7 +455,7 @@ class StyleTests(unittest.TestCase):
 
     def test_prompt_style_rules(self):
         f = kb.fold(P.SYSTEM_QUYET_DINH)
-        for must in ['goi nguoi dung la "ban"', "cau ngan", "toi da 3 cau", "2–4 buoc", "1–2 cau hoi",
+        for must in ['goi nguoi dung la "ban"', "cau ngan", "toi da 4 cau", "2–4 buoc", "1–2 cau hoi",
                      "khong doi nghia", "khong chep nguyen van doan luat dai", "co can cu de de nghi xem xet",
                      "thuong khong thuoc dien", "khong bia thu tuc"]:
             self.assertIn(must, f, must)

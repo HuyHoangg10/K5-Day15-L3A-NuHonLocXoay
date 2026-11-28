@@ -128,15 +128,26 @@ class _BM25:
         return out
 
 
+QA_QUESTION_WEIGHT = 2   # câu hỏi + tiêu đề đếm 2 lần: khớp câu hỏi quan trọng hơn khớp một đoạn trong câu trả lời
+
+
+def _qa_doc_tokens(c: dict) -> list:
+    """Tài liệu BM25 của một bài hỏi đáp: câu hỏi + tiêu đề (nhân QA_QUESTION_WEIGHT) + câu trả lời.
+    Chỉ tìm trên câu hỏi thì bài có lời giải đúng tình huống (vd "ngừng học… không có lý do chính đáng" nằm trong
+    câu trả lời của bài "Xác định thời gian tạm hoãn") không bao giờ được tìm thấy khi người dùng kể "bảo lưu"."""
+    head = tokens((c.get("question") or "") + " " + (c.get("title") or ""))
+    return head * QA_QUESTION_WEIGHT + tokens(c.get("answer") or "")
+
+
 def _qa_index():
     if "qa_index" not in _cache:
         docs = [c for c in qa_all() if c.get("loai") == "hoi_dap"]
-        _cache["qa_index"] = (docs, _BM25([tokens(c.get("question") or "") for c in docs]))
+        _cache["qa_index"] = (docs, _BM25([_qa_doc_tokens(c) for c in docs]))
     return _cache["qa_index"]
 
 
 def qa_search(query: str, k: int = 2) -> list:
-    """k bài hỏi đáp (loai == "hoi_dap") có câu hỏi gần query nhất theo BM25. Không bài nào khớp → []."""
+    """k bài hỏi đáp (loai == "hoi_dap") gần query nhất theo BM25 (câu hỏi + tiêu đề + câu trả lời). Không khớp → []."""
     docs, bm25 = _qa_index()
     scored = sorted(((s, i) for i, s in enumerate(bm25.scores(tokens(query))) if s > 0), reverse=True)
     return [dict(docs[i], score=round(s, 3)) for s, i in scored[:k]]

@@ -71,7 +71,10 @@ class ToolTests(unittest.TestCase):
     def test_tra_cuu_can_cu_shape(self):
         out = tools.tra_cuu_can_cu("em nợ môn chưa tốt nghiệp")
         self.assertEqual({c["id"] for c in out["luat"]}, kb.legal_ids())
-        self.assertEqual(len(out["tham_khao"]), 2)
+        ids = [h["id"] for h in out["tham_khao"]]
+        self.assertEqual(len(ids), len(set(ids)))
+        self.assertTrue(set(tools.QA_CORE) <= set(ids))               # bài nền luôn có
+        self.assertLessEqual(len(ids), tools.QA_K + len(tools.QA_CORE))
         self.assertTrue(all(kb.is_qa_id(h["id"]) for h in out["tham_khao"]))
 
     def test_registered_as_tool(self):

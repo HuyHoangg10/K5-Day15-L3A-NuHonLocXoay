@@ -13,7 +13,11 @@ _ABSOLUTE = [
     r"dam\s+bao\s+(?:\w+\s+){0,2}(?:se\s+)?duoc\s+(?:tam\s+)?hoan",
     r"100\s*%",
     r"giay\s+(?:cua\s+(?:ban|em)\s+)?(?:da\s+)?hop\s+le",
-    r"cam\s+ket",
+    # "cam kết" là lời HỨA của trợ lý ("mình cam kết bạn được hoãn"); KHÔNG tính khi là tên giấy tờ người dùng phải nộp
+    # ("giấy/bản/đơn cam kết", "viết/ký/làm cam kết", "kèm cam kết") hoặc cam kết của công dân trong hỏi đáp du học
+    # ("cam kết sau khi khóa đào tạo kết thúc / trở về nước").
+    r"(?<!giay\s)(?<!ban\s)(?<!don\s)(?<!viet\s)(?<!ky\s)(?<!lam\s)(?<!kem\s)(?<!mau\s)"
+    r"cam\s+ket(?!\s+(?:sau\s+khi|tro\s+ve|ve\s+nuoc|se\s+ve|hoan\s+thanh))",
 ]
 _ABSOLUTE_RX = [re.compile(r"(?<!\w)" + p) for p in _ABSOLUTE]
 # Phủ định đứng NGAY TRƯỚC cụm (trong cùng mệnh đề, cách tối đa 3 từ đệm): "không thể nói 100%",

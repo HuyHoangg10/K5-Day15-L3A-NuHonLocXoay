@@ -9,7 +9,7 @@ session thì luồng, prompt và đầu ra giữ nguyên từng byte (tests/test
 
 Hình dạng: workflow cố định (sơ đồ ở spec.md §4):
   1 tiền xử lý (code) · 2 chặn đầu vào (code) · 3 trích dữ kiện (model → JSON nhỏ, KHÔNG kèm kho)
-  4 ngoài lát cắt / thiếu dữ kiện bắt buộc (code) · 5 tra cứu: tra_cuu_can_cu → chunk luật mvp + 2 bài hỏi đáp
+  4 ngoài lát cắt / thiếu dữ kiện bắt buộc (code) · 5 tra cứu: tra_cuu_can_cu → chunk luật mvp + 3 bài hỏi đáp BM25 + bài nền qa-q04
   6 quyết định (model → JSON, có ngữ cảnh RAG) · 7 kiểm đầu ra (code) · 8 định dạng (code)
   9 lỗi model / quá thời gian → thông báo lỗi lịch sự (code)
 
@@ -53,10 +53,11 @@ MAX_STEPS, MAX_STEP_CHARS = 4, 300
 MAX_QUESTIONS, MAX_QUESTION_CHARS = 2, 200
 
 Y_DO = ("hop_phap", "lach_luat", "ngoai_pham_vi")
-BOOL_FACTS = ("dang_hoc", "he_chinh_quy", "qua_han", "bao_luu", "du_hoc", "da_tot_nghiep", "da_tam_hoan_truoc")
+BOOL_FACTS = ("dang_hoc", "he_chinh_quy", "qua_han", "bao_luu", "du_hoc", "da_tot_nghiep", "da_tam_hoan_truoc",
+              "ly_do_chinh_dang", "truong_xac_nhan")
 # Bước 4: câu về tình trạng riêng của mình mà KHÔNG có dữ kiện học tập nào trong số này → need_more_information
 STUDY_DETAIL_FACTS = ("trinh_do", "he_chinh_quy", "nam_thu", "qua_han", "bao_luu", "du_hoc", "da_tot_nghiep",
-                      "da_tam_hoan_truoc")
+                      "da_tam_hoan_truoc", "ly_do_chinh_dang", "truong_xac_nhan")
 
 # Cụm khẳng định tuyệt đối (danh sách dùng trong metric trich_dan_hop_le). Bước 7 chặn bằng guards.has_absolute:
 # so trên bản bỏ dấu, thêm "cam kết", "đảm bảo <ai> được hoãn", và BỎ QUA khi bị phủ định ngay trước ("không thể nói 100%").
@@ -267,6 +268,7 @@ def clean_facts(d: dict):
     n = d.get("nam_thu")
     f["nam_thu"] = n if isinstance(n, int) and not isinstance(n, bool) and 0 < n <= 10 else None
     f["hoi_quy_dinh_chung"] = d.get("hoi_quy_dinh_chung") is True
+    f["hoi_thu_tuc"] = d.get("hoi_thu_tuc") is True
     f["chu_de"], f["y_do"] = d["chu_de"], d["y_do"]
     return f
 
@@ -477,7 +479,7 @@ def _answer(text: str, session) -> dict:
 
     # 3. Trích dữ kiện (model → JSON nhỏ, KHÔNG kèm kho)
     try:
-        res = call_model(P.SYSTEM_TRICH, P.user_trich(clean))
+        res = call_model(P.SYSTEM_TRICH, P.user_trich(clean, session.extract_block() if history else ""))
     except NotImplementedError:
         raise                     # khung báo "chưa nối model"
     except Exception as e:        # hết lượt, mất mạng, quá thời gian…: lỗi đã được @model_call ghi vào trace
@@ -494,6 +496,11 @@ def _answer(text: str, session) -> dict:
     if facts["y_do"] == "lach_luat":
         note("G_EVASION: model đánh dấu y_do=lach_luat — không tra căn cứ")
         return refuse_answer(clean, P.REFUSE_EVASION)
+    if facts["y_do"] == "ngoai_pham_vi" and history and session.continuing_study_topic():
+        # câu trả lời ngắn cho câu hỏi thêm của lượt trước (vd "gia hạn thời gian để hoàn thành") không phải câu ngoài
+        # phạm vi: cuộc trò chuyện đang bàn tạm hoãn vì học tập và trợ lý vừa hỏi thêm. Lách luật vẫn bị chặn ở trên.
+        note("phiên: model trích y_do=ngoai_pham_vi nhưng đây là câu trả lời cho câu hỏi thêm — giữ chủ đề học tập")
+        facts["y_do"], facts["chu_de"] = "hop_phap", "hoc_tap"
     if facts["y_do"] == "ngoai_pham_vi":
         note("G_OFFTOPIC: model đánh dấu y_do=ngoai_pham_vi — không tra căn cứ")
         return render("out_of_scope", P.OUT_OF_SCOPE, P.REDIRECT_OTHER)
@@ -506,15 +513,16 @@ def _answer(text: str, session) -> dict:
     if chu_de == "khac":
         note("G_ASK_TOPIC: thiếu dữ kiện — chưa rõ chủ đề")
         return render("need_more_information", "Mình chưa rõ bạn đang hỏi về căn cứ tạm hoãn nào.", hoi_them=[P.TOPIC_QUESTION])
-    if (chu_de == "hoc_tap" and not facts["hoi_quy_dinh_chung"] and facts["dang_hoc"] is not False
+    if (chu_de == "hoc_tap" and not facts["hoi_quy_dinh_chung"] and not facts["hoi_thu_tuc"]
+            and facts["dang_hoc"] is not False
             and all(facts[k] is None for k in STUDY_DETAIL_FACTS)):
         note("G_ASK_STUDY: thiếu dữ kiện học tập bắt buộc")
         return render("need_more_information", "Chưa đủ dữ kiện về việc học của bạn để đối chiếu căn cứ tạm hoãn.",
                       hoi_them=P.STUDY_QUESTIONS)
 
-    # 5. Tra cứu (công cụ): chunk luật mvp + 2 bài hỏi đáp gần nhất
+    # 5. Tra cứu (công cụ): chunk luật mvp + 3 bài hỏi đáp gần nhất + bài nền (tools.QA_CORE); bản nhiều lượt: kèm 3 lượt trước
     try:
-        found = tra_cuu_can_cu(" ".join(session.recent_user_texts(1) + [clean]) if history else clean)
+        found = tra_cuu_can_cu(" ".join(session.recent_user_texts(3) + [clean]) if history else clean)
     except Exception as e:        # thiếu / hỏng kho
         return error_answer("E_KB: tra cứu — " + type(e).__name__)
     passages, refs = found["luat"], found["tham_khao"]
