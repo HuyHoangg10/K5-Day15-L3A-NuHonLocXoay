@@ -87,7 +87,12 @@
       }
       ul = null;
       var m = ln.match(KEYS), p = el("p");
-      if (m) { p.appendChild(el("span", "k", m[1] + ": ")); p.appendChild(document.createTextNode(m[2])); }
+      if (m && m[1] === "Lưu ý") {
+        p.className = "note";
+        var cut = m[2].indexOf(". "), head = cut > 0 ? m[2].slice(0, cut + 1) : m[2], rest = cut > 0 ? m[2].slice(cut + 2) : "";
+        p.appendChild(el("span", "k", "Lưu ý: ")); p.appendChild(document.createTextNode(head));
+        if (rest) { var dd = el("details", "more"); dd.appendChild(el("summary", "", "Xem thêm")); dd.appendChild(el("span", "", rest)); p.appendChild(dd); }
+      } else if (m) { p.appendChild(el("span", "k", m[1] + ": ")); p.appendChild(document.createTextNode(m[2])); }
       else p.textContent = ln;
       box.appendChild(p);
     });
@@ -102,6 +107,22 @@
     });
     return wrap;
   }
+  var HELP_QS = ["Em đang học đại học chính quy, có thể được xem xét tạm hoãn không?", "Em học cao đẳng hệ chính quy, tạm hoãn gọi nhập ngũ cần điều kiện gì?", "Em đã học xong đại học và muốn học thêm thạc sĩ, có được tạm hoãn không?"];
+  function followUp(m) {
+    var f = el("div", "follow");
+    f.appendChild(el("p", "k", "Mình hỗ trợ tốt nhất câu hỏi về tạm hoãn vì học tập. Bạn có thể thử:"));
+    var row = el("div", "follow-row");
+    HELP_QS.forEach(function (q) {
+      var c = el("button", "chip-q small", q); c.type = "button";
+      c.addEventListener("click", function () { show("chat"); var i = $("#input"); i.value = q; autosize(); i.focus(); });
+      row.appendChild(c);
+    });
+    f.appendChild(row);
+    var src = el("button", "mini", "Xem nguồn dữ liệu của trợ lý"); src.type = "button";
+    src.addEventListener("click", function () { lastCites = m.cites || []; drawCited(); openSources(true); });
+    f.appendChild(src);
+    return f;
+  }
   function botBubble(m, opts) {
     opts = opts || {};
     var li = el("li", "m bot"), b = el("div", "bubble");
@@ -114,6 +135,7 @@
       b.appendChild(citeNodes(m.cites));
     }
     li.appendChild(b);
+    if (!m.error && !opts.readonly && (m.nhan === "out_of_scope" || m.nhan === "refuse")) li.appendChild(followUp(m));
     if (!m.error && !opts.readonly) {
       var a = el("div", "acts");
       var sv = el("button", "mini", isSaved(m.id) ? "Bỏ lưu" : "Lưu");
