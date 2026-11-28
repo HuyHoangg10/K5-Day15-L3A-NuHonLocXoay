@@ -95,3 +95,7 @@ legend{font-weight:700;padding:0 6px}
 
 /* chặn nhảy bố cục khi thanh cuộn xuất hiện/biến mất */
 #scroll,.page,#sources{scrollbar-gutter:stable both-edges}
+
+/* #app giữ đúng cỡ khung nhìn: hoạt ảnh trượt của .view không làm trang có thanh cuộn gốc */
+html,body{overflow:hidden}
+#app{overflow:hidden}
