@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi" data-theme="light" data-size="md" data-design="v1">
+<html lang="vi" data-theme="light" data-size="md" data-design="main">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,25 +8,26 @@
 </head>
 <body>
 <div id="app">
-  <nav id="rail" aria-label="Điều hướng chính">
-    <button class="rail-btn" data-view="chat" title="Chat" aria-label="Chat"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg></button>
-    <button class="rail-btn" data-view="history" title="Lịch sử" aria-label="Lịch sử"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg></button>
-    <button class="rail-btn" data-view="saved" title="Đã lưu" aria-label="Đã lưu"><svg viewBox="0 0 24 24"><path d="M7 4h10v16l-5-4-5 4z"/></svg></button>
-    <button class="rail-btn" data-view="settings" title="Cài đặt" aria-label="Cài đặt"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg></button>
-  </nav>
+  <header>
+    <h1><span class="mark" aria-hidden="true"></span>Trợ lý NVQS</h1>
+    <nav id="rail" aria-label="Điều hướng chính">
+      <button class="rail-btn" data-view="chat" aria-label="Chat"><span>Chat</span></button>
+      <button class="rail-btn" data-view="history" aria-label="Lịch sử"><span>Lịch sử</span></button>
+      <button class="rail-btn" data-view="saved" aria-label="Đã lưu"><span>Đã lưu</span></button>
+      <button class="rail-btn" data-view="settings" aria-label="Cài đặt"><span>Cài đặt</span></button>
+    </nav>
+    <span id="mode-badge" hidden></span>
+    <button id="menu-btn" aria-label="Mở menu" hidden></button>
+    <button id="src-btn" aria-expanded="false" aria-controls="sources"><span>Nguồn tham khảo</span></button>
+  </header>
+  <div id="notice" role="status" hidden></div>
   <div id="main">
-    <header>
-      <button id="menu-btn" aria-label="Mở menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-      <h1>Trợ lý NVQS</h1>
-      <span id="mode-badge" hidden></span>
-      <button id="src-btn" aria-expanded="false" aria-controls="sources"><svg viewBox="0 0 24 24"><path d="M7 3h8l4 4v14H7z"/><path d="M14 3v5h5"/></svg><span>Nguồn tham khảo</span></button>
-    </header>
-    <div id="notice" role="status" hidden></div>
     <section id="view-chat" class="view">
       <div id="scroll" tabindex="-1">
         <div id="welcome">
-          <h2>Hỏi về tạm hoãn gọi nhập ngũ vì học tập</h2>
-          <p class="lead">Mình giúp sinh viên nam tìm hiểu căn cứ để đề nghị xem xét tạm hoãn gọi nhập ngũ vì đang học (Điều 41 khoản 1 điểm g, Luật Nghĩa vụ quân sự). Mình không giải đáp mọi vấn đề về nghĩa vụ quân sự; câu hỏi ngoài phạm vi sẽ được nói rõ.</p>
+          <h2>Hỏi về tạm hoãn vì học tập</h2>
+          <p class="lead">Tra căn cứ Điều 41 khoản 1 điểm g, Luật Nghĩa vụ quân sự, cho sinh viên nam, kèm nguồn.</p>
+          <p class="scope">Chỉ trả lời trong lát cắt này. Câu hỏi ngoài phạm vi sẽ được nói rõ.</p>
           <div id="suggest">
             <button class="chip-q" type="button">Em đang học đại học chính quy, có thể được xem xét tạm hoãn không?</button>
             <button class="chip-q" type="button">Em học cao đẳng hệ chính quy, tạm hoãn gọi nhập ngũ cần điều kiện gì?</button>
@@ -48,9 +49,9 @@
       <form id="composer">
         <label for="input" class="sr">Câu hỏi của bạn</label>
         <textarea id="input" rows="1" placeholder="Nhập câu hỏi của bạn…" autocomplete="off"></textarea>
-        <button id="send" type="submit"><svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8z"/></svg><span>Gửi</span></button>
+        <button id="send" type="submit"><span>Gửi</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       </form>
-      <div id="count" class="hint">Enter để gửi · Shift+Enter xuống dòng · Mỗi câu hỏi được xử lý độc lập</div>
+      <div id="count" class="hint">Enter để gửi, Shift+Enter xuống dòng. Mỗi câu hỏi được xử lý độc lập.</div>
     </section>
     <section id="view-history" class="view page" hidden>
       <div class="bar"><h2>Lịch sử</h2><button id="new-chat" class="btn">Cuộc trò chuyện mới</button></div>
@@ -62,8 +63,8 @@
     </section>
     <section id="view-settings" class="view page" hidden>
       <div class="bar"><h2>Cài đặt</h2></div>
+      <fieldset><legend>Phiên bản giao diện</legend><div class="opts"><button id="design-switch" class="btn" type="button">Chuyển sang giao diện cũ</button></div></fieldset>
       <fieldset><legend>Giao diện</legend><div id="themes" class="opts"></div></fieldset>
-      <fieldset><legend>Thiết kế giao diện</legend><div class="opts"><button id="design-switch" class="btn" type="button">Chuyển sang thiết kế #2</button></div></fieldset>
       <fieldset><legend>Cỡ chữ</legend><div id="sizes" class="opts"></div></fieldset>
       <fieldset><legend>Dữ liệu trên trình duyệt này</legend>
         <div class="opts"><button id="clear-hist" class="btn danger">Xóa toàn bộ lịch sử</button>

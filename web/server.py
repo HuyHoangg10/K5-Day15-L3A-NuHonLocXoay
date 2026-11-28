@@ -155,8 +155,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, {"sources": load_sources()})
         if path == "/api/info":
             return self._send(200, {"mode": mode(), "max_chars": agent.MAX_INPUT_CHARS, "wait_s": agent.DEADLINE_S})
-        name = {"/": "index.html", "/v2": "v2.html", "/v2/": "v2.html"}.get(path, path.lstrip("/"))
-        if name in ("index.html", "v2.html", "app.css", "v2.css", "app.js"):
+        name = {"/": "index.html", "/legacy": "legacy.html", "/legacy/": "legacy.html"}.get(path, path.lstrip("/"))
+        if name in ("index.html", "legacy.html", "app.css", "legacy.css", "app.js"):
             with open(os.path.join(STATIC, name), "rb") as f:
                 return self._send(200, f.read(), MIME[os.path.splitext(name)[1]])
         self._send(404, {"error": "Không tìm thấy."})

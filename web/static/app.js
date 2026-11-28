@@ -28,14 +28,14 @@
   function fmt(t) { try { return new Date(t).toLocaleString("vi-VN"); } catch (e) { return ""; } }
 
   /* ---------- chọn thiết kế #1 / #2 ---------- */
-  var DESIGN = document.documentElement.getAttribute("data-design") || "v1";
+  var DESIGN = document.documentElement.getAttribute("data-design") || "main";
   KEY.design = "nvqs.design";
   var pref = readRaw(KEY.design);
-  if ((pref === "v1" || pref === "v2") && pref !== DESIGN) { location.replace(pref === "v2" ? "/v2" : "/"); return; }
+  if ((pref === "main" || pref === "legacy") && pref !== DESIGN) { location.replace(pref === "legacy" ? "/legacy" : "/"); return; }
   var dsw = $("#design-switch");
   if (dsw) {
-    dsw.textContent = DESIGN === "v1" ? "Chuyển sang thiết kế #2" : "Chuyển sang thiết kế #1";
-    dsw.addEventListener("click", function () { var to = DESIGN === "v1" ? "v2" : "v1"; write(KEY.design, to); location.href = to === "v2" ? "/v2" : "/"; });
+    dsw.textContent = DESIGN === "legacy" ? "Chuyển sang giao diện mới" : "Chuyển sang giao diện cũ";
+    dsw.addEventListener("click", function () { var to = DESIGN === "legacy" ? "main" : "legacy"; write(KEY.design, to); location.href = to === "legacy" ? "/legacy" : "/"; });
   }
 
   /* ---------- giao diện ---------- */

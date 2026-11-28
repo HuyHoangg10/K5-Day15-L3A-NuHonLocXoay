@@ -98,7 +98,7 @@ class WebTest(unittest.TestCase):
         self.assertTrue(all(s["url"] == "" or s["url"].startswith("http") for s in j["sources"]))
 
     def test_static_files(self):
-        for p in ("/", "/v2", "/app.css", "/v2.css", "/app.js"):
+        for p in ("/", "/legacy", "/app.css", "/legacy.css", "/app.js"):
             st, _ = self.req("GET", p)
             self.assertEqual(st, 200)
         self.assertEqual(self.req("GET", "/../server.py")[0], 404)
