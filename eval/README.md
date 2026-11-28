@@ -42,7 +42,6 @@
 | (phát triển) | `run-4@20261127-220724` | `gpt-6.1-terra` | như run-3, quay lại model của lượt 1 | 19/27 | 70% | chưa |
 | (phát triển) | `run-5@20261127-221157` | `gpt-6.1-terra` | + luật 6a (chỉ `not_eligible` khi người dùng đã nói dữ kiện loại trừ) | 21/27 | 78% | có |
 | (phát triển) | `run-6@20261127-221507` | `gpt-6.1-terra` | + giới hạn 6a không hoãn kết luận `eligible_for_review` | 22/27 | 81% | có |
-| (hồi quy sau CP4) | `run-8@20261128-135627` | `gpt-6.1-terra` | nhánh `fix/chatbot-retrieval-multiturn` (bản đầu): tra cứu BM25 trên câu trả lời + 3 bài + bài nền `qa-q04`, bài không cắt ở 1.200 ký tự, luật 5a–5c, bỏ ép bảo lưu → hỏi thêm, `hoi_thu_tuc` · chạy một lần · pass chấm bằng code theo `nhan_dung` | 22/27 | 81% | có (≥ 21/27; tu_choi 9/9). GT03 chuyển sang đạt; GT02, GT07 (G_ABSOLUTE chặn nhầm "giấy cam kết"), GT14 (nội dung đúng, nhãn out_of_scope) trượt — đã sửa sau run-8, chỉ kiểm bằng test và chạy lại tay GT07 (2/2), chưa đo lại vì tài khoản API hết credit (run-9 hỏng: 18/27 câu lỗi HTTP 429, không tính, không commit) |
 
 > run-2 → run-6 là **lượt phát triển**: chạy trên chính bộ 27 câu trong lúc chỉnh prompt, có lượt chạy trên code chưa commit (run-2, run-3 trước commit `3034aa7`; run-4 → run-6 trước commit `03de007`). Không phải lượt 2 chính thức. Cột `pass` chấm bằng code theo `nhan_dung`; cùng bộ chấm cho run-1 khớp từng câu với bản nhóm chấm tay (18/27). Lượt 2 chính thức chạy **một lần** sau khi merge, ghi SHA `main` vào dòng 2.
 
